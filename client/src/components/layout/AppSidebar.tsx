@@ -12,7 +12,7 @@ import {
 import { Link, useLocation } from "wouter";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
-import logo from "@assets/generated_images/minimalist_fintech_logo_with_geometric_shapes_in_blue_and_teal..png";
+import logo from "/image.png";
 
 const sidebarItems = [
   { icon: LayoutDashboard, label: "Dashboard", href: "/dashboard" },
