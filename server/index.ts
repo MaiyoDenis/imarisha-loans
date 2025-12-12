@@ -1,3 +1,4 @@
+
 import express, { type Request, Response, NextFunction } from "express";
 import { registerRoutes } from "./routes";
 import { serveStatic } from "./static";
@@ -46,4 +47,24 @@ app.use(
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
     },
-  })
+  }),
+);
+
+// API routes
+registerRoutes(app, httpServer);
+
+// Serve static files
+serveStatic(app);
+
+// Error handling
+app.use((err: Error, _req: Request, res: Response, _next: NextFunction) => {
+  console.error("Error:", err);
+  res.status(500).json({ error: "Internal server error" });
+});
+
+// Start server
+const port = process.env.PORT || 3001;
+httpServer.listen(port, () => {
+  console.log(`Server running on port ${port}`);
+  console.log(`API available at http://localhost:${port}/api`);
+});
