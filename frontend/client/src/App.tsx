@@ -21,6 +21,7 @@ import Reports from "@/pages/Reports";
 import Settings from "@/pages/Settings";
 
 
+
 function Router() {
   return (
     <Switch>
@@ -36,7 +37,6 @@ function Router() {
       <Route path="/savings" component={Savings} />
       <Route path="/reports" component={Reports} />
       <Route path="/settings" component={Settings} />
-      {/* Fallback to 404 */}
       <Route component={NotFound} />
     </Switch>
   );
