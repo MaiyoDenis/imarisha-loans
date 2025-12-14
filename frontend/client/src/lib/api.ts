@@ -1,8 +1,9 @@
 
 
+
 const API_BASE = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
 
-async function fetchAPI(endpoint: string, options?: RequestInit) {
+async function fetchAPI(endpoint: string, options: any = {}) {
   const response = await fetch(`${API_BASE}${endpoint}`, {
     ...options,
     headers: {
@@ -111,3 +112,4 @@ export const api = {
       body: JSON.stringify(data),
     }),
 };
+
