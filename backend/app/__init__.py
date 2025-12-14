@@ -16,7 +16,12 @@ def create_app(config_class=Config):
 
     db.init_app(app)
     migrate.init_app(app, db)
-    cors.init_app(app, resources={r"/*": {"origins": ["http://localhost:5173", "http://127.0.0.1:5173"]}}, supports_credentials=True)
+
+    cors.init_app(app, resources={r"/*": {"origins": [
+        "http://localhost:5173", 
+        "http://127.0.0.1:5173",
+        "https://frontend-6w055i0ie-denis-maiyos-projects-a8c9e612.vercel.app"
+    ]}}, supports_credentials=True)
     bcrypt.init_app(app)
 
     from app.routes import auth, branches, groups, members, loans, products, transactions, dashboard
