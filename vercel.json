@@ -1,3 +1,6 @@
+
+
+
 {
   "version": 2,
   "builds": [
@@ -5,29 +8,19 @@
       "src": "frontend/package.json",
       "use": "@vercel/static-build",
       "config": {
-        "installCommand": "npm install",
-        "buildCommand": "npm run build:vercel"
-      }
-    },
-    {
-      "src": "backend/run.py",
-      "use": "@vercel/python",
-      "config": {
-        "runtime": "python3.12"
+        "installCommand": "cd frontend && npm install",
+        "buildCommand": "cd frontend && npm run build:vercel",
+        "distDir": "dist"
       }
     }
   ],
   "routes": [
     {
-      "src": "/api/(.*)",
-      "dest": "backend/run.py"
-    },
-    {
       "handle": "filesystem"
     },
     {
       "src": "/(.*)",
-      "dest": "/dist/index.html"
+      "dest": "/index.html"
     }
   ]
 }
