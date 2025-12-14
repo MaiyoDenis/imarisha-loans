@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import { AppSidebar } from "@/components/layout/AppSidebar";
+import Layout from "@/components/layout/Layout";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
@@ -46,9 +46,7 @@ export default function Loans() {
   };
 
   return (
-    <div className="flex h-screen bg-background">
-      <AppSidebar />
-      <main className="flex-1 overflow-y-auto">
+    <Layout>
         <div className="p-8 space-y-8">
           <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
             <div>
@@ -142,7 +140,6 @@ export default function Loans() {
             </div>
           )}
         </div>
-      </main>
-    </div>
+    </Layout>
   );
 }

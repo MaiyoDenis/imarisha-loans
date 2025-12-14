@@ -1,7 +1,7 @@
 
 import React from "react";
 import { useQuery } from "@tanstack/react-query";
-import { AppSidebar } from "@/components/layout/AppSidebar";
+import Layout from "@/components/layout/Layout";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
@@ -240,9 +240,7 @@ export default function Savings() {
     sum + parseFloat(account.balance), 0);
 
   return (
-    <div className="flex h-screen bg-background">
-      <AppSidebar />
-      <main className="flex-1 overflow-y-auto">
+    <Layout>
         <div className="p-8 space-y-8">
           <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
             <div>
@@ -398,6 +396,7 @@ export default function Savings() {
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                 <CardTitle className="text-sm font-medium">Total Savings</CardTitle>
                 <Wallet className="h-4 w-4 text-muted-foreground" />
+
               </CardHeader>
               <CardContent>
                 <div className="text-2xl font-bold">KES {totalSavings.toLocaleString()}</div>
@@ -539,7 +538,6 @@ export default function Savings() {
             </Table>
           </div>
         </div>
-      </main>
-    </div>
+    </Layout>
   );
 }

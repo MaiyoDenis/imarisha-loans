@@ -1,5 +1,5 @@
 
-import { AppSidebar } from "@/components/layout/AppSidebar";
+import Layout from "@/components/layout/Layout";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -34,9 +34,7 @@ export default function Reports() {
   ];
 
   return (
-    <div className="flex h-screen bg-background">
-      <AppSidebar />
-      <main className="flex-1 overflow-y-auto">
+    <Layout>
         <div className="p-8 space-y-8">
           <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
             <div>
@@ -217,8 +215,7 @@ export default function Reports() {
             </Table>
           </div>
         </div>
-      </main>
-    </div>
+    </Layout>
   );
 }
 

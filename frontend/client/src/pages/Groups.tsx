@@ -1,6 +1,6 @@
 
 import { useQuery } from "@tanstack/react-query";
-import { AppSidebar } from "@/components/layout/AppSidebar";
+import Layout from "@/components/layout/Layout";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
@@ -76,9 +76,7 @@ export default function Groups() {
   };
 
   return (
-    <div className="flex h-screen bg-background">
-      <AppSidebar />
-      <main className="flex-1 overflow-y-auto">
+    <Layout>
         <div className="p-8 space-y-8">
           <div className="flex items-center justify-between">
             <div>
@@ -159,7 +157,6 @@ export default function Groups() {
 
           )}
         </div>
-      </main>
 
       {/* Group Members Dialog */}
       <Dialog open={isMembersOpen} onOpenChange={setIsMembersOpen}>
@@ -205,6 +202,6 @@ export default function Groups() {
           </div>
         </DialogContent>
       </Dialog>
-    </div>
+    </Layout>
   );
 }

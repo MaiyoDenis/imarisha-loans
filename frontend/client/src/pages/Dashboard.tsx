@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import { AppSidebar } from "@/components/layout/AppSidebar";
+import Layout from "@/components/layout/Layout";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Users, CreditCard, TrendingUp, AlertTriangle, ArrowUpRight, ArrowDownRight, Activity } from "lucide-react";
 import { Area, AreaChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
@@ -22,9 +22,7 @@ export default function Dashboard() {
   });
 
   return (
-    <div className="flex h-screen bg-background">
-      <AppSidebar />
-      <main className="flex-1 overflow-y-auto">
+    <Layout>
         <div className="p-8 space-y-8">
           <div className="flex items-center justify-between">
             <div>
@@ -163,7 +161,6 @@ export default function Dashboard() {
             </Card>
           </div>
         </div>
-      </main>
-    </div>
+    </Layout>
   );
 }
