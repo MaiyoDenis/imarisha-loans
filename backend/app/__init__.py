@@ -18,11 +18,13 @@ def create_app(config_class=Config):
     migrate.init_app(app, db)
 
 
+
     cors.init_app(app, resources={r"/*": {"origins": [
         "http://localhost:5173", 
         "http://127.0.0.1:5173",
         "https://frontend-6w055i0ie-denis-maiyos-projects-a8c9e612.vercel.app",
-        "https://frontend-p7gyshnvi-denis-maiyos-projects-a8c9e612.vercel.app"
+        "https://frontend-p7gyshnvi-denis-maiyos-projects-a8c9e612.vercel.app",
+        "https://imarisha-loans.vercel.app"
     ]}}, supports_credentials=True)
     bcrypt.init_app(app)
 
