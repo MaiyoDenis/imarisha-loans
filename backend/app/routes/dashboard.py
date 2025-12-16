@@ -3,6 +3,7 @@ from app.models import Loan, SavingsAccount, Member
 from app import db
 from sqlalchemy import func
 from datetime import datetime, timedelta
+from app.services.analytics_service import AnalyticsService
 
 bp = Blueprint('dashboard', __name__, url_prefix='/api/dashboard')
 
@@ -31,3 +32,18 @@ def get_dashboard_stats():
         'activeMembers': active_members_count,
         'arrearsCount': arrears_count
     })
+
+@bp.route('/analytics', methods=['GET'])
+def get_analytics():
+    try:
+        portfolio_metrics = AnalyticsService.get_portfolio_metrics()
+        repayment_forecast = AnalyticsService.get_repayment_forecast()
+        customer_segments = AnalyticsService.get_customer_segments()
+        
+        return jsonify({
+            'portfolio': portfolio_metrics,
+            'forecast': repayment_forecast,
+            'segments': customer_segments
+        })
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500

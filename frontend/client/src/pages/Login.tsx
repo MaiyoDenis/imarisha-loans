@@ -22,7 +22,17 @@ export default function Login() {
     setLoading(true);
 
     try {
-      await api.login(username, password);
+      const response = await api.login(username, password);
+      
+      if (response.tokens) {
+        localStorage.setItem('auth_token', response.tokens.access_token);
+        localStorage.setItem('refresh_token', response.tokens.refresh_token);
+      }
+      
+      if (response.user) {
+        localStorage.setItem('user', JSON.stringify(response.user));
+      }
+      
       toast({
         title: "Success",
         description: "Logged in successfully",

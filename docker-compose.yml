@@ -1,0 +1,139 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:15
+    container_name: imarisha-postgres
+    environment:
+      POSTGRES_DB: imarisha_loan
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  redis:
+    image: redis:7-alpine
+    container_name: imarisha-redis
+    volumes:
+      - redis_data:/data
+    ports:
+      - "6379:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  api-core:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: imarisha-api-core
+    environment:
+      FLASK_ENV: production
+      DATABASE_URL: postgresql://postgres:postgres@postgres:5432/imarisha_loan
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+    ports:
+      - "5000:5000"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    volumes:
+      - ./backend:/app
+    command: gunicorn -w 4 -b 0.0.0.0:5000 --timeout 120 wsgi:app
+
+  api-analytics:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: imarisha-api-analytics
+    environment:
+      FLASK_ENV: production
+      DATABASE_URL: postgresql://postgres:postgres@postgres:5432/imarisha_loan
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      SERVICE_NAME: analytics
+    ports:
+      - "5001:5000"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    volumes:
+      - ./backend:/app
+    command: gunicorn -w 2 -b 0.0.0.0:5000 --timeout 120 wsgi:app
+
+  api-compliance:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: imarisha-api-compliance
+    environment:
+      FLASK_ENV: production
+      DATABASE_URL: postgresql://postgres:postgres@postgres:5432/imarisha_loan
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      SERVICE_NAME: compliance
+    ports:
+      - "5002:5000"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    volumes:
+      - ./backend:/app
+    command: gunicorn -w 2 -b 0.0.0.0:5000 --timeout 120 wsgi:app
+
+  frontend:
+    build:
+      context: ./frontend/client
+      dockerfile: Dockerfile
+    container_name: imarisha-frontend
+    environment:
+      VITE_API_BASE_URL: http://localhost:5000
+    ports:
+      - "3000:3000"
+    depends_on:
+      - api-core
+    volumes:
+      - ./frontend/client:/app
+
+  nginx:
+    image: nginx:latest
+    container_name: imarisha-nginx
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+    ports:
+      - "80:80"
+      - "443:443"
+    depends_on:
+      - api-core
+      - api-analytics
+      - api-compliance
+      - frontend
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:80"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+volumes:
+  postgres_data:
+  redis_data:
+
+networks:
+  default:
+    name: imarisha-network
+    driver: bridge

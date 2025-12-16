@@ -1,6 +1,7 @@
 from flask import Blueprint, request, jsonify
 from app.models import LoanProduct, LoanType
 from app import db
+from app.services.inventory_service import InventoryService
 
 bp = Blueprint('products', __name__, url_prefix='/api')
 
@@ -9,6 +10,17 @@ bp = Blueprint('products', __name__, url_prefix='/api')
 def get_loan_products():
     products = LoanProduct.query.filter_by(is_active=True).all()
     return jsonify([product.to_dict() for product in products])
+
+@bp.route('/loan-products/alerts', methods=['GET'])
+def get_stock_alerts():
+    alerts = InventoryService.check_stock_levels()
+    return jsonify(alerts)
+
+@bp.route('/loan-products/<int:id>/forecast', methods=['GET'])
+def get_product_forecast(id):
+    days = request.args.get('days', 30, type=int)
+    forecast = InventoryService.predict_demand(id, days)
+    return jsonify(forecast)
 
 @bp.route('/loan-products/<int:id>', methods=['GET'])
 def get_loan_product(id):

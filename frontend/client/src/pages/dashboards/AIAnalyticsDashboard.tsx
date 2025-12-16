@@ -1,0 +1,206 @@
+import React, { useState } from 'react';
+import { Brain, RefreshCw, Download } from 'lucide-react';
+import Layout from '../../components/layout/Layout';
+import { ArrearsForcastChart } from '../../components/ai-analytics/ArrearsForcastChart';
+import { MemberSegmentationChart } from '../../components/ai-analytics/MemberSegmentationChart';
+import { AtRiskMembersTable } from '../../components/ai-analytics/AtRiskMembersTable';
+import { CohortAnalysisChart } from '../../components/ai-analytics/CohortAnalysisChart';
+import {
+  useArrearsForcast,
+  useMemberBehavior,
+  useAtRiskMembers,
+  useCohortAnalysis,
+} from '../../hooks/use-ai-analytics';
+
+interface FilterState {
+  branchId?: number;
+  timeRange: 'month' | 'quarter' | 'year';
+}
+
+export const AIAnalyticsDashboard: React.FC = () => {
+  const [filters, setFilters] = useState<FilterState>({
+    timeRange: 'month',
+  });
+
+  const arrearsForcast = useArrearsForcast(filters.branchId);
+  const memberBehavior = useMemberBehavior(filters.branchId);
+  const atRiskMembers = useAtRiskMembers(filters.branchId);
+  const cohortAnalysis = useCohortAnalysis(filters.branchId);
+
+  const isLoading =
+    arrearsForcast.isLoading ||
+    memberBehavior.isLoading ||
+    atRiskMembers.isLoading ||
+    cohortAnalysis.isLoading;
+
+  const handleRefresh = () => {
+    arrearsForcast.refetch();
+    memberBehavior.refetch();
+    atRiskMembers.refetch();
+    cohortAnalysis.refetch();
+  };
+
+  const handleExport = () => {
+    const data = {
+      timestamp: new Date().toISOString(),
+      arrears_forecast: arrearsForcast.data,
+      member_behavior: memberBehavior.data,
+      at_risk_members: atRiskMembers.data,
+      cohort_analysis: cohortAnalysis.data,
+    };
+
+    const dataStr = JSON.stringify(data, null, 2);
+    const dataBlob = new Blob([dataStr], { type: 'application/json' });
+    const url = URL.createObjectURL(dataBlob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `ai-analytics-${new Date().toISOString().split('T')[0]}.json`;
+    link.click();
+  };
+
+  return (
+    <Layout>
+      <div className="min-h-screen bg-gray-50">
+        <div className="sticky top-0 bg-white border-b border-gray-200 z-40">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+          <div className="flex justify-between items-start mb-6">
+            <div>
+              <h1 className="text-3xl font-bold text-gray-900 flex items-center gap-3">
+                <Brain className="w-8 h-8 text-purple-600" />
+                AI Analytics Dashboard
+              </h1>
+              <p className="text-gray-600 mt-1">
+                AI-powered insights for predictive analytics and member intelligence
+              </p>
+            </div>
+            <div className="flex gap-2">
+              <button
+                onClick={handleRefresh}
+                disabled={isLoading}
+                className="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 transition"
+              >
+                <RefreshCw className={`w-4 h-4 ${isLoading ? 'animate-spin' : ''}`} />
+                Refresh
+              </button>
+              <button
+                onClick={handleExport}
+                className="inline-flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition"
+              >
+                <Download className="w-4 h-4" />
+                Export
+              </button>
+            </div>
+          </div>
+
+          <div className="flex gap-4 flex-wrap">
+            <select
+              value={filters.timeRange}
+              onChange={(e) => setFilters({ ...filters, timeRange: e.target.value as any })}
+              className="px-4 py-2 border border-gray-300 rounded-lg text-sm"
+            >
+              <option value="month">Last Month</option>
+              <option value="quarter">Last Quarter</option>
+              <option value="year">Last Year</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div className="space-y-8">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            <div>
+              {arrearsForcast.data && (
+                <ArrearsForcastChart
+                  data={arrearsForcast.data}
+                  isLoading={arrearsForcast.isLoading}
+                />
+              )}
+            </div>
+
+            <div>
+              <MemberSegmentationChart
+                segments={memberBehavior.data?.segments || {}}
+                totalMembers={memberBehavior.data?.total_members || 0}
+                isLoading={memberBehavior.isLoading}
+              />
+            </div>
+          </div>
+
+          {atRiskMembers.data && (
+            <AtRiskMembersTable
+              members={atRiskMembers.data.members}
+              totalScanned={atRiskMembers.data.total_members_scanned}
+              isLoading={atRiskMembers.isLoading}
+            />
+          )}
+
+          <CohortAnalysisChart
+            cohorts={cohortAnalysis.data?.cohorts || []}
+            insights={cohortAnalysis.data?.insights || { best_performing_cohort: null, average_active_rate: 0, average_default_rate: 0 }}
+            isLoading={cohortAnalysis.isLoading}
+          />
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="bg-white rounded-lg shadow p-6">
+              <h3 className="text-lg font-semibold text-gray-900 mb-4">Key Metrics</h3>
+              <div className="space-y-4">
+                <div className="flex justify-between items-center pb-4 border-b border-gray-200">
+                  <span className="text-gray-600">Portfolio Health Score</span>
+                  <span className="text-2xl font-bold text-green-600">78%</span>
+                </div>
+                <div className="flex justify-between items-center pb-4 border-b border-gray-200">
+                  <span className="text-gray-600">Members at Risk</span>
+                  <span className="text-2xl font-bold text-red-600">
+                    {atRiskMembers.data?.at_risk_count || 0}
+                  </span>
+                </div>
+                <div className="flex justify-between items-center pb-4 border-b border-gray-200">
+                  <span className="text-gray-600">Average Active Rate</span>
+                  <span className="text-2xl font-bold text-blue-600">
+                    {cohortAnalysis.data?.insights?.average_active_rate?.toFixed(1) || 0}%
+                  </span>
+                </div>
+                <div className="flex justify-between items-center">
+                  <span className="text-gray-600">Forecast Confidence</span>
+                  <span className="text-2xl font-bold text-purple-600">95%</span>
+                </div>
+              </div>
+            </div>
+
+            <div className="bg-white rounded-lg shadow p-6">
+              <h3 className="text-lg font-semibold text-gray-900 mb-4">Recommendations</h3>
+              <div className="space-y-3">
+                <div className="flex gap-3">
+                  <div className="w-2 h-2 rounded-full bg-red-500 flex-shrink-0 mt-1.5"></div>
+                  <p className="text-sm text-gray-700">
+                    Immediate follow-up required for {atRiskMembers.data?.members?.filter((m: any) => m.risk_score > 0.8).length || 0} critical risk members
+                  </p>
+                </div>
+                <div className="flex gap-3">
+                  <div className="w-2 h-2 rounded-full bg-orange-500 flex-shrink-0 mt-1.5"></div>
+                  <p className="text-sm text-gray-700">
+                    Arrears forecasting shows {arrearsForcast.data?.predictions?.[0]?.trend === 'increasing' ? 'increasing' : 'decreasing'} trend
+                  </p>
+                </div>
+                <div className="flex gap-3">
+                  <div className="w-2 h-2 rounded-full bg-blue-500 flex-shrink-0 mt-1.5"></div>
+                  <p className="text-sm text-gray-700">
+                    Focus engagement efforts on Growth Potential segment for portfolio expansion
+                  </p>
+                </div>
+                <div className="flex gap-3">
+                  <div className="w-2 h-2 rounded-full bg-green-500 flex-shrink-0 mt-1.5"></div>
+                  <p className="text-sm text-gray-700">
+                    {cohortAnalysis.data?.insights?.best_performing_cohort} shows best retention metrics
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    </Layout>
+  );
+};

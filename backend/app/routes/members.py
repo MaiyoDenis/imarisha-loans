@@ -1,8 +1,36 @@
-from flask import Blueprint, request, jsonify
+from flask import Blueprint, request, jsonify, send_file
 from app.models import Member, User, Group, SavingsAccount, DrawdownAccount
 from app import db
+import qrcode
+from io import BytesIO
 
 bp = Blueprint('members', __name__, url_prefix='/api/members')
+
+@bp.route('/<int:id>/qr', methods=['GET'])
+def get_member_qr(id):
+    member = Member.query.get(id)
+    if not member:
+        return jsonify({'error': 'Member not found'}), 404
+        
+    # Data to encode: Member Code
+    data = member.member_code
+    
+    qr = qrcode.QRCode(
+        version=1,
+        error_correction=qrcode.constants.ERROR_CORRECT_L,
+        box_size=10,
+        border=4,
+    )
+    qr.add_data(data)
+    qr.make(fit=True)
+
+    img = qr.make_image(fill_color="black", back_color="white")
+    
+    img_io = BytesIO()
+    img.save(img_io, 'PNG')
+    img_io.seek(0)
+    
+    return send_file(img_io, mimetype='image/png')
 
 @bp.route('', methods=['GET'])
 def get_members():

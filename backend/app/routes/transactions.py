@@ -104,6 +104,37 @@ def create_transaction():
         if account_type == 'loan':
             balance_after = loan.outstanding_balance
             
+    elif transaction_type == 'transfer':
+        to_account_type = data.get('toAccountType')
+        if not to_account_type:
+             return jsonify({'error': 'Destination account type required'}), 400
+             
+        if account_type == to_account_type:
+             return jsonify({'error': 'Source and destination accounts must be different'}), 400
+             
+        # Get dest account
+        dest_account = None
+        if to_account_type == 'savings':
+            dest_account = SavingsAccount.query.filter_by(member_id=member_id).first()
+            if not dest_account:
+                dest_account = SavingsAccount(member_id=member_id, account_number=f"SAV-{member.member_code}")
+                db.session.add(dest_account)
+        elif to_account_type == 'drawdown':
+            dest_account = DrawdownAccount.query.filter_by(member_id=member_id).first()
+            if not dest_account:
+                dest_account = DrawdownAccount(member_id=member_id, account_number=f"DRD-{member.member_code}")
+                db.session.add(dest_account)
+        else:
+             return jsonify({'error': 'Invalid destination account type'}), 400
+             
+        if account.balance < amount:
+             return jsonify({'error': 'Insufficient funds'}), 400
+             
+        account.balance -= amount
+        dest_account.balance += amount
+        
+        balance_after = account.balance
+            
     else:
         return jsonify({'error': 'Invalid transaction type'}), 400
     
