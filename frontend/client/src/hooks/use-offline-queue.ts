@@ -43,14 +43,23 @@ const OFFLINE_QUEUE_CONFIG = {
 export function useOfflineQueue(): OfflineQueueState {
   const [isOnline, setIsOnline] = useState(navigator.onLine);
   const [isProcessing, setIsProcessing] = useState(false);
+  const [queue, setQueue] = useState<QueuedRequest[]>([]);
 
   const {
-    data: queue,
     add: addToDB,
     remove: removeFromDB,
     clear: clearDB,
     getAll: refreshQueue
-  } = useIndexedDB<QueuedRequest>(OFFLINE_QUEUE_CONFIG, 'requests');
+  } = useIndexedDB('imarisha-offline-queue', 'requests');
+
+  // Load queue on mount
+  useEffect(() => {
+    refreshQueue().then((items: any[]) => {
+      setQueue(items || []);
+    }).catch(() => {
+      setQueue([]);
+    });
+  }, [refreshQueue]);
 
   // Monitor online status
   useEffect(() => {
@@ -99,8 +108,8 @@ export function useOfflineQueue(): OfflineQueueState {
 
     // Sort by priority and timestamp
     const sortedQueue = [...queue].sort((a, b) => {
-      const priorityOrder = { high: 3, normal: 2, low: 1 };
-      const priorityDiff = priorityOrder[b.priority] - priorityOrder[a.priority];
+      const priorityOrder: Record<string, number> = { high: 3, normal: 2, low: 1 };
+      const priorityDiff = (priorityOrder[b.priority] || 0) - (priorityOrder[a.priority] || 0);
       return priorityDiff !== 0 ? priorityDiff : a.timestamp - b.timestamp;
     });
 

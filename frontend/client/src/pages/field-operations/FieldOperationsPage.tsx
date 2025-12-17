@@ -89,7 +89,7 @@ export const FieldOperationsPage: React.FC = () => {
         color: "white",
       }}>
         <Grid container spacing={3} alignItems="center">
-          <Grid item xs={12} md={8}>
+          <Grid size={{ xs: 12, md: 8 }}>
             <Typography variant="h4" sx={{ fontWeight: "bold", mb: 1 }}>
               Field Operations
             </Typography>
@@ -97,7 +97,7 @@ export const FieldOperationsPage: React.FC = () => {
               Manage your visits, applications, and field work efficiently
             </Typography>
           </Grid>
-          <Grid item xs={12} md={4}>
+          <Grid size={{ xs: 12, md: 4 }}>
             <Box sx={{ display: "flex", gap: 1, flexWrap: "wrap" }}>
               <Chip
                 label={`${activeVisits.length} Active Visits`}
@@ -115,7 +115,7 @@ export const FieldOperationsPage: React.FC = () => {
       </Paper>
 
       <Grid container spacing={3} sx={{ mb: 3 }}>
-        <Grid item xs={12} sm={6} md={3}>
+        <Grid size={{ xs: 12, sm: 6, md: 3 }}>
           <Card>
             <CardContent>
               <Stack direction="row" spacing={2} alignItems="center">
@@ -133,7 +133,7 @@ export const FieldOperationsPage: React.FC = () => {
           </Card>
         </Grid>
 
-        <Grid item xs={12} sm={6} md={3}>
+        <Grid size={{ xs: 12, sm: 6, md: 3 }}>
           <Card>
             <CardContent>
               <Stack direction="row" spacing={2} alignItems="center">
@@ -151,7 +151,7 @@ export const FieldOperationsPage: React.FC = () => {
           </Card>
         </Grid>
 
-        <Grid item xs={12} sm={6} md={3}>
+        <Grid size={{ xs: 12, sm: 6, md: 3 }}>
           <Card>
             <CardContent>
               <Stack direction="row" spacing={2} alignItems="center">
@@ -169,7 +169,7 @@ export const FieldOperationsPage: React.FC = () => {
           </Card>
         </Grid>
 
-        <Grid item xs={12} sm={6} md={3}>
+        <Grid size={{ xs: 12, sm: 6, md: 3 }}>
           <Card>
             <CardContent>
               <Stack direction="row" spacing={2} alignItems="center">
@@ -202,10 +202,10 @@ export const FieldOperationsPage: React.FC = () => {
 
         <TabPanel value={tabValue} index={0}>
           <Grid container spacing={3}>
-            <Grid item xs={12} md={6}>
+            <Grid size={{ xs: 12, md: 6 }}>
               <OfflineSyncStatus userId={userId} />
             </Grid>
-            <Grid item xs={12} md={6}>
+            <Grid size={{ xs: 12, md: 6 }}>
               <Card>
                 <CardContent>
                   <Typography variant="h6" sx={{ mb: 2 }}>
@@ -265,10 +265,10 @@ export const FieldOperationsPage: React.FC = () => {
 
         <TabPanel value={tabValue} index={2}>
           <Grid container spacing={3}>
-            <Grid item xs={12} md={6}>
+            <Grid size={{ xs: 12, md: 6 }}>
               <MobileLoanWizard memberId={userId} />
             </Grid>
-            <Grid item xs={12} md={6}>
+            <Grid size={{ xs: 12, md: 6 }}>
               <PhotoCapture entityType="application" entityId={userId} />
             </Grid>
           </Grid>
@@ -276,10 +276,10 @@ export const FieldOperationsPage: React.FC = () => {
 
         <TabPanel value={tabValue} index={3}>
           <Grid container spacing={3}>
-            <Grid item xs={12} md={6}>
+            <Grid size={{ xs: 12, md: 6 }}>
               <BiometricAuthSetup userId={userId} />
             </Grid>
-            <Grid item xs={12} md={6}>
+            <Grid size={{ xs: 12, md: 6 }}>
               <Card>
                 <CardContent>
                   <Typography variant="h6" sx={{ mb: 2 }}>

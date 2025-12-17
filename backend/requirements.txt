@@ -1,4 +1,3 @@
-
 flask
 flask-sqlalchemy
 flask-migrate
@@ -11,7 +10,6 @@ flask-jwt-extended
 flask-limiter
 redis
 celery
-redis
 requests
 python-dateutil
 marshmallow
@@ -27,3 +25,5 @@ scikit-learn
 prophet
 statsmodels
 scipy
+reportlab
+matplotlib

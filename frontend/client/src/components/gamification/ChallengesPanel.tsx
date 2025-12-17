@@ -85,7 +85,7 @@ export const ChallengesPanel: React.FC<ChallengesPanelProps> = ({ userId }) => {
         ) : userChallengesQuery.data?.length > 0 ? (
           <Grid container spacing={2}>
             {userChallengesQuery.data?.map((uc: any) => (
-              <Grid item xs={12} md={6} key={uc.id}>
+              <Grid size={{ xs: 12, md: 6 }}>
                 <Card>
                   <CardContent>
                     <Box
@@ -154,7 +154,7 @@ export const ChallengesPanel: React.FC<ChallengesPanelProps> = ({ userId }) => {
             {challengesQuery.data?.map((challenge: any) => {
               const isJoined = userChallengeIds.has(challenge.id);
               return (
-                <Grid item xs={12} md={6} key={challenge.id}>
+                <Grid size={{ xs: 12, md: 6 }}>
                   <Card>
                     <CardContent>
                       <Typography variant="h6" sx={{ mb: 1 }}>

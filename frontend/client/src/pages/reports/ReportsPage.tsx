@@ -171,7 +171,7 @@ export const ReportsPage: React.FC = () => {
                             {key.replace(/_/g, ' ').toUpperCase()}
                           </p>
                           <p className="text-2xl font-bold text-gray-900">
-                            {typeof value === 'number' ? value.toLocaleString() : value}
+                            {typeof value === 'number' ? value.toLocaleString() : String(value)}
                           </p>
                         </div>
                       ))}

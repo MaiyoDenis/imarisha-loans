@@ -157,7 +157,7 @@ window.addEventListener('online', () => {
     
     if ('SyncManager' in window) {
       navigator.serviceWorker.ready.then(registration => {
-        registration.sync.register('sync-requests').catch(error => {
+        (registration as any).sync.register('sync-requests').catch((error: any) => {
           console.error('[SW] Sync registration failed:', error);
         });
       });

@@ -73,11 +73,11 @@ export const MemberSegmentationChart: React.FC<MemberSegmentationChartProps> = (
       <ResponsiveContainer width="100%" height={300}>
         <PieChart>
           <Pie
-            data={chartData}
+            data={chartData as any}
             cx="50%"
             cy="50%"
             labelLine={false}
-            label={({ percentage }) => `${percentage.toFixed(1)}%`}
+            label={(entry: any) => `${entry.percentage.toFixed(1)}%`}
             outerRadius={80}
             fill="#8884d8"
             dataKey="count"

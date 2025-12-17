@@ -33,7 +33,7 @@ export const AchievementsPanel: React.FC<AchievementsPanelProps> = ({
         ) : achievementsQuery.data?.length > 0 ? (
           <Grid container spacing={2}>
             {achievementsQuery.data?.map((achievement: any) => (
-              <Grid item xs={12} sm={6} md={4} key={achievement.id}>
+              <Grid size={{ xs: 12, sm: 6, md: 4 }}>
                 <Card
                   sx={{
                     cursor: "pointer",
@@ -94,7 +94,7 @@ export const AchievementsPanel: React.FC<AchievementsPanelProps> = ({
         ) : badgesQuery.data?.length > 0 ? (
           <Grid container spacing={2}>
             {badgesQuery.data?.map((badge: any) => (
-              <Grid item xs={12} sm={6} md={4} key={badge.id}>
+              <Grid size={{ xs: 12, sm: 6, md: 4 }}>
                 <Card
                   sx={{
                     background: `linear-gradient(135deg, ${

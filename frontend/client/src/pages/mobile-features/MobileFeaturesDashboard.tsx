@@ -323,7 +323,7 @@ export function MobileFeaturesDashboard() {
               <CardContent className="space-y-4">
                 <div className="flex gap-2">
                   <Button
-                    onClick={cameraActive ? stopCamera : startCamera}
+                    onClick={() => cameraActive ? stopCamera() : startCamera()}
                     variant={cameraActive ? "destructive" : "default"}
                     className="flex-1"
                   >

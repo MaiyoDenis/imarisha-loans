@@ -96,7 +96,7 @@ export const VisitTracking: React.FC<VisitTrackingProps> = ({
 
   return (
     <Grid container spacing={2}>
-      <Grid item xs={12}>
+      <Grid size={{ xs: 12 }}>
         <Card>
           <CardContent>
             <Stack direction="row" justifyContent="space-between" alignItems="center" sx={{ mb: 2 }}>

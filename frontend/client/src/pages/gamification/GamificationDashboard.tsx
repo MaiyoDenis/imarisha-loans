@@ -92,8 +92,10 @@ export const GamificationDashboard: React.FC = () => {
       <Container maxWidth="lg" sx={{ py: 4 }}>
       {/* Header */}
       <Paper sx={{ p: 3, mb: 3, background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)", color: "white" }}>
+
+
         <Grid container spacing={3} alignItems="center">
-          <Grid item xs={12} md={6}>
+          <Grid size={{ xs: 12, md: 6 }}>
             <Typography variant="h3" sx={{ fontWeight: "bold", mb: 1 }}>
               Gamification Dashboard
             </Typography>
@@ -101,7 +103,7 @@ export const GamificationDashboard: React.FC = () => {
               Earn points, unlock achievements, and compete with others!
             </Typography>
           </Grid>
-          <Grid item xs={12} md={6}>
+          <Grid size={{ xs: 12, md: 6 }}>
             {summaryQuery.isLoading ? (
               <LinearProgress />
             ) : (
@@ -166,7 +168,7 @@ export const GamificationDashboard: React.FC = () => {
       {/* Stats Grid */}
       {summaryQuery.data && (
         <Grid container spacing={2} sx={{ mb: 3 }}>
-          <Grid item xs={6} sm={3}>
+          <Grid size={{ xs: 6, sm: 3 }}>
             <Card>
               <CardContent sx={{ textAlign: "center" }}>
                 <Typography variant="h5" sx={{ fontWeight: "bold", color: "#667eea" }}>
@@ -178,7 +180,7 @@ export const GamificationDashboard: React.FC = () => {
               </CardContent>
             </Card>
           </Grid>
-          <Grid item xs={6} sm={3}>
+          <Grid size={{ xs: 6, sm: 3 }}>
             <Card>
               <CardContent sx={{ textAlign: "center" }}>
                 <Typography variant="h5" sx={{ fontWeight: "bold", color: "#764ba2" }}>
@@ -190,7 +192,7 @@ export const GamificationDashboard: React.FC = () => {
               </CardContent>
             </Card>
           </Grid>
-          <Grid item xs={6} sm={3}>
+          <Grid size={{ xs: 6, sm: 3 }}>
             <Card>
               <CardContent sx={{ textAlign: "center" }}>
                 <Typography variant="h5" sx={{ fontWeight: "bold", color: "#4ecdc4" }}>
@@ -202,7 +204,7 @@ export const GamificationDashboard: React.FC = () => {
               </CardContent>
             </Card>
           </Grid>
-          <Grid item xs={6} sm={3}>
+          <Grid size={{ xs: 6, sm: 3 }}>
             <Card>
               <CardContent sx={{ textAlign: "center" }}>
                 <Typography variant="h5" sx={{ fontWeight: "bold", color: "#ff6b6b" }}>

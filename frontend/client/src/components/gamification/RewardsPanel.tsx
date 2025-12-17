@@ -51,7 +51,7 @@ export const RewardsPanel: React.FC<RewardsPanelProps> = ({ userId }) => {
         ) : rewardsQuery.data?.length > 0 ? (
           <Grid container spacing={2}>
             {rewardsQuery.data?.map((reward: any) => (
-              <Grid item xs={12} md={6} key={reward.id}>
+              <Grid size={{ xs: 12, md: 6 }}>
                 <Card
                   sx={{
                     background: reward.canRedeem
@@ -141,7 +141,7 @@ export const RewardsPanel: React.FC<RewardsPanelProps> = ({ userId }) => {
         ) : userRewardsQuery.data?.length > 0 ? (
           <Grid container spacing={2}>
             {userRewardsQuery.data?.map((userReward: any) => (
-              <Grid item xs={12} md={6} key={userReward.id}>
+              <Grid size={{ xs: 12, md: 6 }}>
                 <Card>
                   <CardContent>
                     <Box

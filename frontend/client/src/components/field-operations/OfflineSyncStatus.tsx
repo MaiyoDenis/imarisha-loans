@@ -162,7 +162,7 @@ export const OfflineSyncStatus: React.FC<OfflineSyncStatusProps> = ({
                   secondaryAction={
                     item.status === "failed" && (
                       <Button
-                        edge="end"
+                        
                         size="small"
                         onClick={() => handleResolveConflict(item.id)}
                       >

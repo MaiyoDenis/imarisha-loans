@@ -96,7 +96,7 @@ export function GPSTracker({ autoStart = false, showControls = false, className 
         {showControls && (
           <div className="flex gap-2">
             <Button
-              onClick={isTracking ? stopTracking : startTracking}
+              onClick={() => (isTracking ? stopTracking() : startTracking())}
               variant={isTracking ? "destructive" : "default"}
               className="flex-1"
             >

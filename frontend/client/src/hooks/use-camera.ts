@@ -135,7 +135,7 @@ export function useCamera(): CameraState {
       startCamera({
         ...DEFAULT_CONSTRAINTS,
         video: {
-          ...DEFAULT_CONSTRAINTS.video,
+          ...(DEFAULT_CONSTRAINTS.video as any),
           facingMode: newFacingMode
         }
       });
