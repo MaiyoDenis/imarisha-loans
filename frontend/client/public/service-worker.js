@@ -176,7 +176,7 @@ async function cacheFirstStrategy(request) {
 
 async function handleOfflineSync(request) {
   try {
-    return await fetch(request);
+    return await fetch(request.clone());
   } catch (error) {
     await storeRequestForSync(request);
     
