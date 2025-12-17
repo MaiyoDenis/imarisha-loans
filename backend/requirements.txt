@@ -27,3 +27,4 @@ statsmodels
 scipy
 reportlab
 matplotlib
+openpyxl
