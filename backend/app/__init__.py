@@ -30,11 +30,9 @@ def create_app(config_class=Config):
         "origins": [
             "http://localhost:5173", 
             "http://127.0.0.1:5173",
-            "https://frontend-6w055i0ie-denis-maiyos-projects-a8c9e612.vercel.app",
-            "https://frontend-p7gyshnvi-denis-maiyos-projects-a8c9e612.vercel.app",
             "https://imarisha-loans.vercel.app",
-            "https://*.vercel.app",
-            "https://*.netlify.app"
+            r"https://.*\.vercel\.app",
+            r"https://.*\.netlify\.app"
         ],
         "methods": ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
         "allowed_headers": [
