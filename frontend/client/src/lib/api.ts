@@ -4,6 +4,10 @@
 
 const API_BASE = import.meta.env.VITE_API_URL || "https://imarisha-loans.onrender.com/api";
 
+if (typeof window !== 'undefined') {
+  console.log('[API] Using API base:', API_BASE);
+}
+
 function getAuthToken(): string | null {
   if (typeof window !== 'undefined') {
     return localStorage.getItem('auth_token');

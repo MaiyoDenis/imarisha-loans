@@ -9,56 +9,63 @@ bp = Blueprint('auth', __name__, url_prefix='/api/auth')
 @bp.route('/login', methods=['POST'])
 @jwt_service.limit("5 per minute")
 def login():
-    # Rate limiting check handled by decorator
+    import logging
+    logger = logging.getLogger(__name__)
+    
+    try:
+        data = request.get_json()
+        username = data.get('username')
+        password = data.get('password')
 
-    data = request.get_json()
-    username = data.get('username')
-    password = data.get('password')
-
-    user = User.query.filter_by(username=username).first()
-
-    if user and bcrypt.check_password_hash(user.password, password):
-        # Create tokens
-        tokens = jwt_service.create_tokens(user.id, {
-            'role': user.role,
-            'branch_id': user.branch_id
-        })
+        user = User.query.filter_by(username=username).first()
         
-        # Log successful login
+        if user and bcrypt.check_password_hash(user.password, password):
+            try:
+                tokens = jwt_service.create_tokens(user.id, {
+                    'role': user.role,
+                    'branch_id': user.branch_id
+                })
+            except Exception as token_error:
+                logger.error(f"Token creation failed for user {username}: {str(token_error)}", exc_info=True)
+                raise
+            
+            audit_service.log_event(
+                event_type=AuditEventType.AUTH_LOGIN,
+                user_id=user.id,
+                resource="auth",
+                action="login",
+                details={'username': username},
+                risk_level=RiskLevel.LOW
+            )
+            
+            return jsonify({
+                'user': {
+                    'id': user.id,
+                    'username': user.username,
+                    'role': user.role,
+                    'firstName': user.first_name,
+                    'lastName': user.last_name
+                },
+                'tokens': tokens,
+                'access_token': tokens.get('access_token'),
+                'refresh_token': tokens.get('refresh_token'),
+                'expires_in': tokens.get('expires_in'),
+                'token_type': tokens.get('token_type')
+            })
+        
         audit_service.log_event(
-            event_type=AuditEventType.AUTH_LOGIN,
-            user_id=user.id,
+            event_type=AuditEventType.AUTH_FAILURE,
             resource="auth",
-            action="login",
+            action="login_failed",
             details={'username': username},
-            risk_level=RiskLevel.LOW
+            risk_level=RiskLevel.MEDIUM
         )
         
-        return jsonify({
-            'user': {
-                'id': user.id,
-                'username': user.username,
-                'role': user.role,
-                'firstName': user.first_name,
-                'lastName': user.last_name
-            },
-            'tokens': tokens,
-            'access_token': tokens.get('access_token'),
-            'refresh_token': tokens.get('refresh_token'),
-            'expires_in': tokens.get('expires_in'),
-            'token_type': tokens.get('token_type')
-        })
+        return jsonify({'error': 'Invalid credentials'}), 401
     
-    # Log failed login
-    audit_service.log_event(
-        event_type=AuditEventType.AUTH_FAILURE,
-        resource="auth",
-        action="login_failed",
-        details={'username': username},
-        risk_level=RiskLevel.MEDIUM
-    )
-    
-    return jsonify({'error': 'Invalid credentials'}), 401
+    except Exception as e:
+        logger.error(f"Login error for user {data.get('username') if data else 'unknown'}: {str(e)}", exc_info=True)
+        return jsonify({'error': 'Internal server error', 'detail': str(e)}), 500
 
 @bp.route('/register', methods=['POST'])
 @jwt_service.limit("3 per hour")
