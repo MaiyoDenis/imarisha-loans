@@ -195,20 +195,40 @@ async function handleOfflineSync(request) {
 }
 
 async function storeRequestForSync(request) {
-  const db = await openDB();
-  const tx = db.transaction('sync-queue', 'readwrite');
-  const store = tx.objectStore('sync-queue');
-  
-  const requestData = {
-    url: request.url,
-    method: request.method,
-    headers: Object.fromEntries(request.headers.entries()),
-    body: request.method !== 'GET' ? await request.text() : null,
-    timestamp: Date.now()
-  };
-  
-  await store.add(requestData);
-  await tx.done;
+  try {
+    const db = await openDB();
+    const requestData = {
+      url: request.url,
+      method: request.method,
+      headers: Object.fromEntries(request.headers.entries()),
+      body: request.method !== 'GET' ? await request.clone().text() : null,
+      timestamp: Date.now()
+    };
+    
+    return new Promise((resolve, reject) => {
+      const tx = db.transaction('sync-queue', 'readwrite');
+      const store = tx.objectStore('sync-queue');
+      const addRequest = store.add(requestData);
+      
+      addRequest.onsuccess = () => {
+        console.log('[ServiceWorker] Request queued for sync');
+        resolve();
+      };
+      
+      addRequest.onerror = () => {
+        console.error('[ServiceWorker] Failed to queue request:', addRequest.error);
+        reject(addRequest.error);
+      };
+      
+      tx.onerror = () => {
+        console.error('[ServiceWorker] Transaction error:', tx.error);
+        reject(tx.error);
+      };
+    });
+  } catch (error) {
+    console.error('[ServiceWorker] Error storing request:', error);
+    throw error;
+  }
 }
 
 function openDB() {
@@ -236,9 +256,15 @@ self.addEventListener('sync', (event) => {
 async function syncQueuedRequests() {
   try {
     const db = await openDB();
-    const tx = db.transaction('sync-queue', 'readonly');
-    const store = tx.objectStore('sync-queue');
-    const requests = await store.getAll();
+    
+    const requests = await new Promise((resolve, reject) => {
+      const tx = db.transaction('sync-queue', 'readonly');
+      const store = tx.objectStore('sync-queue');
+      const getAllRequest = store.getAll();
+      
+      getAllRequest.onsuccess = () => resolve(getAllRequest.result);
+      getAllRequest.onerror = () => reject(getAllRequest.error);
+    });
 
     const failedRequests = [];
 
@@ -251,8 +277,12 @@ async function syncQueuedRequests() {
         });
 
         if (response.ok) {
-          const deleteTx = db.transaction('sync-queue', 'readwrite');
-          await deleteTx.objectStore('sync-queue').delete(req.id);
+          await new Promise((resolve, reject) => {
+            const deleteTx = db.transaction('sync-queue', 'readwrite');
+            const deleteRequest = deleteTx.objectStore('sync-queue').delete(req.id);
+            deleteRequest.onsuccess = () => resolve();
+            deleteRequest.onerror = () => reject(deleteRequest.error);
+          });
         } else {
           failedRequests.push(req);
         }
