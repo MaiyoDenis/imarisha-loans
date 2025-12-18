@@ -46,11 +46,12 @@ class JWTService:
                 decode_responses=True
             )
         
-        # Rate limiting configuration
+
+        # Rate limiting configuration (use memory storage to avoid Redis dependency)
         self.limiter = Limiter(
             key_func=get_remote_address,
             default_limits=["5000 per day", "500 per hour"],
-            storage_uri=app.config.get('REDIS_URL', 'redis://localhost:6379/0')
+            storage_uri="memory://"
         )
         self.limiter.init_app(app)
         

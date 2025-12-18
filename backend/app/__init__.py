@@ -51,10 +51,10 @@ def create_app(config_class=Config):
     
     bcrypt.init_app(app)
     
-    # Initialize caching
+
+    # Initialize caching (use simple cache to avoid Redis dependency)
     cache.init_app(app, config={
-        'CACHE_TYPE': 'RedisCache',
-        'CACHE_REDIS_URL': app.config.get('REDIS_URL', 'redis://localhost:6379/0'),
+        'CACHE_TYPE': 'SimpleCache',
         'CACHE_DEFAULT_TIMEOUT': 300
     })
     
@@ -131,6 +131,7 @@ def create_app(config_class=Config):
     app.register_blueprint(inventory_intelligence.bp)
     app.register_blueprint(etl_pipeline.bp)
     
+
     # Health check endpoint
     @app.route('/health')
     def health_check():
@@ -138,13 +139,14 @@ def create_app(config_class=Config):
             # Test database connection
             db.session.execute('SELECT 1')
             
-            # Test cache connection
+            # Test cache connection (simple cache doesn't need Redis)
             cache.get('health_check')
             
             return {
                 'status': 'healthy',
                 'database': 'connected',
                 'cache': 'connected',
+                'redis': 'not_configured',
                 'timestamp': '2024-01-15T10:30:00Z',
                 'version': '1.0.0-enterprise'
             }, 200

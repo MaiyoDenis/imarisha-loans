@@ -19,15 +19,25 @@ class CurrencyService:
         if app:
             self.init_app(app)
     
+
     def init_app(self, app):
         """Initialize currency service with Flask app"""
         self.app = app
-        self.redis_client = redis.Redis(
-            host=app.config.get('REDIS_HOST', 'localhost'),
-            port=app.config.get('REDIS_PORT', 6379),
-            db=app.config.get('REDIS_DB', 5),
-            decode_responses=True
-        )
+        
+        # Initialize Redis client with graceful failure handling
+        try:
+            self.redis_client = redis.Redis(
+                host=app.config.get('REDIS_HOST', 'localhost'),
+                port=app.config.get('REDIS_PORT', 6379),
+                db=app.config.get('REDIS_DB', 5),
+                decode_responses=True
+            )
+            # Test connection
+            self.redis_client.ping()
+            logging.info("Currency Service: Redis connection established")
+        except Exception as e:
+            logging.warning(f"Currency Service: Redis not available - {str(e)}")
+            self.redis_client = None
         
         self._initialize_currencies()
         logging.info("Currency Service initialized successfully")
@@ -136,6 +146,7 @@ class CurrencyService:
             logging.error(f"Error getting currency info: {str(e)}")
             return None
     
+
     def get_exchange_rate(self, from_currency: str, to_currency: str = 'KES', cached: bool = True) -> float:
         """Get exchange rate between two currencies"""
         try:
@@ -144,14 +155,14 @@ class CurrencyService:
             
             cache_key = f"exchange_rate:{from_currency}:{to_currency}"
             
-            if cached:
+            if cached and self.redis_client:
                 cached_rate = self.redis_client.get(cache_key)
                 if cached_rate:
                     return float(cached_rate)
             
             rate = self._fetch_exchange_rate(from_currency, to_currency)
             
-            if rate:
+            if rate and self.redis_client:
                 self.redis_client.setex(cache_key, 3600, str(rate))  # Cache for 1 hour
                 return rate
             else:
@@ -240,6 +251,7 @@ class CurrencyService:
         """Convert amount from base currency (KES) to another currency"""
         return self.convert(amount, 'KES', to_currency)
     
+
     def update_exchange_rates(self) -> bool:
         """Manually update all exchange rates"""
         try:
@@ -247,21 +259,26 @@ class CurrencyService:
             
             for currency in major_currencies:
                 rate = self._fetch_exchange_rate(currency, 'KES')
-                if rate:
+                if rate and self.redis_client:
                     cache_key = f"exchange_rate:{currency}:KES"
                     self.redis_client.setex(cache_key, 3600, str(rate))
                     logging.info(f"Updated {currency}/KES rate: {rate}")
             
-            self.redis_client.set('exchange_rates_updated', datetime.utcnow().isoformat())
+            if self.redis_client:
+                self.redis_client.set('exchange_rates_updated', datetime.utcnow().isoformat())
             return True
         
         except Exception as e:
             logging.error(f"Error updating exchange rates: {str(e)}")
             return False
     
+
     def get_rate_history(self, from_currency: str, to_currency: str, days: int = 30) -> Optional[List[Dict[str, Any]]]:
         """Get historical exchange rates"""
         try:
+            if not self.redis_client:
+                return []
+                
             key = f"rate_history:{from_currency}:{to_currency}"
             history_json = self.redis_client.get(key)
             
@@ -293,6 +310,7 @@ class CurrencyService:
             logging.error(f"Error formatting amount: {str(e)}")
             return f"{amount:.2f} {currency_code}"
     
+
     def create_multicurrency_account(self, user_id: int, primary_currency: str = 'KES', secondary_currencies: List[str] = None) -> Dict[str, Any]:
         """Create multicurrency account for user"""
         try:
@@ -314,8 +332,9 @@ class CurrencyService:
                 if currency in self.supported_currencies:
                     account_data['balances'][currency] = 0.0
             
-            key = f"multicurrency_account:{user_id}"
-            self.redis_client.setex(key, 30*24*60*60, json.dumps(account_data))
+            if self.redis_client:
+                key = f"multicurrency_account:{user_id}"
+                self.redis_client.setex(key, 30*24*60*60, json.dumps(account_data))
             
             logging.info(f"Created multicurrency account for user {user_id}")
             return account_data

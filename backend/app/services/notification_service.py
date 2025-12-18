@@ -83,15 +83,25 @@ class NotificationService:
         if app:
             self.init_app(app)
     
+
     def init_app(self, app):
         """Initialize notification service with Flask app"""
         self.app = app
-        self.redis_client = redis.Redis(
-            host=app.config.get('REDIS_HOST', 'localhost'),
-            port=app.config.get('REDIS_PORT', 6379),
-            db=app.config.get('REDIS_DB', 3),  # Different DB for notifications
-            decode_responses=True
-        )
+        
+        # Initialize Redis client with graceful failure handling
+        try:
+            self.redis_client = redis.Redis(
+                host=app.config.get('REDIS_HOST', 'localhost'),
+                port=app.config.get('REDIS_PORT', 6379),
+                db=app.config.get('REDIS_DB', 3),  # Different DB for notifications
+                decode_responses=True
+            )
+            # Test connection
+            self.redis_client.ping()
+            logging.info("Notification Service: Redis connection established")
+        except Exception as e:
+            logging.warning(f"Notification Service: Redis not available - {str(e)}")
+            self.redis_client = None
         
         self.mail = app.extensions.get('mail')
         
@@ -359,9 +369,14 @@ class NotificationService:
             logging.error(f"Error rendering template {template.template_id}: {str(e)}")
             return template.body_template
     
+
     def _store_notification(self, notification: Notification):
         """Store notification in Redis"""
         try:
+            if not self.redis_client:
+                logging.warning("Redis not available, skipping notification storage")
+                return
+                
             notification_dict = asdict(notification)
             notification_dict['channel'] = notification.channel.value
             notification_dict['priority'] = notification.priority.value
@@ -675,9 +690,13 @@ class NotificationService:
             logging.error(f"Error checking preferences: {str(e)}")
             return True
     
+
     def _get_notification(self, notification_id: str) -> Optional[Dict[str, Any]]:
         """Get notification from Redis"""
         try:
+            if not self.redis_client:
+                return None
+                
             key = f"notification:{notification_id}"
             notification_json = self.redis_client.get(key)
             
@@ -690,9 +709,14 @@ class NotificationService:
             logging.error(f"Error getting notification {notification_id}: {str(e)}")
             return None
 
+
     def _update_notification(self, notification_data: Dict[str, Any]):
         """Update notification status"""
         try:
+            if not self.redis_client:
+                logging.warning("Redis not available, skipping notification update")
+                return
+                
             key = f"notification:{notification_data['notification_id']}"
             self.redis_client.setex(
                 key,
@@ -740,9 +764,13 @@ class NotificationService:
                 'message': str(e)
             }
     
+
     def _find_notification_by_message_id(self, message_id: str) -> Optional[Dict[str, Any]]:
         """Find notification by Africa's Talking message ID"""
         try:
+            if not self.redis_client:
+                return None
+                
             # Search in all notifications (this could be optimized)
             # For now, try to get from a mapping
             key = f"at_message:{message_id}"
@@ -757,9 +785,14 @@ class NotificationService:
             logging.error(f"Error finding notification by message ID: {str(e)}")
             return None
     
+
     def _retry_notification(self, notification_data: Dict[str, Any]) -> bool:
         """Retry sending a notification"""
         try:
+            if not self.redis_client:
+                logging.warning("Redis not available, cannot retry notification")
+                return False
+                
             notification_data['status'] = NotificationStatus.PENDING.value
             self._update_notification(notification_data)
             
