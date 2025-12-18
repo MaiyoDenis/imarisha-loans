@@ -33,12 +33,18 @@ class JWTService:
     def init_app(self, app):
         """Initialize JWT service with Flask app"""
         self.jwt.init_app(app)
-        self.redis_client = redis.Redis(
-            host=app.config.get('REDIS_HOST', 'localhost'),
-            port=app.config.get('REDIS_PORT', 6379),
-            db=app.config.get('REDIS_DB', 0),
-            decode_responses=True
-        )
+        
+        # Initialize Redis client
+        redis_url = app.config.get('REDIS_URL')
+        if redis_url:
+            self.redis_client = redis.from_url(redis_url, decode_responses=True)
+        else:
+            self.redis_client = redis.Redis(
+                host=app.config.get('REDIS_HOST', 'localhost'),
+                port=app.config.get('REDIS_PORT', 6379),
+                db=app.config.get('REDIS_DB', 0),
+                decode_responses=True
+            )
         
         # Rate limiting configuration
         self.limiter = Limiter(

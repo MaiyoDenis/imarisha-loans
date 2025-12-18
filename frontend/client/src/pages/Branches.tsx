@@ -263,7 +263,7 @@ export default function Branches() {
       <div className="p-8 space-y-8">
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-4xl font-heading font-extrabold tracking-tight text-gradient">
+            <h1 className="text-4xl font-heading font-extrabold tracking-tight text-foreground">
               Branches
             </h1>
             <p className="text-muted-foreground mt-1">
@@ -273,7 +273,7 @@ export default function Branches() {
           <div className="flex gap-2">
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="outline" className="btn-neon">
+                <Button variant="outline">
                   <Download className="mr-2 h-4 w-4" /> Export Reports
                 </Button>
               </DropdownMenuTrigger>
@@ -291,7 +291,7 @@ export default function Branches() {
             </DropdownMenu>
 
             <Button
-              className="btn-neon"
+              className="button-primary"
               onClick={() => setIsAddOpen(true)}
             >
               <Plus className="mr-2 h-4 w-4" /> Add Branch
@@ -299,17 +299,17 @@ export default function Branches() {
           </div>
         </div>
 
-        <div className="flex items-center gap-4 glass-card gradient-border p-4 rounded-lg">
+        <div className="flex items-center gap-4 bg-card border border-border p-4 rounded-lg shadow-sm">
           <div className="relative flex-1">
             <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
             <Input 
               placeholder="Search by name, location, or ID..." 
-              className="pl-9 bg-background neon-input"
+              className="pl-9 bg-background"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
             />
           </div>
-          <Button variant="outline" className="gap-2 btn-neon">
+          <Button variant="outline" className="gap-2">
             <Filter className="h-4 w-4" /> Filter
           </Button>
         </div>
@@ -341,9 +341,8 @@ export default function Branches() {
             {filteredBranches.map((branch: Branch) => (
               <Card
                 key={branch.id}
-                className="relative overflow-visible transition-shadow duration-300 hover:shadow-xl"
+                className="relative overflow-visible"
               >
-                <span className="aura" style={{pointerEvents: 'none', position: 'absolute', inset: 0}}></span>
                 <CardHeader className="flex flex-row items-start justify-between space-y-0">
                   <div
                     className="space-y-1 cursor-pointer flex-1 min-w-0 relative z-40 group"

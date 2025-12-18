@@ -79,14 +79,13 @@ export function AppSidebar() {
   return (
     <Sidebar 
       collapsible="icon" 
-      className="md:sticky md:top-0 md:h-screen glass-card gradient-border"
+      className="md:sticky md:top-0 md:h-screen border-r border-sidebar-border bg-sidebar text-sidebar-foreground"
       aria-label="Main navigation"
     >
       <SidebarHeader>
         <div className="relative flex items-center gap-3 px-2 py-2">
-          <span className="aura" aria-hidden="true"></span>
-          <img src={logo} alt="Imarisha Logo" className="h-7 w-7 md:h-8 md:w-8 rounded-md shadow-md" />
-          <span className="text-lg md:text-xl font-heading font-bold tracking-tight text-gradient group-data-[collapsible=icon]:hidden" aria-label="Imarisha">Imarisha</span>
+          <img src={logo} alt="Imarisha Logo" className="h-7 w-7 md:h-8 md:w-8 rounded-md shadow-sm" />
+          <span className="text-lg md:text-xl font-heading font-bold tracking-tight text-sidebar-foreground group-data-[collapsible=icon]:hidden" aria-label="Imarisha">Imarisha</span>
         </div>
       </SidebarHeader>
       <SidebarContent>

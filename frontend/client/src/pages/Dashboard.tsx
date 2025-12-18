@@ -46,21 +46,21 @@ export default function Dashboard() {
         <div className="space-y-6 md:space-y-8">
           <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
             <div>
-              <h1 className="text-3xl md:text-4xl font-heading font-extrabold tracking-tight text-gradient">Dashboard</h1>
+              <h1 className="text-3xl md:text-4xl font-heading font-extrabold tracking-tight text-foreground">Dashboard</h1>
               <p className="text-xs md:text-sm text-muted-foreground mt-1">Overview of your branch performance and loan portfolio.</p>
             </div>
             <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 sm:gap-3">
               <button
                 onClick={() => refetch()}
                 disabled={isRefetching}
-                className="btn-neon px-4 py-2 text-xs md:text-sm rounded-lg disabled:opacity-50 focus-ring-enhanced"
+                className="button-primary px-4 py-2 text-xs md:text-sm rounded-lg disabled:opacity-50"
                 aria-label={isRefetching ? "Refreshing dashboard data" : "Refresh dashboard data"}
               >
                 <RefreshCw size={16} className={isRefetching ? 'animate-spin' : ''} aria-hidden="true" />
-                <span className="hidden sm:inline">Refresh</span>
+                <span className="hidden sm:inline ml-2">Refresh</span>
               </button>
-              <div className="flex items-center justify-center gap-2 text-xs md:text-sm text-foreground glass-effect gradient-border px-3 py-2 md:py-1 rounded-full">
-                <span className="h-2 w-2 rounded-full bg-green-500 animate-pulse ring-2 ring-green-400/40 shadow-[0_0_12px_rgba(34,197,94,0.7)]"></span>
+              <div className="flex items-center justify-center gap-2 text-xs md:text-sm text-foreground bg-card border border-border px-3 py-2 md:py-1 rounded-full shadow-sm">
+                <span className="h-2 w-2 rounded-full bg-green-500 animate-pulse"></span>
                 <span className="hidden sm:inline">System Live</span>
                 <span className="sm:hidden">Live</span>
               </div>
@@ -68,8 +68,7 @@ export default function Dashboard() {
           </div>
 
           <div className="grid gap-3 md:gap-4 grid-cols-2 sm:grid-cols-2 md:grid-cols-4">
-            <Card className="stat-card glass-card gradient-border hover-tilt relative overflow-hidden" role="region" aria-label="Total active loans">
-              <span className="aura" aria-hidden="true"></span>
+            <Card className="stat-card" role="region" aria-label="Total active loans">
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                 <CardTitle className="text-xs md:text-sm font-medium text-muted-foreground">Total Active Loans</CardTitle>
                 <CreditCard className="h-3 w-3 md:h-4 md:w-4 text-primary flex-shrink-0" aria-hidden="true" />
@@ -84,8 +83,7 @@ export default function Dashboard() {
                 </p>
               </CardContent>
             </Card>
-            <Card className="stat-card glass-card gradient-border hover-tilt relative overflow-hidden" role="region" aria-label="Total savings">
-              <span className="aura" aria-hidden="true"></span>
+            <Card className="stat-card" role="region" aria-label="Total savings">
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                 <CardTitle className="text-xs md:text-sm font-medium text-muted-foreground">Total Savings</CardTitle>
                 <TrendingUp className="h-3 w-3 md:h-4 md:w-4 text-secondary flex-shrink-0" aria-hidden="true" />
@@ -100,8 +98,7 @@ export default function Dashboard() {
                 </p>
               </CardContent>
             </Card>
-            <Card className="stat-card glass-card gradient-border hover-tilt relative overflow-hidden" role="region" aria-label="Active members">
-              <span className="aura" aria-hidden="true"></span>
+            <Card className="stat-card" role="region" aria-label="Active members">
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                 <CardTitle className="text-xs md:text-sm font-medium text-muted-foreground">Active Members</CardTitle>
                 <Users className="h-3 w-3 md:h-4 md:w-4 text-blue-500 flex-shrink-0" aria-hidden="true" />
@@ -113,8 +110,7 @@ export default function Dashboard() {
                 <p className="text-xs text-muted-foreground mt-1">Active customers</p>
               </CardContent>
             </Card>
-            <Card className="stat-card glass-card gradient-border hover-tilt relative overflow-hidden" role="region" aria-label="Arrears alert">
-              <span className="aura" aria-hidden="true"></span>
+            <Card className="stat-card" role="region" aria-label="Arrears alert">
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                 <CardTitle className="text-xs md:text-sm font-medium text-destructive">Arrears Alert</CardTitle>
                 <AlertTriangle className="h-3 w-3 md:h-4 md:w-4 text-destructive flex-shrink-0" aria-hidden="true" />
@@ -129,8 +125,7 @@ export default function Dashboard() {
           </div>
 
           <div className="grid gap-3 md:gap-4 md:grid-cols-7 auto-rows-max">
-            <Card className="md:col-span-4 glass-card gradient-border hover-tilt relative overflow-hidden">
-              <span className="aura"></span>
+            <Card className="md:col-span-4">
               <CardHeader>
                 <CardTitle className="text-sm md:text-base font-heading">Loan Disbursement vs Repayment</CardTitle>
               </CardHeader>
@@ -163,8 +158,7 @@ export default function Dashboard() {
               </CardContent>
             </Card>
             
-            <Card className="md:col-span-3 glass-card gradient-border hover-tilt relative overflow-hidden">
-              <span className="aura"></span>
+            <Card className="md:col-span-3">
               <CardHeader>
                 <CardTitle className="text-sm md:text-base font-heading">Recent Activity</CardTitle>
               </CardHeader>
@@ -196,11 +190,10 @@ export default function Dashboard() {
           </div>
 
           <div className="grid gap-3 md:gap-4 grid-cols-1 md:grid-cols-3">
-            <Card className="glass-card gradient-border hover-tilt relative overflow-hidden">
-              <span className="aura"></span>
+            <Card>
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                 <CardTitle className="text-xs md:text-sm font-medium text-muted-foreground">AI Insights</CardTitle>
-                <Sparkles className="h-3 w-3 md:h-4 md:w-4 text-purple-600 flex-shrink-0" />
+                <Sparkles className="h-3 w-3 md:h-4 md:w-4 text-primary flex-shrink-0" />
               </CardHeader>
               <CardContent>
                 <div className="space-y-3">
@@ -216,8 +209,7 @@ export default function Dashboard() {
               </CardContent>
             </Card>
 
-            <Card className="glass-card gradient-border hover-tilt relative overflow-hidden">
-              <span className="aura"></span>
+            <Card>
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                 <CardTitle className="text-sm font-medium text-muted-foreground">System Instructions</CardTitle>
                 <AlertCircle className="h-4 w-4 text-orange-600" />
@@ -237,8 +229,7 @@ export default function Dashboard() {
               </CardContent>
             </Card>
 
-            <Card className="glass-card gradient-border hover-tilt relative overflow-hidden">
-              <span className="aura"></span>
+            <Card>
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                 <CardTitle className="text-sm font-medium text-muted-foreground">Performance</CardTitle>
                 <TrendingDown className="h-4 w-4 text-green-600" />
