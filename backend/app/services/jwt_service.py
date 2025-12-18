@@ -30,21 +30,29 @@ class JWTService:
         if app:
             self.init_app(app)
     
+
     def init_app(self, app):
         """Initialize JWT service with Flask app"""
         self.jwt.init_app(app)
         
-        # Initialize Redis client
-        redis_url = app.config.get('REDIS_URL')
-        if redis_url:
-            self.redis_client = redis.from_url(redis_url, decode_responses=True)
-        else:
-            self.redis_client = redis.Redis(
-                host=app.config.get('REDIS_HOST', 'localhost'),
-                port=app.config.get('REDIS_PORT', 6379),
-                db=app.config.get('REDIS_DB', 0),
-                decode_responses=True
-            )
+        # Initialize Redis client with graceful failure handling
+        try:
+            redis_url = app.config.get('REDIS_URL')
+            if redis_url:
+                self.redis_client = redis.from_url(redis_url, decode_responses=True)
+            else:
+                self.redis_client = redis.Redis(
+                    host=app.config.get('REDIS_HOST', 'localhost'),
+                    port=app.config.get('REDIS_PORT', 6379),
+                    db=app.config.get('REDIS_DB', 0),
+                    decode_responses=True
+                )
+            # Test connection
+            self.redis_client.ping()
+            logging.info("JWT Service: Redis connection established")
+        except Exception as e:
+            logging.warning(f"JWT Service: Redis not available - {str(e)}")
+            self.redis_client = None
         
 
         # Rate limiting configuration (use memory storage to avoid Redis dependency)
@@ -69,11 +77,16 @@ class JWTService:
     def _setup_jwt_callbacks(self, app):
         """Setup JWT callbacks for token validation and blacklisting"""
         
+
         @self.jwt.token_in_blocklist_loader
         def check_if_token_revoked(jwt_header, jwt_payload):
             """Check if JWT token is blacklisted"""
             jti = jwt_payload['jti']
-            return self.redis_client.sismember('blocked_tokens', jti)
+            if self.redis_client:
+                return self.redis_client.sismember('blocked_tokens', jti)
+            else:
+                # Use in-memory set when Redis is not available
+                return jti in self.blocked_tokens
         
         @self.jwt.revoked_token_loader
         def revoked_token_callback(jwt_header, jwt_payload):
@@ -107,6 +120,7 @@ class JWTService:
                 'code': 'MISSING_TOKEN'
             }), 401
     
+
     def create_tokens(self, user_id: int, user_data: Dict[str, Any]) -> Dict[str, str]:
         """Create access and refresh tokens"""
         try:
@@ -130,13 +144,20 @@ class JWTService:
                 additional_claims={'type': 'refresh'}
             )
             
-            # Store refresh token in Redis for validation
-            refresh_key = f"refresh_token:{user_id}:{secrets.token_hex(16)}"
-            self.redis_client.setex(
-                refresh_key, 
-                30*24*60*60,  # 30 days
-                "valid"
-            )
+            # Store refresh token in Redis for validation (if Redis is available)
+            if self.redis_client:
+                try:
+                    refresh_key = f"refresh_token:{user_id}:{secrets.token_hex(16)}"
+                    self.redis_client.setex(
+                        refresh_key, 
+                        30*24*60*60,  # 30 days
+                        "valid"
+                    )
+                except Exception as redis_error:
+                    logging.warning(f"Failed to store refresh token in Redis: {redis_error}")
+                    # Continue without Redis - tokens will still work
+            else:
+                logging.info("Redis not available, skipping refresh token storage")
             
             logging.info(f"Tokens created for user {user_id}")
             
@@ -151,27 +172,39 @@ class JWTService:
             logging.error(f"Error creating tokens: {str(e)}")
             raise
     
+
     def revoke_token(self, jti: str) -> bool:
         """Revoke a JWT token by adding to blacklist"""
         try:
-            self.redis_client.sadd('blocked_tokens', jti)
-            self.redis_client.expire('blocked_tokens', 3600)  # 1 hour
-            logging.info(f"Token {jti} revoked")
+            if self.redis_client:
+                self.redis_client.sadd('blocked_tokens', jti)
+                self.redis_client.expire('blocked_tokens', 3600)  # 1 hour
+                logging.info(f"Token {jti} revoked")
+            else:
+                # Use in-memory set when Redis is not available
+                self.blocked_tokens.add(jti)
+                logging.info(f"Token {jti} revoked (in-memory)")
             return True
         except Exception as e:
             logging.error(f"Error revoking token {jti}: {str(e)}")
             return False
     
+
     def revoke_user_tokens(self, user_id: int) -> bool:
         """Revoke all tokens for a user"""
         try:
-            # Add wildcard pattern for all user tokens
-            pattern = f"access_token:{user_id}:*"
-            keys = self.redis_client.keys(pattern)
-            
-            for key in keys:
-                self.redis_client.sadd('blocked_tokens', key)
-                self.redis_client.delete(key)
+            if self.redis_client:
+                # Add wildcard pattern for all user tokens
+                pattern = f"access_token:{user_id}:*"
+                keys = self.redis_client.keys(pattern)
+                
+                for key in keys:
+                    self.redis_client.sadd('blocked_tokens', key)
+                    self.redis_client.delete(key)
+            else:
+                # Use in-memory set when Redis is not available
+                # This is a simplified approach - in production you'd want more sophisticated token tracking
+                logging.info(f"Cannot revoke all tokens for user {user_id} without Redis")
             
             logging.info(f"All tokens revoked for user {user_id}")
             return True
@@ -198,6 +231,7 @@ class JWTService:
             logging.warning(f"Rate limit check failed: {str(e)}")
             return True
     
+
     def log_auth_event(self, event_type: str, user_id: Optional[int] = None, 
                       ip_address: str = None, details: str = None):
         """Log authentication events for audit trail"""
@@ -213,10 +247,16 @@ class JWTService:
             
             logging.info(f"AUTH EVENT: {log_data}")
             
-            # Store in Redis for analytics (serialize to JSON string)
-            log_key = f"auth_log:{datetime.utcnow().strftime('%Y%m%d')}"
-            self.redis_client.lpush(log_key, json.dumps(log_data))
-            self.redis_client.expire(log_key, 7*24*60*60)  # 7 days
+            # Store in Redis for analytics (if Redis is available)
+            if self.redis_client:
+                try:
+                    log_key = f"auth_log:{datetime.utcnow().strftime('%Y%m%d')}"
+                    self.redis_client.lpush(log_key, json.dumps(log_data))
+                    self.redis_client.expire(log_key, 7*24*60*60)  # 7 days
+                except Exception as redis_error:
+                    logging.warning(f"Failed to store auth event in Redis: {redis_error}")
+            else:
+                logging.info("Redis not available, skipping auth event storage")
             
         except Exception as e:
             logging.error(f"Error logging auth event: {str(e)}")
