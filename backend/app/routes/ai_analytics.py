@@ -1,5 +1,5 @@
 from flask import Blueprint, request, jsonify
-from flask_jwt_extended import jwt_required, get_jwt_identity
+from app.services.jwt_service import jwt_required_api
 from datetime import datetime
 from app import db
 from app.services import AIAnalyticsService
@@ -11,14 +11,13 @@ ai_analytics_bp = Blueprint('ai_analytics', __name__, url_prefix='/api/ai-analyt
 
 
 @ai_analytics_bp.route('/arrears-forecast', methods=['GET'])
-@jwt_required()
+@jwt_required_api
 def forecast_arrears():
     """
     Forecast arrears rate using Prophet time series model.
     Query params: months_ahead (default: 12), branch_id (optional)
     """
     try:
-        user_id = get_jwt_identity()
         months_ahead = request.args.get('months_ahead', 12, type=int)
         branch_id = request.args.get('branch_id', type=int)
         
@@ -29,7 +28,6 @@ def forecast_arrears():
         
         audit_service.log_event(
             event_type=AuditEventType.API_ACCESS,
-            user_id=user_id,
             resource='ai_analytics',
             action='arrears_forecast',
             details={'months_ahead': months_ahead, 'branch_id': branch_id},
@@ -43,21 +41,19 @@ def forecast_arrears():
 
 
 @ai_analytics_bp.route('/member-behavior', methods=['GET'])
-@jwt_required()
+@jwt_required_api
 def analyze_member_behavior():
     """
     Analyze member behavior and segment them using clustering.
     Query params: branch_id (optional)
     """
     try:
-        user_id = get_jwt_identity()
         branch_id = request.args.get('branch_id', type=int)
         
         result = AIAnalyticsService.analyze_member_behavior(branch_id=branch_id)
         
         audit_service.log_event(
             event_type=AuditEventType.API_ACCESS,
-            user_id=user_id,
             resource='ai_analytics',
             action='member_behavior',
             details={'branch_id': branch_id},
@@ -71,19 +67,16 @@ def analyze_member_behavior():
 
 
 @ai_analytics_bp.route('/clv-prediction/<int:member_id>', methods=['GET'])
-@jwt_required()
+@jwt_required_api
 def predict_clv(member_id):
     """
     Predict Customer Lifetime Value (CLV) for a specific member.
     """
     try:
-        user_id = get_jwt_identity()
-        
         result = AIAnalyticsService.predict_customer_lifetime_value(member_id)
         
         audit_service.log_event(
             event_type=AuditEventType.API_ACCESS,
-            user_id=user_id,
             resource='ai_analytics',
             action='clv_prediction',
             details={'member_id': member_id},
@@ -97,14 +90,13 @@ def predict_clv(member_id):
 
 
 @ai_analytics_bp.route('/seasonal-demand', methods=['GET'])
-@jwt_required()
+@jwt_required_api
 def forecast_seasonal_demand():
     """
     Forecast seasonal demand patterns for products.
     Query params: product_id (optional), months_ahead (default: 12), branch_id (optional)
     """
     try:
-        user_id = get_jwt_identity()
         product_id = request.args.get('product_id', type=int)
         months_ahead = request.args.get('months_ahead', 12, type=int)
         branch_id = request.args.get('branch_id', type=int)
@@ -117,7 +109,6 @@ def forecast_seasonal_demand():
         
         audit_service.log_event(
             event_type=AuditEventType.API_ACCESS,
-            user_id=user_id,
             resource='ai_analytics',
             action='seasonal_demand',
             details={'product_id': product_id, 'months_ahead': months_ahead, 'branch_id': branch_id},
@@ -131,19 +122,16 @@ def forecast_seasonal_demand():
 
 
 @ai_analytics_bp.route('/lifecycle-stage/<int:member_id>', methods=['GET'])
-@jwt_required()
+@jwt_required_api
 def get_lifecycle_stage(member_id):
     """
     Get member lifecycle stage (onboarding, active, mature, vip, at_risk, inactive).
     """
     try:
-        user_id = get_jwt_identity()
-        
         result = AIAnalyticsService.get_member_lifecycle_stage(member_id)
         
         audit_service.log_event(
             event_type=AuditEventType.API_ACCESS,
-            user_id=user_id,
             resource='ai_analytics',
             action='lifecycle_stage',
             details={'member_id': member_id},
@@ -157,14 +145,13 @@ def get_lifecycle_stage(member_id):
 
 
 @ai_analytics_bp.route('/at-risk-members', methods=['GET'])
-@jwt_required()
+@jwt_required_api
 def identify_at_risk_members():
     """
     Identify members at risk of defaulting.
     Query params: branch_id (optional), threshold (default: 0.6)
     """
     try:
-        user_id = get_jwt_identity()
         branch_id = request.args.get('branch_id', type=int)
         threshold = request.args.get('threshold', 0.6, type=float)
         
@@ -175,7 +162,6 @@ def identify_at_risk_members():
         
         audit_service.log_event(
             event_type=AuditEventType.API_ACCESS,
-            user_id=user_id,
             resource='ai_analytics',
             action='at_risk_members',
             details={'threshold': threshold, 'branch_id': branch_id},
@@ -189,21 +175,19 @@ def identify_at_risk_members():
 
 
 @ai_analytics_bp.route('/cohort-analysis', methods=['GET'])
-@jwt_required()
+@jwt_required_api
 def get_cohort_analysis():
     """
     Get cohort analysis for member retention and activity patterns.
     Query params: branch_id (optional)
     """
     try:
-        user_id = get_jwt_identity()
         branch_id = request.args.get('branch_id', type=int)
         
         result = AIAnalyticsService.get_cohort_analysis(branch_id=branch_id)
         
         audit_service.log_event(
             event_type=AuditEventType.API_ACCESS,
-            user_id=user_id,
             resource='ai_analytics',
             action='cohort_analysis',
             details={'branch_id': branch_id},
@@ -217,13 +201,12 @@ def get_cohort_analysis():
 
 
 @ai_analytics_bp.route('/summary', methods=['GET'])
-@jwt_required()
+@jwt_required_api
 def get_ai_summary():
     """
     Get comprehensive AI analytics summary combining multiple insights.
     """
     try:
-        user_id = get_jwt_identity()
         branch_id = request.args.get('branch_id', type=int)
         
         arrears_forecast = AIAnalyticsService.forecast_arrears_rate(branch_id=branch_id)
@@ -242,7 +225,6 @@ def get_ai_summary():
         
         audit_service.log_event(
             event_type=AuditEventType.API_ACCESS,
-            user_id=user_id,
             resource='ai_analytics',
             action='summary',
             details={'branch_id': branch_id},
