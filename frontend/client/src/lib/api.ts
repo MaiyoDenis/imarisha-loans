@@ -33,6 +33,13 @@ async function fetchAPI(endpoint: string, options: any = {}) {
 export const apiCall = fetchAPI;
 
 export const api = {
+  // Generic methods
+  get: (endpoint: string) => fetchAPI(endpoint),
+  post: (endpoint: string, data?: any) => fetchAPI(endpoint, {
+    method: "POST",
+    body: data ? JSON.stringify(data) : undefined,
+  }),
+
   // Auth
   login: async (username: string, password: string) => {
     const data = await fetchAPI("/auth/login", {
@@ -305,6 +312,11 @@ export const api = {
     }),
   deleteSupplier: (id: number) =>
     fetchAPI(`/suppliers/${id}`, { method: "DELETE" }),
+  rateSupplier: (id: number, rating: number) =>
+    fetchAPI(`/suppliers/${id}/rate`, {
+      method: "POST",
+      body: JSON.stringify({ rating }),
+    }),
 
   // Stock/Inventory
   getStock: (page?: number, perPage?: number) => {
@@ -326,6 +338,8 @@ export const api = {
     }),
   deleteStockItem: (id: number) =>
     fetchAPI(`/stock/${id}`, { method: "DELETE" }),
+  getLowStockProducts: () => fetchAPI("/stock/low-stock"),
+  getCriticalStockProducts: () => fetchAPI("/stock/critical"),
 
   // Reports
   getReports: () => fetchAPI("/reports"),
