@@ -6,6 +6,7 @@ Create Date: 2025-12-20 20:46:00.000000
 
 """
 from alembic import op
+from sqlalchemy import text
 
 
 revision = 'final_cleanup_role_column'
@@ -15,14 +16,15 @@ depends_on = None
 
 
 def upgrade():
+    conn = op.get_bind()
+    
     try:
-        op.execute('ALTER TABLE users DROP COLUMN role')
-        print("Dropped role column using raw SQL")
+        conn.execute(text('ALTER TABLE users DROP COLUMN role'))
+        conn.commit()
+        print("Dropped role column")
     except Exception as e:
-        if 'does not exist' in str(e):
-            print("Column already dropped")
-        else:
-            raise
+        print(f"Note: {e}")
+        conn.rollback()
 
 
 def downgrade():
