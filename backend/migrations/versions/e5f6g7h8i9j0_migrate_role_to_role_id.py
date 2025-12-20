@@ -53,7 +53,7 @@ def upgrade():
     try:
         result = conn.execute(sa.text("SELECT DISTINCT role FROM users WHERE role IS NOT NULL"))
         existing_roles = set(row[0] for row in result)
-    except:
+    except Exception:
         existing_roles = set()
     
     default_roles = ['admin', 'loan_officer', 'field_officer', 'member', 'customer', 'branch_manager', 'procurement_officer']
@@ -62,62 +62,76 @@ def upgrade():
     try:
         existing_role_records = conn.execute(sa.text("SELECT name FROM roles")).fetchall()
         existing_role_names = {name[0] for name in existing_role_records}
-    except:
+    except Exception:
         existing_role_names = set()
     
     for role_name in all_roles:
         if role_name and role_name not in existing_role_names:
             try:
-                conn.execute(sa.text(f"INSERT INTO roles (name) VALUES ('{role_name}')"))
+                conn.execute(sa.text("INSERT INTO roles (name) VALUES (:name)"), {"name": role_name})
                 conn.commit()
-            except:
-                pass
+            except Exception as e:
+                print(f"Error inserting role {role_name}: {e}")
+                conn.rollback()
     
     try:
         result = conn.execute(sa.text("SELECT id, name FROM roles"))
         role_id_map = {name: id for id, name in result}
-    except:
+    except Exception:
         role_id_map = {}
     
     for role_name, role_id in role_id_map.items():
         if role_name:
             try:
-                conn.execute(sa.text(f"UPDATE users SET role_id = {role_id} WHERE role = '{role_name}'"))
+                conn.execute(sa.text("UPDATE users SET role_id = :role_id WHERE role = :role_name"), 
+                           {"role_id": role_id, "role_name": role_name})
                 conn.commit()
-            except:
-                pass
+            except Exception as e:
+                print(f"Error updating role {role_name}: {e}")
+                conn.rollback()
     
     if 'role' in users_columns:
         try:
             op.alter_column('users', 'role', existing_type=sa.Text(), nullable=True)
-        except:
+        except Exception:
             pass
         
         try:
-            op.execute(sa.text("ALTER TABLE users DROP COLUMN role"))
-        except:
+            op.drop_column('users', 'role')
+        except Exception:
             pass
     
     try:
         op.alter_column('users', 'role_id', existing_type=sa.Integer(), nullable=False)
-    except:
+    except Exception:
         pass
     
+    constraint_exists = False
     try:
-        op.create_foreign_key('fk_users_role_id_roles', 'users', 'roles', ['role_id'], ['id'])
-    except:
+        fks = inspector.get_foreign_keys('users')
+        for fk in fks:
+            if fk.get('name') == 'fk_users_role_id_roles':
+                constraint_exists = True
+                break
+    except Exception:
         pass
+    
+    if not constraint_exists:
+        try:
+            op.create_foreign_key('fk_users_role_id_roles', 'users', 'roles', ['role_id'], ['id'])
+        except Exception:
+            pass
 
 
 def downgrade():
     try:
         op.drop_constraint('fk_users_role_id_roles', 'users', type_='foreignkey')
-    except:
+    except Exception:
         pass
     
     try:
         op.add_column('users', sa.Column('role', sa.Text(), nullable=False, server_default='admin'))
-    except:
+    except Exception:
         pass
     
     try:
@@ -127,29 +141,30 @@ def downgrade():
         
         for role_id, role_name in role_map.items():
             try:
-                conn.execute(sa.text(f"UPDATE users SET role = '{role_name}' WHERE role_id = {role_id}"))
-            except:
+                conn.execute(sa.text("UPDATE users SET role = :role_name WHERE role_id = :role_id"),
+                           {"role_name": role_name, "role_id": role_id})
+            except Exception:
                 pass
         conn.commit()
-    except:
+    except Exception:
         pass
     
     try:
         op.drop_column('users', 'role_id')
-    except:
+    except Exception:
         pass
     
     try:
         op.drop_table('role_permissions')
-    except:
+    except Exception:
         pass
     
     try:
         op.drop_table('permissions')
-    except:
+    except Exception:
         pass
     
     try:
         op.drop_table('roles')
-    except:
+    except Exception:
         pass
