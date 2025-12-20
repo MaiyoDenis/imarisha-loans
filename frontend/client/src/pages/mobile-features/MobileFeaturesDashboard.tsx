@@ -30,7 +30,7 @@ import {
   Square
 } from 'lucide-react';
 
-export function MobileFeaturesDashboard() {
+export function MobileFeaturesDashboard({ embedded = false }: { embedded?: boolean }) {
   const [activeTab, setActiveTab] = useState('overview');
 
   // PWA features
@@ -83,18 +83,20 @@ export function MobileFeaturesDashboard() {
   } = useQRScanner();
 
   return (
-    <div className="container mx-auto p-6 space-y-6">
+    <div className={embedded ? "space-y-6" : "container mx-auto p-6 space-y-6"}>
       <PWAUpdateBanner />
 
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-3xl font-bold">Mobile Features</h1>
-          <p className="text-muted-foreground">
-            Advanced mobile capabilities for field operations
-          </p>
+      {!embedded && (
+        <div className="flex items-center justify-between">
+          <div>
+            <h1 className="text-3xl font-bold">Mobile Features</h1>
+            <p className="text-muted-foreground">
+              Advanced mobile capabilities for field operations
+            </p>
+          </div>
+          <Smartphone className="w-8 h-8 text-primary" />
         </div>
-        <Smartphone className="w-8 h-8 text-primary" />
-      </div>
+      )}
 
       <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
         <TabsList className="grid w-full grid-cols-4">

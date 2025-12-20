@@ -99,7 +99,7 @@ export default function ProductManagement() {
     const b = parseFloat(buying);
     const s = parseFloat(selling);
     if (b === 0) return 0;
-    return (((s - b) / b) * 100).toFixed(2);
+    return ((s - b) / b) * 100;
   };
 
   const visibleProducts = products.filter((p: LoanProduct) => showHidden || p.isActive);
@@ -325,7 +325,7 @@ export default function ProductManagement() {
                 <p className="text-sm text-slate-600 font-semibold">Avg Margin</p>
                 <p className="text-2xl font-bold text-green-600 mt-2">
                   {(
-                    visibleProducts.reduce((sum: number, p: LoanProduct) => sum + parseFloat(calculateMargin(p.buyingPrice, p.sellingPrice)), 0) / visibleProducts.length
+                    visibleProducts.reduce((sum: number, p: LoanProduct) => sum + calculateMargin(p.buyingPrice, p.sellingPrice), 0) / visibleProducts.length
                   ).toFixed(2)}%
                 </p>
               </div>

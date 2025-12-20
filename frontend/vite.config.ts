@@ -29,8 +29,82 @@ export default defineConfig({
   build: {
     outDir: path.resolve(import.meta.dirname, "dist"),
     emptyOutDir: true,
+    target: 'esnext',
+    minify: 'terser',
+    sourcemap: false,
+    chunkSizeWarningLimit: 1000,
     rollupOptions: {
-      input: path.resolve(import.meta.dirname, "client", "index.html")
+      input: path.resolve(import.meta.dirname, "client", "index.html"),
+      output: {
+        manualChunks: {
+          // React and React DOM
+          'react-vendor': ['react', 'react-dom'],
+          
+          // UI Libraries
+          'ui-vendor': [
+            '@radix-ui/react-accordion',
+            '@radix-ui/react-alert-dialog',
+            '@radix-ui/react-avatar',
+            '@radix-ui/react-checkbox',
+            '@radix-ui/react-collapsible',
+            '@radix-ui/react-context-menu',
+            '@radix-ui/react-dialog',
+            '@radix-ui/react-dropdown-menu',
+            '@radix-ui/react-hover-card',
+            '@radix-ui/react-label',
+            '@radix-ui/react-menubar',
+            '@radix-ui/react-navigation-menu',
+            '@radix-ui/react-popover',
+            '@radix-ui/react-progress',
+            '@radix-ui/react-radio-group',
+            '@radix-ui/react-scroll-area',
+            '@radix-ui/react-select',
+            '@radix-ui/react-separator',
+            '@radix-ui/react-slider',
+            '@radix-ui/react-slot',
+            '@radix-ui/react-switch',
+            '@radix-ui/react-tabs',
+            '@radix-ui/react-toast',
+            '@radix-ui/react-toggle',
+            '@radix-ui/react-toggle-group',
+            '@radix-ui/react-tooltip'
+          ],
+          
+          // Charts and Analytics
+          'charts-vendor': ['recharts'],
+          
+          // Forms and Validation
+          'forms-vendor': [
+            'react-hook-form',
+            '@hookform/resolvers',
+            'zod',
+            'drizzle-orm'
+          ],
+          
+          // State Management and Query
+          'state-vendor': [
+            '@tanstack/react-query',
+            'wouter'
+          ],
+          
+          // Utilities
+          'utils-vendor': [
+            'date-fns',
+            'clsx',
+            'tailwind-merge',
+            'lucide-react',
+            'class-variance-authority'
+          ],
+          
+          // Material UI
+          'mui-vendor': [
+            '@mui/material',
+            '@mui/icons-material',
+            '@emotion/react',
+            '@emotion/styled'
+          ]
+        }
+      }
     }
   },
   server: {

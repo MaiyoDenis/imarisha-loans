@@ -57,8 +57,8 @@ function TabPanel(props: TabPanelProps) {
 }
 
 export const FieldOperationsPage: React.FC = () => {
-  const { user } = useAuth();
   const [tabValue, setTabValue] = useState(0);
+  const { user, isLoading } = useAuth();
 
   const userId = user?.id || 0;
   const { data: visits, isLoading: visitsLoading } = useFieldVisits(userId);
@@ -66,11 +66,15 @@ export const FieldOperationsPage: React.FC = () => {
   const { data: performance } = useOfficerPerformance(userId);
   const { data: syncStatus } = useOfflineSync(userId);
 
-  if (!user) {
+  if (isLoading) {
     return (
-      <Container>
-        <Typography>Please log in to access field operations</Typography>
-      </Container>
+      <Layout>
+        <Container>
+          <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '400px' }}>
+            <Typography>Loading...</Typography>
+          </Box>
+        </Container>
+      </Layout>
     );
   }
 

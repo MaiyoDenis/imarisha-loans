@@ -1,0 +1,44 @@
+import React from 'react';
+import { ArrowUp, ArrowDown, TrendingUp } from 'lucide-react';
+var statusColors = {
+    normal: 'border-l-4 border-l-blue-500 bg-blue-50',
+    warning: 'border-l-4 border-l-yellow-500 bg-yellow-50',
+    critical: 'border-l-4 border-l-red-500 bg-red-50',
+    success: 'border-l-4 border-l-green-500 bg-green-50'
+};
+var statusIconColors = {
+    normal: 'text-blue-600',
+    warning: 'text-yellow-600',
+    critical: 'text-red-600',
+    success: 'text-green-600'
+};
+export function KPICard(_a) {
+    var title = _a.title, value = _a.value, unit = _a.unit, change = _a.change, icon = _a.icon, _b = _a.status, status = _b === void 0 ? 'normal' : _b, onClick = _a.onClick, _c = _a.className, className = _c === void 0 ? '' : _c;
+    return (<div onClick={onClick} className={"p-4 md:p-6 rounded-lg shadow-sm hover:shadow-md transition-shadow cursor-pointer bg-white ".concat(statusColors[status], " ").concat(className)}>
+      <div className="flex items-start justify-between gap-2">
+        <div className="flex-1 min-w-0">
+          <p className="text-xs md:text-sm font-medium text-gray-600 mb-2 truncate">{title}</p>
+          <div className="flex items-baseline gap-2 flex-wrap">
+            <h3 className="text-2xl md:text-3xl font-bold text-gray-900 truncate">
+              {typeof value === 'number' ? (value > 1000000 ? "".concat((value / 1000000).toFixed(1), "M") : value.toLocaleString()) : value}
+            </h3>
+            {unit && <span className="text-xs md:text-sm text-gray-500 whitespace-nowrap">{unit}</span>}
+          </div>
+          
+          {change && (<div className={"flex items-center gap-1 mt-2 md:mt-3 ".concat(change.isPositive ? 'text-green-600' : 'text-red-600')}>
+              {change.isPositive ? (<ArrowUp size={14}/>) : (<ArrowDown size={14}/>)}
+              <span className="text-xs font-semibold">
+                {Math.abs(change.value)}% {change.isPositive ? 'up' : 'down'}
+              </span>
+            </div>)}
+        </div>
+
+        <div className={"p-2 md:p-3 rounded-lg flex-shrink-0 ".concat(statusColors[status].split(' ')[1])}>
+          {icon ? (<div className={statusIconColors[status]}>
+              {icon}
+            </div>) : (<TrendingUp className={"w-6 h-6 md:w-8 md:h-8 ".concat(statusIconColors[status])}/>)}
+        </div>
+      </div>
+    </div>);
+}
+export default KPICard;

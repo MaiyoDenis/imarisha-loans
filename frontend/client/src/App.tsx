@@ -158,14 +158,14 @@ function Router() {
       <Route path="/field-officer/groups/:groupId">
         {(params) => (
           <ProtectedRoute allowedRoles={["admin", "field_officer"]} fallbackPath="/dashboard">
-            <GroupMembersPage {...params} />
+            <GroupMembersPage />
           </ProtectedRoute>
         )}
       </Route>
       <Route path="/field-officer/members/:memberId">
         {(params) => (
           <ProtectedRoute allowedRoles={["admin", "field_officer"]} fallbackPath="/dashboard">
-            <MemberDashboardPage {...params} />
+            <MemberDashboardPage />
           </ProtectedRoute>
         )}
       </Route>
@@ -193,7 +193,7 @@ function Router() {
       <Route path="/branches/:branchId">
         {(params) => (
           <ProtectedRoute allowedRoles={["admin"]} fallbackPath="/dashboard">
-            <BranchDetail {...params} />
+            <BranchDetail />
           </ProtectedRoute>
         )}
       </Route>
