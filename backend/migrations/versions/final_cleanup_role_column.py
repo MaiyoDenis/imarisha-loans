@@ -1,7 +1,7 @@
 """Final cleanup - consolidate role column cleanup and ensure role_id is properly configured
 
 Revision ID: final_cleanup_role_column
-Revises: fix_role_migration
+Revises: force_drop_role_column
 Create Date: 2025-12-20 21:00:00.000000
 
 """
@@ -11,7 +11,7 @@ import sqlalchemy as sa
 
 
 revision = 'final_cleanup_role_column'
-down_revision = 'fix_role_migration'
+down_revision = 'force_drop_role_column'
 branch_labels = None
 depends_on = None
 
