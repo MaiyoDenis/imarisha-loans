@@ -21,8 +21,8 @@ function getProductIcon(name: string) {
 }
 
 const categoryColors: Record<string, string> = {
-  "Energy": "bg-yellow-500/10 text-yellow-500",
-  "Electronics": "bg-blue-500/10 text-blue-500",
+  "Energy": "bg-accent/100/10 text-yellow-500",
+  "Electronics": "bg-primary/10 text-primary",
   "Agriculture": "bg-green-500/10 text-green-500",
 };
 
@@ -62,7 +62,7 @@ export default function LoanProducts() {
               {products.map((product: any) => {
                 const Icon = getProductIcon(product.name);
                 const isLowStock = product.stockQuantity <= product.lowStockThreshold;
-                const colorClass = categoryColors[product.categoryId === 1 ? "Energy" : product.categoryId === 2 ? "Electronics" : "Agriculture"] || "bg-gray-500/10 text-gray-500";
+                const colorClass = categoryColors[product.categoryId === 1 ? "Energy" : product.categoryId === 2 ? "Electronics" : "Agriculture"] || "bg-background0/10 text-gray-500";
                 
                 return (
                   <Card key={product.id} className="overflow-hidden border-border/50 hover:shadow-lg transition-all duration-200 group" data-testid={`card-product-${product.id}`}>

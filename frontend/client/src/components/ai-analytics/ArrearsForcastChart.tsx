@@ -37,10 +37,10 @@ export const ArrearsForcastChart: React.FC<ArrearsForcastChartProps> = ({
 }) => {
   if (isLoading) {
     return (
-      <div className="bg-white rounded-lg shadow p-6">
+      <div className="bg-card rounded-xl border border-border/50 shadow-sm p-4 md:p-5">
         <div className="animate-pulse space-y-4">
-          <div className="h-4 bg-gray-200 rounded w-1/4"></div>
-          <div className="h-64 bg-gray-200 rounded"></div>
+          <div className="h-4 bg-muted rounded w-1/4"></div>
+          <div className="h-64 bg-muted rounded"></div>
         </div>
       </div>
     );
@@ -69,20 +69,20 @@ export const ArrearsForcastChart: React.FC<ArrearsForcastChartProps> = ({
   const isDemo = !data || !data.predictions || data.predictions.length === 0;
 
   return (
-    <div className="bg-white rounded-lg shadow p-6">
-      <div className="flex justify-between items-start mb-6">
+    <div className="bg-card rounded-xl border border-border/50 shadow-sm p-4 md:p-5">
+      <div className="flex justify-between items-start mb-4">
         <div>
-          <h3 className="text-lg font-semibold text-gray-900">Arrears Rate Forecast</h3>
-          <p className="text-sm text-gray-500 mt-1">{isDemo ? 'Sample forecast' : '12-month prediction with confidence intervals'}</p>
+          <h3 className="text-lg font-semibold text-card-foreground">Arrears Rate Forecast</h3>
+          <p className="text-sm text-muted-foreground mt-1">{isDemo ? 'Sample forecast' : '12-month prediction with confidence intervals'}</p>
         </div>
         <div className="flex items-center gap-2">
           {trend ? (
-            <div className="flex items-center gap-1 text-red-600">
+            <div className="flex items-center gap-1 text-red-400">
               <ArrowUpIcon className="w-4 h-4" />
               <span className="text-sm font-medium">Increasing</span>
             </div>
           ) : (
-            <div className="flex items-center gap-1 text-green-600">
+            <div className="flex items-center gap-1 text-emerald-400">
               <ArrowDownIcon className="w-4 h-4" />
               <span className="text-sm font-medium">Decreasing</span>
             </div>
@@ -90,18 +90,18 @@ export const ArrearsForcastChart: React.FC<ArrearsForcastChartProps> = ({
         </div>
       </div>
 
-      <div className="grid grid-cols-3 gap-4 mb-6">
-        <div className="bg-blue-50 rounded-lg p-4">
-          <p className="text-sm text-gray-600">Current Rate</p>
-          <p className="text-2xl font-bold text-blue-600">{currentRate.toFixed(2)}%</p>
+      <div className="grid grid-cols-3 gap-3 mb-4">
+        <div className="bg-accent rounded-lg p-3">
+          <p className="text-sm text-muted-foreground">Current Rate</p>
+          <p className="text-2xl font-bold text-blue-300">{currentRate.toFixed(2)}%</p>
         </div>
-        <div className="bg-purple-50 rounded-lg p-4">
-          <p className="text-sm text-gray-600">Average Rate</p>
-          <p className="text-2xl font-bold text-purple-600">{averageRate.toFixed(2)}%</p>
+        <div className="bg-accent rounded-lg p-3">
+          <p className="text-sm text-muted-foreground">Average Rate</p>
+          <p className="text-2xl font-bold text-purple-300">{averageRate.toFixed(2)}%</p>
         </div>
-        <div className="bg-green-50 rounded-lg p-4">
-          <p className="text-sm text-gray-600">Confidence Level</p>
-          <p className="text-2xl font-bold text-green-600">{confidenceLevel}%</p>
+        <div className="bg-accent rounded-lg p-3">
+          <p className="text-sm text-muted-foreground">Confidence Level</p>
+          <p className="text-2xl font-bold text-emerald-300">{confidenceLevel}%</p>
         </div>
       </div>
 
@@ -161,8 +161,8 @@ export const ArrearsForcastChart: React.FC<ArrearsForcastChartProps> = ({
         </ResponsiveContainer>
       </div>
 
-      <div className={`mt-6 border rounded-lg p-4 ${isDemo ? 'bg-yellow-50 border-yellow-200' : 'bg-blue-50 border-blue-200'}`}>
-        <p className={`text-sm ${isDemo ? 'text-yellow-900' : 'text-blue-900'}`}>
+      <div className={`mt-4 border rounded-lg p-3 ${isDemo ? 'border-yellow-400/40 bg-accent/100/10' : 'border-blue-400/40 bg-primary/10'}`}>
+        <p className={`text-sm ${isDemo ? 'text-yellow-300' : 'text-blue-300'}`}>
           <strong>{isDemo ? 'Note:' : 'Insight:'}</strong> {isDemo 
             ? 'This is a sample forecast. To get accurate predictions, more historical loan data is needed.' 
             : `The forecast suggests ${trend ? 'an increasing' : 'a decreasing'} trend in arrears rate over the next 12 months. ${trend ? 'Consider implementing preventive measures.' : 'Current strategies appear effective.'}`

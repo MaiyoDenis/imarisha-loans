@@ -122,7 +122,7 @@ export function ProfileMenu() {
         <DropdownMenuItem
           onClick={handleLogout}
           disabled={isLoading}
-          className="text-red-600"
+          className="text-destructive"
         >
           <LogOut className="mr-2 h-4 w-4" />
           <span>{isLoading ? "Logging out..." : "Logout"}</span>

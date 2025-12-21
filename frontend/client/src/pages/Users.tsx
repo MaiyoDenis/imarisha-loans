@@ -187,15 +187,15 @@ export default function Users() {
   const getRoleBadgeColor = (role: string) => {
     switch (role) {
       case 'admin':
-        return "bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200";
+        return "bg-destructive/15 text-destructive";
       case 'branch_manager':
-        return "bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200";
+        return "bg-primary/15 text-primary";
       case 'loan_officer':
-        return "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200";
+        return "bg-secondary/15 text-secondary";
       case 'customer':
-        return "bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-200";
+        return "bg-muted text-muted-foreground";
       default:
-        return "bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-200";
+        return "bg-muted text-muted-foreground";
     }
   };
 
@@ -383,19 +383,19 @@ export default function Users() {
             <Card>
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                 <CardTitle className="text-sm font-medium">Active Users</CardTitle>
-                <Shield className="h-4 w-4 text-green-600" />
+                <Shield className="h-4 w-4 text-secondary" />
               </CardHeader>
               <CardContent>
-                <div className="text-2xl font-bold text-green-600">{activeUsers}</div>
+                <div className="text-2xl font-bold text-secondary">{activeUsers}</div>
               </CardContent>
             </Card>
             <Card>
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                 <CardTitle className="text-sm font-medium">Administrators</CardTitle>
-                <Shield className="h-4 w-4 text-red-600" />
+                <Shield className="h-4 w-4 text-destructive" />
               </CardHeader>
               <CardContent>
-                <div className="text-2xl font-bold text-red-600">
+                <div className="text-2xl font-bold text-destructive">
                   {users.filter((u: User) => u.role === 'admin').length}
                 </div>
               </CardContent>
@@ -403,10 +403,10 @@ export default function Users() {
             <Card>
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                 <CardTitle className="text-sm font-medium">Loan Officers</CardTitle>
-                <UserPlus className="h-4 w-4 text-blue-600" />
+                <UserPlus className="h-4 w-4 text-primary" />
               </CardHeader>
               <CardContent>
-                <div className="text-2xl font-bold text-blue-600">
+                <div className="text-2xl font-bold text-primary">
                   {users.filter((u: User) => u.role === 'loan_officer').length}
                 </div>
               </CardContent>

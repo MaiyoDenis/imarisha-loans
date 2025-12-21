@@ -168,20 +168,20 @@ export default function ProductManagement() {
     };
     var visibleProducts = products.filter(function (p) { return showHidden || p.isActive; });
     return (<Layout>
-      <div className="min-h-screen p-6 bg-gradient-to-br from-slate-50 to-slate-100">
+      <div className="min-h-screen p-6 bg-background">
         <div className="max-w-7xl mx-auto">
           {/* Header */}
           <div className="flex justify-between items-start mb-8">
             <div>
-              <h1 className="text-4xl font-bold tracking-tight text-slate-900">Product Management</h1>
-              <p className="text-slate-600 mt-2">Manage loan products with pricing and market values</p>
+              <h1 className="text-4xl font-bold tracking-tight text-foreground">Product Management</h1>
+              <p className="text-muted-foreground mt-2">Manage loan products with pricing and market values</p>
             </div>
             <div className="flex gap-3">
-              <button onClick={function () { return refetch(); }} className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition">
+              <button onClick={function () { return refetch(); }} className="flex items-center gap-2 px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary/80 transition">
                 <RefreshCw size={18}/>
                 Refresh
               </button>
-              <button onClick={function () { return setIsAddingNew(true); }} className="flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition">
+              <button onClick={function () { return setIsAddingNew(true); }} className="flex items-center gap-2 px-4 py-2 bg-secondary text-white rounded-lg hover:bg-secondary/80 transition">
                 <Plus size={18}/>
                 Add Product
               </button>
@@ -192,48 +192,48 @@ export default function ProductManagement() {
           <div className="mb-6">
             <label className="flex items-center gap-2 cursor-pointer">
               <input type="checkbox" checked={showHidden} onChange={function (e) { return setShowHidden(e.target.checked); }} className="w-4 h-4"/>
-              <span className="text-slate-700 font-medium">Show inactive products</span>
+              <span className="text-foreground font-medium">Show inactive products</span>
             </label>
           </div>
 
           {/* Add New Product Form */}
-          {isAddingNew && (<div className="mb-6 bg-white rounded-lg border border-slate-200 p-6">
-              <h2 className="text-xl font-bold text-slate-900 mb-4">Add New Product</h2>
+          {isAddingNew && (<div className="mb-6 bg-card rounded-lg border border-border p-6">
+              <h2 className="text-xl font-bold text-foreground mb-4">Add New Product</h2>
               <form onSubmit={handleAddProduct} className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div>
-                  <label className="block text-sm font-semibold text-slate-700 mb-2">Product Name</label>
-                  <input type="text" value={formData.name} onChange={function (e) { return setFormData(__assign(__assign({}, formData), { name: e.target.value })); }} className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" required/>
+                  <label className="block text-sm font-semibold text-foreground mb-2">Product Name</label>
+                  <input type="text" value={formData.name} onChange={function (e) { return setFormData(__assign(__assign({}, formData), { name: e.target.value })); }} className="w-full px-3 py-2 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary" required/>
                 </div>
                 <div>
-                  <label className="block text-sm font-semibold text-slate-700 mb-2">Category</label>
-                  <select value={formData.categoryId} onChange={function (e) { return setFormData(__assign(__assign({}, formData), { categoryId: e.target.value })); }} className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                  <label className="block text-sm font-semibold text-foreground mb-2">Category</label>
+                  <select value={formData.categoryId} onChange={function (e) { return setFormData(__assign(__assign({}, formData), { categoryId: e.target.value })); }} className="w-full px-3 py-2 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary">
                     <option value="1">Energy</option>
                     <option value="2">Electronics</option>
                     <option value="3">Agriculture</option>
                   </select>
                 </div>
                 <div>
-                  <label className="block text-sm font-semibold text-slate-700 mb-2">Market Price (Cost)</label>
-                  <input type="number" step="0.01" value={formData.buyingPrice} onChange={function (e) { return setFormData(__assign(__assign({}, formData), { buyingPrice: e.target.value })); }} className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" required/>
-                  <p className="text-xs text-slate-500 mt-1">Only visible to admins</p>
+                  <label className="block text-sm font-semibold text-foreground mb-2">Market Price (Cost)</label>
+                  <input type="number" step="0.01" value={formData.buyingPrice} onChange={function (e) { return setFormData(__assign(__assign({}, formData), { buyingPrice: e.target.value })); }} className="w-full px-3 py-2 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary" required/>
+                  <p className="text-xs text-muted-foreground mt-1">Only visible to admins</p>
                 </div>
                 <div>
-                  <label className="block text-sm font-semibold text-slate-700 mb-2">Selling Price</label>
-                  <input type="number" step="0.01" value={formData.sellingPrice} onChange={function (e) { return setFormData(__assign(__assign({}, formData), { sellingPrice: e.target.value })); }} className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" required/>
+                  <label className="block text-sm font-semibold text-foreground mb-2">Selling Price</label>
+                  <input type="number" step="0.01" value={formData.sellingPrice} onChange={function (e) { return setFormData(__assign(__assign({}, formData), { sellingPrice: e.target.value })); }} className="w-full px-3 py-2 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary" required/>
                 </div>
                 <div>
-                  <label className="block text-sm font-semibold text-slate-700 mb-2">Initial Stock</label>
-                  <input type="number" value={formData.stockQuantity} onChange={function (e) { return setFormData(__assign(__assign({}, formData), { stockQuantity: e.target.value })); }} className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"/>
+                  <label className="block text-sm font-semibold text-foreground mb-2">Initial Stock</label>
+                  <input type="number" value={formData.stockQuantity} onChange={function (e) { return setFormData(__assign(__assign({}, formData), { stockQuantity: e.target.value })); }} className="w-full px-3 py-2 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"/>
                 </div>
                 <div>
-                  <label className="block text-sm font-semibold text-slate-700 mb-2">Low Stock Threshold</label>
-                  <input type="number" value={formData.lowStockThreshold} onChange={function (e) { return setFormData(__assign(__assign({}, formData), { lowStockThreshold: e.target.value })); }} className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"/>
+                  <label className="block text-sm font-semibold text-foreground mb-2">Low Stock Threshold</label>
+                  <input type="number" value={formData.lowStockThreshold} onChange={function (e) { return setFormData(__assign(__assign({}, formData), { lowStockThreshold: e.target.value })); }} className="w-full px-3 py-2 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"/>
                 </div>
                 <div className="md:col-span-3 flex gap-3">
-                  <button type="submit" className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition font-medium">
+                  <button type="submit" className="px-6 py-2 bg-primary text-white rounded-lg hover:bg-primary/80 transition font-medium">
                     Save Product
                   </button>
-                  <button type="button" onClick={function () { return setIsAddingNew(false); }} className="px-6 py-2 bg-slate-300 text-slate-700 rounded-lg hover:bg-slate-400 transition font-medium">
+                  <button type="button" onClick={function () { return setIsAddingNew(false); }} className="px-6 py-2 bg-slate-300 text-foreground rounded-lg hover:bg-slate-400 transition font-medium">
                     Cancel
                   </button>
                 </div>
@@ -243,50 +243,50 @@ export default function ProductManagement() {
           {/* Products Table */}
           {isLoading ? (<div className="text-center py-12">
               <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
-              <p className="text-slate-600 mt-4">Loading products...</p>
-            </div>) : visibleProducts.length === 0 ? (<div className="bg-white rounded-lg border border-slate-200 p-12 text-center">
-              <p className="text-slate-600">No products found. Create one to get started.</p>
-            </div>) : (<div className="bg-white rounded-lg border border-slate-200 overflow-hidden">
+              <p className="text-muted-foreground mt-4">Loading products...</p>
+            </div>) : visibleProducts.length === 0 ? (<div className="bg-card rounded-lg border border-border p-12 text-center">
+              <p className="text-muted-foreground">No products found. Create one to get started.</p>
+            </div>) : (<div className="bg-card rounded-lg border border-border overflow-hidden">
               <div className="overflow-x-auto">
                 <table className="w-full">
-                  <thead className="bg-slate-50 border-b border-slate-200">
+                  <thead className="bg-background border-b border-border">
                     <tr>
-                      <th className="px-4 py-3 text-left text-sm font-semibold text-slate-600">Product Name</th>
-                      <th className="px-4 py-3 text-right text-sm font-semibold text-slate-600">Market Price</th>
-                      <th className="px-4 py-3 text-right text-sm font-semibold text-slate-600">Selling Price</th>
-                      <th className="px-4 py-3 text-right text-sm font-semibold text-slate-600">Margin %</th>
-                      <th className="px-4 py-3 text-right text-sm font-semibold text-slate-600">Stock</th>
-                      <th className="px-4 py-3 text-center text-sm font-semibold text-slate-600">Status</th>
-                      <th className="px-4 py-3 text-center text-sm font-semibold text-slate-600">Actions</th>
+                      <th className="px-4 py-3 text-left text-sm font-semibold text-muted-foreground">Product Name</th>
+                      <th className="px-4 py-3 text-right text-sm font-semibold text-muted-foreground">Market Price</th>
+                      <th className="px-4 py-3 text-right text-sm font-semibold text-muted-foreground">Selling Price</th>
+                      <th className="px-4 py-3 text-right text-sm font-semibold text-muted-foreground">Margin %</th>
+                      <th className="px-4 py-3 text-right text-sm font-semibold text-muted-foreground">Stock</th>
+                      <th className="px-4 py-3 text-center text-sm font-semibold text-muted-foreground">Status</th>
+                      <th className="px-4 py-3 text-center text-sm font-semibold text-muted-foreground">Actions</th>
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-slate-200">
-                    {visibleProducts.map(function (product) { return (<tr key={product.id} className={!product.isActive ? 'bg-slate-50 opacity-50' : 'hover:bg-slate-50 transition'}>
-                        <td className="px-4 py-3 text-sm font-medium text-slate-900">{product.name}</td>
-                        <td className="px-4 py-3 text-sm text-right text-slate-600">{formatCurrency(product.buyingPrice)}</td>
-                        <td className="px-4 py-3 text-sm text-right text-slate-600">{formatCurrency(product.sellingPrice)}</td>
-                        <td className="px-4 py-3 text-sm text-right font-semibold text-green-600">
+                  <tbody className="divide-y divide-border">
+                    {visibleProducts.map(function (product) { return (<tr key={product.id} className={!product.isActive ? 'bg-background opacity-50' : 'hover:bg-background transition'}>
+                        <td className="px-4 py-3 text-sm font-medium text-foreground">{product.name}</td>
+                        <td className="px-4 py-3 text-sm text-right text-muted-foreground">{formatCurrency(product.buyingPrice)}</td>
+                        <td className="px-4 py-3 text-sm text-right text-muted-foreground">{formatCurrency(product.sellingPrice)}</td>
+                        <td className="px-4 py-3 text-sm text-right font-semibold text-secondary">
                           {calculateMargin(product.buyingPrice, product.sellingPrice)}%
                         </td>
-                        <td className="px-4 py-3 text-sm text-right text-slate-600">
-                          <span className={product.stockQuantity <= product.lowStockThreshold ? 'text-red-600 font-semibold' : ''}>
+                        <td className="px-4 py-3 text-sm text-right text-muted-foreground">
+                          <span className={product.stockQuantity <= product.lowStockThreshold ? 'text-destructive font-semibold' : ''}>
                             {product.stockQuantity}
                           </span>
                         </td>
                         <td className="px-4 py-3 text-center">
                           <span className={"px-2 py-1 rounded text-xs font-semibold ".concat(product.isActive
                     ? 'bg-green-100 text-green-800'
-                    : 'bg-slate-100 text-slate-800')}>
+                    : 'bg-background text-slate-800')}>
                             {product.isActive ? 'Active' : 'Inactive'}
                           </span>
                         </td>
                         <td className="px-4 py-3 text-center">
                           <div className="flex justify-center gap-2">
                             <button onClick={function () { return setEditingId(editingId === product.id ? null : product.id); }} className="p-2 hover:bg-blue-100 rounded-lg transition" title="Edit">
-                              <Edit2 size={16} className="text-blue-600"/>
+                              <Edit2 size={16} className="text-primary"/>
                             </button>
                             <button onClick={function () { return handleDeleteProduct(product.id); }} className="p-2 hover:bg-red-100 rounded-lg transition" title="Delete">
-                              <Trash2 size={16} className="text-red-600"/>
+                              <Trash2 size={16} className="text-destructive"/>
                             </button>
                           </div>
                         </td>
@@ -298,27 +298,27 @@ export default function ProductManagement() {
 
           {/* Summary Stats */}
           {visibleProducts.length > 0 && (<div className="mt-8 grid grid-cols-1 md:grid-cols-4 gap-4">
-              <div className="bg-white rounded-lg border border-slate-200 p-4">
-                <p className="text-sm text-slate-600 font-semibold">Total Products</p>
-                <p className="text-2xl font-bold text-slate-900 mt-2">{visibleProducts.length}</p>
+              <div className="bg-card rounded-lg border border-border p-4">
+                <p className="text-sm text-muted-foreground font-semibold">Total Products</p>
+                <p className="text-2xl font-bold text-foreground mt-2">{visibleProducts.length}</p>
               </div>
-              <div className="bg-white rounded-lg border border-slate-200 p-4">
-                <p className="text-sm text-slate-600 font-semibold">Total Inventory Value</p>
-                <p className="text-2xl font-bold text-slate-900 mt-2">
+              <div className="bg-card rounded-lg border border-border p-4">
+                <p className="text-sm text-muted-foreground font-semibold">Total Inventory Value</p>
+                <p className="text-2xl font-bold text-foreground mt-2">
                   {formatCurrency(visibleProducts.reduce(function (sum, p) { return sum + (parseFloat(p.buyingPrice) * p.stockQuantity); }, 0))}
                 </p>
               </div>
-              <div className="bg-white rounded-lg border border-slate-200 p-4">
-                <p className="text-sm text-slate-600 font-semibold">Avg Margin</p>
-                <p className="text-2xl font-bold text-green-600 mt-2">
+              <div className="bg-card rounded-lg border border-border p-4">
+                <p className="text-sm text-muted-foreground font-semibold">Avg Margin</p>
+                <p className="text-2xl font-bold text-secondary mt-2">
                   {(visibleProducts.reduce(function (sum, p) { return sum + calculateMargin(p.buyingPrice, p.sellingPrice); }, 0) / visibleProducts.length).toFixed(2)}%
                 </p>
               </div>
-              <div className="bg-white rounded-lg border border-slate-200 p-4">
-                <p className="text-sm text-slate-600 font-semibold">Low Stock Count</p>
+              <div className="bg-card rounded-lg border border-border p-4">
+                <p className="text-sm text-muted-foreground font-semibold">Low Stock Count</p>
                 <p className={"text-2xl font-bold mt-2 ".concat(visibleProducts.filter(function (p) { return p.stockQuantity <= p.lowStockThreshold; }).length > 0
-                ? 'text-red-600'
-                : 'text-green-600')}>
+                ? 'text-destructive'
+                : 'text-secondary')}>
                   {visibleProducts.filter(function (p) { return p.stockQuantity <= p.lowStockThreshold; }).length}
                 </p>
               </div>

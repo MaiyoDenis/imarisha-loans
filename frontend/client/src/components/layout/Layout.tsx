@@ -59,10 +59,10 @@ export default function Layout({ children }: { children: React.ReactNode }) {
           <div className="flex items-center gap-4">
             {/* Notifications */}
             <div className="relative">
-              <button className="relative p-2 text-slate-600 hover:text-slate-900 hover:bg-slate-100 rounded-lg transition">
+              <button className="relative p-2 text-muted-foreground hover:text-foreground hover:bg-background rounded-lg transition">
                 <Bell size={20} />
                 {unreadNotifications > 0 && (
-                  <span className="absolute top-1 right-1 bg-red-500 text-white text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center">
+                  <span className="absolute top-1 right-1 bg-destructive/100 text-white text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center">
                     {unreadNotifications}
                   </span>
                 )}
@@ -71,10 +71,10 @@ export default function Layout({ children }: { children: React.ReactNode }) {
 
             {/* Messages */}
             <div className="relative">
-              <button className="relative p-2 text-slate-600 hover:text-slate-900 hover:bg-slate-100 rounded-lg transition">
+              <button className="relative p-2 text-muted-foreground hover:text-foreground hover:bg-background rounded-lg transition">
                 <MessageSquare size={20} />
                 {unreadMessages > 0 && (
-                  <span className="absolute top-1 right-1 bg-blue-500 text-white text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center">
+                  <span className="absolute top-1 right-1 bg-primary text-white text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center">
                     {unreadMessages}
                   </span>
                 )}
@@ -85,9 +85,9 @@ export default function Layout({ children }: { children: React.ReactNode }) {
             <div className="relative">
               <button
                 onClick={() => setShowProfileMenu(!showProfileMenu)}
-                className="flex items-center gap-2 px-3 py-2 text-slate-700 hover:bg-slate-100 rounded-lg transition"
+                className="flex items-center gap-2 px-3 py-2 text-foreground hover:bg-background rounded-lg transition"
               >
-                <div className="w-8 h-8 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white font-bold text-sm">
+                <div className="w-8 h-8 rounded-full bg-gradient-to-br from-amber-500 to-yellow-600 flex items-center justify-center text-white font-bold text-sm">
                   {userInitials}
                 </div>
                 <span className="text-sm font-medium hidden sm:inline">{userName}</span>
@@ -96,14 +96,14 @@ export default function Layout({ children }: { children: React.ReactNode }) {
 
               {/* Profile Menu Dropdown */}
               {showProfileMenu && (
-                <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg border border-slate-200 shadow-lg z-50">
-                  <button className="w-full flex items-center gap-2 px-4 py-2 text-slate-700 hover:bg-slate-50 transition border-b border-slate-200">
+                <div className="absolute right-0 mt-2 w-48 bg-card rounded-lg border border-border shadow-lg z-50">
+                  <button className="w-full flex items-center gap-2 px-4 py-2 text-foreground hover:bg-background transition border-b border-border">
                     <User size={16} />
                     <span>Profile Settings</span>
                   </button>
                   <button
                     onClick={handleLogout}
-                    className="w-full flex items-center gap-2 px-4 py-2 text-red-600 hover:bg-red-50 transition"
+                    className="w-full flex items-center gap-2 px-4 py-2 text-destructive hover:bg-destructive/10 transition"
                   >
                     <LogOut size={16} />
                     <span>Logout</span>

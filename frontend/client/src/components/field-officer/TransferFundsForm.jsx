@@ -99,17 +99,17 @@ export function TransferFundsForm(_a) {
             <Input id="reference" type="text" placeholder="Enter reference or notes" value={reference} onChange={function (e) { return setReference(e.target.value); }}/>
           </div>
 
-          {mutation.isPending && (<div className="flex items-center gap-2 text-blue-600">
+          {mutation.isPending && (<div className="flex items-center gap-2 text-primary">
               <div className="h-4 w-4 animate-spin rounded-full border-2 border-blue-600 border-t-transparent"/>
               <span>Processing transfer...</span>
             </div>)}
 
-          {mutation.isSuccess && (<div className="flex items-center gap-2 text-green-600">
+          {mutation.isSuccess && (<div className="flex items-center gap-2 text-secondary">
               <CheckCircle className="h-5 w-5"/>
               <span>Funds transferred successfully</span>
             </div>)}
 
-          {mutation.isError && (<div className="flex items-center gap-2 text-red-600">
+          {mutation.isError && (<div className="flex items-center gap-2 text-destructive">
               <AlertCircle className="h-5 w-5"/>
               <span>{mutation.error.message}</span>
             </div>)}

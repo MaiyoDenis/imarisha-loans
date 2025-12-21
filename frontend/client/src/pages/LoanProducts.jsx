@@ -18,8 +18,8 @@ function getProductIcon(name) {
     return key ? iconMap[key] : iconMap.Default;
 }
 var categoryColors = {
-    "Energy": "bg-yellow-500/10 text-yellow-500",
-    "Electronics": "bg-blue-500/10 text-blue-500",
+    "Energy": "bg-accent/100/10 text-yellow-500",
+    "Electronics": "bg-primary/10 text-primary",
     "Agriculture": "bg-green-500/10 text-green-500",
 };
 export default function LoanProducts() {
@@ -53,7 +53,7 @@ export default function LoanProducts() {
               {products.map(function (product) {
                 var Icon = getProductIcon(product.name);
                 var isLowStock = product.stockQuantity <= product.lowStockThreshold;
-                var colorClass = categoryColors[product.categoryId === 1 ? "Energy" : product.categoryId === 2 ? "Electronics" : "Agriculture"] || "bg-gray-500/10 text-gray-500";
+                var colorClass = categoryColors[product.categoryId === 1 ? "Energy" : product.categoryId === 2 ? "Electronics" : "Agriculture"] || "bg-background0/10 text-gray-500";
                 return (<Card key={product.id} className="overflow-hidden border-border/50 hover:shadow-lg transition-all duration-200 group" data-testid={"card-product-".concat(product.id)}>
                     <div className="h-48 bg-muted/30 flex items-center justify-center relative group-hover:bg-muted/50 transition-colors">
                       <div className={"h-20 w-20 rounded-full flex items-center justify-center ".concat(colorClass)}>

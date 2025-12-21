@@ -25,7 +25,7 @@ export function MemberDashboardPage() {
         return <LoadingSpinner />;
     if (!memberId) {
         return (<div className="text-center">
-        <p className="text-red-600">Invalid member ID</p>
+        <p className="text-destructive">Invalid member ID</p>
       </div>);
     }
     if (!member) {
@@ -55,7 +55,7 @@ export function MemberDashboardPage() {
           </div>
         </div>
         <div className="flex gap-2">
-          <Button onClick={function () { return setShowLoanForm(!showLoanForm); }} className="gap-2 bg-blue-600 hover:bg-blue-700" size="lg">
+          <Button onClick={function () { return setShowLoanForm(!showLoanForm); }} className="gap-2 bg-primary hover:bg-primary/80" size="lg">
             <CreditCard className="h-5 w-5"/>
             {showLoanForm ? "Cancel" : "Apply Loan"}
           </Button>
@@ -67,13 +67,13 @@ export function MemberDashboardPage() {
         </div>
       </div>
 
-      {error && (<div className="flex items-center gap-3 rounded-lg bg-red-50 p-4 text-red-800">
+      {error && (<div className="flex items-center gap-3 rounded-lg bg-destructive/10 p-4 text-red-800">
           <AlertCircle className="h-5 w-5"/>
           <span>{error.message}</span>
         </div>)}
 
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-        <Card className="bg-gradient-to-br from-blue-50 to-blue-100 border-blue-200">
+        <Card className="bg-gradient-to-br from-blue-50 to-blue-100 border-primary/30">
           <CardHeader className="pb-3">
             <CardTitle className="text-sm font-medium text-blue-900">
               Max Loan Limit
@@ -84,7 +84,7 @@ export function MemberDashboardPage() {
               <p className="text-2xl font-bold text-blue-900">
                 KES {parseFloat(m.maxLoanLimit).toLocaleString()}
               </p>
-              <CreditCard className="h-5 w-5 text-blue-600"/>
+              <CreditCard className="h-5 w-5 text-primary"/>
             </div>
           </CardContent>
         </Card>
@@ -100,7 +100,7 @@ export function MemberDashboardPage() {
               <p className="text-2xl font-bold text-green-900">
                 KES {parseFloat(m.availableLoan).toLocaleString()}
               </p>
-              <DollarSign className="h-5 w-5 text-green-600"/>
+              <DollarSign className="h-5 w-5 text-secondary"/>
             </div>
           </CardContent>
         </Card>
@@ -143,7 +143,7 @@ export function MemberDashboardPage() {
           <CardHeader>
             <div className="flex items-center justify-between">
               <CardTitle className="flex items-center gap-2">
-                <PiggyBank className="h-5 w-5 text-green-600"/>
+                <PiggyBank className="h-5 w-5 text-secondary"/>
                 Savings Account
               </CardTitle>
             </div>
@@ -151,7 +151,7 @@ export function MemberDashboardPage() {
           <CardContent className="space-y-3">
             <div className="bg-green-50 p-4 rounded-lg">
               <p className="text-xs text-muted-foreground mb-1">Current Balance</p>
-              <p className="text-3xl font-bold text-green-600">
+              <p className="text-3xl font-bold text-secondary">
                 KES {parseFloat(m.savingsBalance).toLocaleString()}
               </p>
             </div>
@@ -165,26 +165,26 @@ export function MemberDashboardPage() {
           <CardHeader>
             <div className="flex items-center justify-between">
               <CardTitle className="flex items-center gap-2">
-                <CreditCard className="h-5 w-5 text-blue-600"/>
+                <CreditCard className="h-5 w-5 text-primary"/>
                 Drawdown Account
               </CardTitle>
             </div>
           </CardHeader>
           <CardContent className="space-y-3">
-            <div className="bg-blue-50 p-4 rounded-lg">
+            <div className="bg-primary/10 p-4 rounded-lg">
               <p className="text-xs text-muted-foreground mb-1">Current Balance</p>
-              <p className="text-3xl font-bold text-blue-600">
+              <p className="text-3xl font-bold text-primary">
                 KES {parseFloat(m.drawdownBalance).toLocaleString()}
               </p>
             </div>
-            <Button onClick={function () { return setShowLoanForm(true); }} className="w-full bg-blue-600 hover:bg-blue-700">
+            <Button onClick={function () { return setShowLoanForm(true); }} className="w-full bg-primary hover:bg-primary/80">
               Withdraw Funds
             </Button>
           </CardContent>
         </Card>
       </div>
 
-      {showLoanForm && (<Card className="border-blue-300 bg-blue-50">
+      {showLoanForm && (<Card className="border-blue-300 bg-primary/10">
           <CardHeader>
             <CardTitle>Apply for New Loan</CardTitle>
           </CardHeader>
@@ -210,13 +210,13 @@ export function MemberDashboardPage() {
 
       <Tabs defaultValue="loans" className="w-full">
         <TabsList className="bg-gray-100 p-1 rounded-lg">
-          <TabsTrigger value="loans" className="data-[state=active]:bg-white">
+          <TabsTrigger value="loans" className="data-[state=active]:bg-card">
             Active Loans ({m.activeLoans.length})
           </TabsTrigger>
-          <TabsTrigger value="history" className="data-[state=active]:bg-white">
+          <TabsTrigger value="history" className="data-[state=active]:bg-card">
             Loan History
           </TabsTrigger>
-          <TabsTrigger value="transactions" className="data-[state=active]:bg-white">
+          <TabsTrigger value="transactions" className="data-[state=active]:bg-card">
             Recent Transactions
           </TabsTrigger>
         </TabsList>
@@ -242,7 +242,7 @@ export function MemberDashboardPage() {
                     </div>
 
                     <div className="grid grid-cols-3 gap-4 sm:text-right">
-                      <div className="bg-blue-50 p-3 rounded-lg sm:bg-transparent sm:p-0">
+                      <div className="bg-primary/10 p-3 rounded-lg sm:bg-transparent sm:p-0">
                         <p className="text-xs text-muted-foreground mb-1">Principal</p>
                         <p className="font-bold text-lg">
                           KES {parseFloat(loan.principleAmount).toLocaleString()}
@@ -273,15 +273,15 @@ export function MemberDashboardPage() {
           <Card className="border-2">
             <CardContent className="pt-6 space-y-6">
               <div className="grid grid-cols-2 gap-4">
-                <div className="bg-blue-50 p-6 rounded-lg border border-blue-200">
+                <div className="bg-primary/10 p-6 rounded-lg border border-primary/30">
                   <p className="text-xs text-muted-foreground mb-2">Total Borrowed</p>
-                  <p className="text-3xl font-bold text-blue-600">
+                  <p className="text-3xl font-bold text-primary">
                     KES {parseFloat(m.totalBorrowed).toLocaleString()}
                   </p>
                 </div>
                 <div className="bg-green-50 p-6 rounded-lg border border-green-200">
                   <p className="text-xs text-muted-foreground mb-2">Total Repaid</p>
-                  <p className="text-3xl font-bold text-green-600">
+                  <p className="text-3xl font-bold text-secondary">
                     KES {parseFloat(m.totalRepaid).toLocaleString()}
                   </p>
                 </div>
@@ -308,7 +308,7 @@ export function MemberDashboardPage() {
 
                     <div className="flex items-start justify-between sm:justify-end gap-6">
                       <div className="text-right">
-                        <p className="text-2xl font-bold text-green-600">
+                        <p className="text-2xl font-bold text-secondary">
                           +KES {parseFloat(transaction.amount).toLocaleString()}
                         </p>
                         <p className="text-xs text-muted-foreground mt-1 flex items-center justify-end gap-1">

@@ -110,7 +110,7 @@ export const AchievementsPanel: React.FC<AchievementsPanelProps> = ({
                         ? "#FF4444"
                         : "#44B4AA"
                     } 100%)`,
-                    color: "white",
+                    color: "card",
                   }}
                 >
                   <CardContent>

@@ -210,14 +210,14 @@ export default function BranchManagerDashboard() {
         {/* KPI Cards */}
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
           {/* Total Loans */}
-          <Card className="bg-gradient-to-br from-blue-50 to-blue-100 border-blue-200">
+          <Card className="bg-gradient-to-br from-blue-50 to-blue-100 border-primary/30">
             <CardHeader className="pb-3">
               <CardTitle className="text-sm font-medium text-blue-900">Total Loans</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="flex items-baseline justify-between">
                 <p className="text-3xl font-bold text-blue-900">{branchStats?.totalLoans || 0}</p>
-                <CreditCard className="h-5 w-5 text-blue-600" />
+                <CreditCard className="h-5 w-5 text-primary" />
               </div>
               <p className="text-xs text-blue-700 mt-2">
                 {branchStats?.activeLoans || 0} active
@@ -233,7 +233,7 @@ export default function BranchManagerDashboard() {
             <CardContent>
               <div className="flex items-baseline justify-between">
                 <p className="text-3xl font-bold text-green-900">{totalGroupMembers}</p>
-                <Users2 className="h-5 w-5 text-green-600" />
+                <Users2 className="h-5 w-5 text-secondary" />
               </div>
               <p className="text-xs text-green-700 mt-2">
                 {branchGroups.length} groups
@@ -477,7 +477,7 @@ export default function BranchManagerDashboard() {
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="grid grid-cols-3 gap-4">
-                  <div className="text-center p-4 bg-blue-50 rounded-lg">
+                  <div className="text-center p-4 bg-primary/10 rounded-lg">
                     <p className="text-sm text-muted-foreground">Total Loans</p>
                     <p className="text-2xl font-bold text-blue-900">{branchStats?.totalLoans || 0}</p>
                   </div>
@@ -485,9 +485,9 @@ export default function BranchManagerDashboard() {
                     <p className="text-sm text-muted-foreground">Active</p>
                     <p className="text-2xl font-bold text-green-900">{branchStats?.activeLoans || 0}</p>
                   </div>
-                  <div className="text-center p-4 bg-yellow-50 rounded-lg">
+                  <div className="text-center p-4 bg-accent/10 rounded-lg">
                     <p className="text-sm text-muted-foreground">Pending</p>
-                    <p className="text-2xl font-bold text-yellow-900">{branchStats?.pendingLoans || 0}</p>
+                    <p className="text-2xl font-bold text-accent">{branchStats?.pendingLoans || 0}</p>
                   </div>
                 </div>
               </CardContent>
@@ -516,7 +516,7 @@ export default function BranchManagerDashboard() {
                   return (
                     <Card key={product.id} className="overflow-hidden hover:shadow-lg transition-shadow">
                       <div className="h-32 bg-gradient-to-br from-blue-50 to-blue-100 flex items-center justify-center relative">
-                        <Package className="h-12 w-12 text-blue-600" />
+                        <Package className="h-12 w-12 text-primary" />
                         {isLowStock && (
                           <Badge variant="destructive" className="absolute top-2 right-2 animate-pulse">
                             Low Stock
@@ -536,7 +536,7 @@ export default function BranchManagerDashboard() {
                           </div>
                           <div className="text-right">
                             <p className="text-muted-foreground">Stock</p>
-                            <p className={`font-bold text-lg ${isLowStock ? 'text-red-600' : 'text-green-600'}`}>
+                            <p className={`font-bold text-lg ${isLowStock ? 'text-destructive' : 'text-secondary'}`}>
                               {product.stockQuantity}
                             </p>
                           </div>

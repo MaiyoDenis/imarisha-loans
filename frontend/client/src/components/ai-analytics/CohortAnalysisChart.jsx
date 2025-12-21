@@ -15,7 +15,7 @@ import { TrendingDown } from 'lucide-react';
 export var CohortAnalysisChart = function (_a) {
     var cohorts = _a.cohorts, insights = _a.insights, _b = _a.isLoading, isLoading = _b === void 0 ? false : _b;
     if (isLoading) {
-        return (<div className="bg-white rounded-lg shadow p-6">
+        return (<div className="bg-card rounded-lg shadow p-6">
         <div className="animate-pulse space-y-4">
           <div className="h-4 bg-gray-200 rounded w-1/4"></div>
           <div className="h-64 bg-gray-200 rounded"></div>
@@ -24,7 +24,7 @@ export var CohortAnalysisChart = function (_a) {
     }
     var chartData = cohorts.slice(-6).map(function (cohort) { return (__assign(__assign({}, cohort), { cohort_month: cohort.cohort_month.substring(5) })); });
     if (chartData.length === 0) {
-        return (<div className="bg-white rounded-lg shadow p-6">
+        return (<div className="bg-card rounded-lg shadow p-6">
         <p className="text-gray-500 text-center py-12">No cohort data available</p>
       </div>);
     }
@@ -45,9 +45,9 @@ export var CohortAnalysisChart = function (_a) {
             value: insights.average_default_rate,
         },
     ];
-    return (<div className="bg-white rounded-lg shadow p-6">
+    return (<div className="bg-card rounded-lg shadow p-6">
       <div className="mb-6">
-        <h3 className="text-lg font-semibold text-gray-900 flex items-center gap-2">
+        <h3 className="text-lg font-semibold text-foreground flex items-center gap-2">
           <TrendingDown className="w-5 h-5"/>
           Cohort Analysis
         </h3>
@@ -57,8 +57,8 @@ export var CohortAnalysisChart = function (_a) {
       </div>
 
       <div className="grid grid-cols-3 gap-4 mb-6">
-        {metrics.map(function (metric) { return (<div key={metric.label} className="border border-gray-200 rounded-lg p-4">
-            <p className="text-xs font-medium text-gray-600">{metric.label}</p>
+        {metrics.map(function (metric) { return (<div key={metric.label} className="border border-border rounded-lg p-4">
+            <p className="text-xs font-medium text-muted-foreground">{metric.label}</p>
             <p className="text-2xl font-bold mt-2" style={{ color: metric.color }}>
               {metric.value.toFixed(1)}%
             </p>
@@ -83,20 +83,20 @@ export var CohortAnalysisChart = function (_a) {
       <div className="mt-6 grid grid-cols-1 md:grid-cols-2 gap-4">
         <div className="bg-green-50 border border-green-200 rounded-lg p-4">
           <p className="text-sm text-green-800 font-medium">Best Performing Cohort</p>
-          <p className="text-lg font-bold text-green-600 mt-1">
+          <p className="text-lg font-bold text-secondary mt-1">
             {insights.best_performing_cohort || 'N/A'}
           </p>
         </div>
-        <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+        <div className="bg-primary/10 border border-primary/30 rounded-lg p-4">
           <p className="text-sm text-blue-800 font-medium">Total Cohorts Analyzed</p>
-          <p className="text-lg font-bold text-blue-600 mt-1">
+          <p className="text-lg font-bold text-primary mt-1">
             {cohorts.length}
           </p>
         </div>
       </div>
 
-      <div className="mt-6 bg-gray-50 border border-gray-200 rounded-lg p-4">
-        <div className="text-sm text-gray-700">
+      <div className="mt-6 bg-background border border-border rounded-lg p-4">
+        <div className="text-sm text-foreground">
           <strong>Key Insights:</strong>
           <ul className="mt-2 space-y-1 ml-4 list-disc">
             <li>

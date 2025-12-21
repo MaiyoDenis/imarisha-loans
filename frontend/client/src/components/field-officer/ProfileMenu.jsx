@@ -148,7 +148,7 @@ export function ProfileMenu() {
           <span>Settings</span>
         </DropdownMenuItem>
         <DropdownMenuSeparator />
-        <DropdownMenuItem onClick={handleLogout} disabled={isLoading} className="text-red-600">
+        <DropdownMenuItem onClick={handleLogout} disabled={isLoading} className="text-destructive">
           <LogOut className="mr-2 h-4 w-4"/>
           <span>{isLoading ? "Logging out..." : "Logout"}</span>
         </DropdownMenuItem>

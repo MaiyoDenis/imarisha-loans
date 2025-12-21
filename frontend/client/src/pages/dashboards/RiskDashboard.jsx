@@ -124,11 +124,11 @@ export default function RiskDashboard() {
         var errorMsg = (dashboard === null || dashboard === void 0 ? void 0 : dashboard.error) || 'Failed to load dashboard';
         return (<Layout>
         <div className="p-6">
-          <div className="bg-red-50 border border-red-200 rounded-lg p-4 flex items-start gap-3">
-            <AlertTriangle className="w-5 h-5 text-red-600 mt-0.5"/>
+          <div className="bg-destructive/10 border border-destructive/30 rounded-lg p-4 flex items-start gap-3">
+            <AlertTriangle className="w-5 h-5 text-destructive mt-0.5"/>
             <div>
-              <h3 className="font-semibold text-red-900">Failed to load dashboard</h3>
-              <p className="text-sm text-red-700 mt-1">{errorMsg}</p>
+              <h3 className="font-semibold text-destructive">Failed to load dashboard</h3>
+              <p className="text-sm text-destructive mt-1">{errorMsg}</p>
             </div>
           </div>
         </div>
@@ -167,7 +167,7 @@ export default function RiskDashboard() {
 
         {/* Risk Overview */}
         <div className="mb-8">
-          <h2 className="text-xl font-bold text-gray-900 mb-4">Risk Overview</h2>
+          <h2 className="text-xl font-bold text-foreground mb-4">Risk Overview</h2>
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
             <KPICard title="Low Risk" value={dashboard.risk_distribution.low_risk.count} unit={"".concat(dashboard.risk_distribution.low_risk.percentage.toFixed(1), "%")} status="success" icon={<Shield size={24}/>}/>
             <KPICard title="Medium Risk" value={dashboard.risk_distribution.medium_risk.count} unit={"".concat(dashboard.risk_distribution.medium_risk.percentage.toFixed(1), "%")} status="normal"/>
@@ -178,7 +178,7 @@ export default function RiskDashboard() {
 
         {/* Fraud Detection */}
         <div className="mb-8">
-          <h2 className="text-xl font-bold text-gray-900 mb-4">Fraud Detection</h2>
+          <h2 className="text-xl font-bold text-foreground mb-4">Fraud Detection</h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <KPICard title="Active Investigations" value={dashboard.fraud_detection.active_investigations} status={dashboard.fraud_detection.active_investigations > 0 ? 'warning' : 'normal'}/>
             <KPICard title="Suspicious Transactions" value={dashboard.fraud_detection.suspicious_transactions} status={dashboard.fraud_detection.suspicious_transactions > 5 ? 'warning' : 'normal'}/>
@@ -281,20 +281,20 @@ export default function RiskDashboard() {
         {/* Early Warnings */}
         {dashboard.early_warnings.length > 0 && (<div className="glass-card gradient-border hover-tilt p-6">
             <h2 className="text-xl font-heading font-semibold text-foreground mb-4 flex items-center gap-2">
-              <AlertTriangle size={24} className="text-yellow-600"/>
+              <AlertTriangle size={24} className="text-accent"/>
               Early Warning Indicators
             </h2>
             <div className="space-y-3 max-h-96 overflow-y-auto">
-              {dashboard.early_warnings.slice(0, 10).map(function (warning) { return (<div key={warning.member_id} className="p-4 border-l-4 border-l-yellow-500 bg-yellow-50 rounded">
+              {dashboard.early_warnings.slice(0, 10).map(function (warning) { return (<div key={warning.member_id} className="p-4 border-l-4 border-l-accent bg-accent/10 rounded">
                   <div className="flex justify-between items-start">
                     <div className="flex-1">
-                      <h4 className="font-semibold text-gray-900">{warning.member_name}</h4>
+                      <h4 className="font-semibold text-card-foreground">{warning.member_name}</h4>
                       <div className="flex flex-wrap gap-2 mt-2">
-                        {warning.risk_flags.map(function (flag) { return (<span key={flag} className="px-2 py-1 bg-yellow-200 text-yellow-800 rounded text-xs">
+                        {warning.risk_flags.map(function (flag) { return (<span key={flag} className="px-2 py-1 bg-accent text-foreground/90 rounded text-xs">
                             {flag.replace(/_/g, ' ')}
                           </span>); })}
                       </div>
-                      <p className="text-sm text-gray-600 mt-2">
+                      <p className="text-sm text-muted-foreground mt-2">
                         <strong>Action:</strong> {warning.recommended_action}
                       </p>
                     </div>

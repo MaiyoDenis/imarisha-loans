@@ -173,7 +173,7 @@ export default function ExecutiveDashboard() {
         <div className="flex items-center justify-center h-screen">
           <div className="text-center">
             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
-            <p className="text-gray-600">Loading executive dashboard...</p>
+            <p className="text-muted-foreground">Loading executive dashboard...</p>
           </div>
         </div>
       </Layout>);
@@ -182,13 +182,13 @@ export default function ExecutiveDashboard() {
         var errorMsg = (dashboard === null || dashboard === void 0 ? void 0 : dashboard.error) || 'Unknown error occurred';
         return (<Layout>
         <div className="p-6">
-          <div className="bg-red-50 border border-red-200 rounded-lg p-4">
+          <div className="bg-destructive/10 border border-destructive/30 rounded-lg p-4">
             <div className="flex items-start gap-3">
-              <AlertCircle className="w-5 h-5 text-red-600 mt-0.5 flex-shrink-0"/>
+              <AlertCircle className="w-5 h-5 text-destructive mt-0.5 flex-shrink-0"/>
               <div className="flex-1">
-                <h3 className="font-semibold text-red-900">Failed to load dashboard</h3>
-                <p className="text-sm text-red-700 mt-1">There was an error loading your dashboard data.</p>
-                {(dashboard === null || dashboard === void 0 ? void 0 : dashboard.error) && (<p className="text-xs text-red-600 mt-2">Details: {errorMsg}</p>)}
+                <h3 className="font-semibold text-destructive">Failed to load dashboard</h3>
+                <p className="text-sm text-destructive mt-1">There was an error loading your dashboard data.</p>
+                {(dashboard === null || dashboard === void 0 ? void 0 : dashboard.error) && (<p className="text-xs text-destructive mt-2">Details: {errorMsg}</p>)}
                 <button onClick={handleRefresh} disabled={isRefreshing} className="mt-4 px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700 transition disabled:opacity-50">
                   {isRefreshing ? 'Retrying...' : 'Retry'}
                 </button>
@@ -240,10 +240,10 @@ export default function ExecutiveDashboard() {
                 <span className="aura"></span>
                 <AlertCircle size={20} className={alert.severity === 'high' ? 'text-red-500' : 'text-yellow-500'}/>
                 <div className="flex-1">
-                  <h3 className={"font-semibold ".concat(alert.severity === 'high' ? 'text-red-600' : 'text-yellow-600')}>
+                  <h3 className={"font-semibold ".concat(alert.severity === 'high' ? 'text-destructive' : 'text-accent')}>
                     {alert.title}
                   </h3>
-                  <p className={"text-sm mt-1 ".concat(alert.severity === 'high' ? 'text-red-500/90' : 'text-yellow-600/90')}>
+                  <p className={"text-sm mt-1 ".concat(alert.severity === 'high' ? 'text-destructive/80' : 'text-accent/90')}>
                     {alert.message}
                   </p>
                 </div>
@@ -252,7 +252,7 @@ export default function ExecutiveDashboard() {
 
         {/* Portfolio Health KPIs */}
         <div className="mb-8">
-          <h2 className="text-xl font-bold text-gray-900 mb-4">Portfolio Health</h2>
+          <h2 className="text-xl font-bold text-foreground mb-4">Portfolio Health</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
             <KPICard title="Total AUM" value={formatCurrency(dashboard.portfolio_health.total_aum)} icon={<DollarSign size={24}/>} status="success"/>
             <KPICard title="Active Members" value={formatNumber(dashboard.portfolio_health.active_members)} icon={<Users size={24}/>} status="success"/>
@@ -263,7 +263,7 @@ export default function ExecutiveDashboard() {
 
         {/* Revenue Metrics */}
         <div className="mb-8">
-          <h2 className="text-xl font-bold text-gray-900 mb-4">Revenue Metrics</h2>
+          <h2 className="text-xl font-bold text-foreground mb-4">Revenue Metrics</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
             <KPICard title="MTD Interest Income" value={formatCurrency(dashboard.revenue_metrics.mtd_interest_income)} change={{ value: 5.2, isPositive: true }}/>
             <KPICard title="YTD Interest Income" value={formatCurrency(dashboard.revenue_metrics.ytd_interest_income)}/>
@@ -274,7 +274,7 @@ export default function ExecutiveDashboard() {
 
         {/* Growth Metrics */}
         <div className="mb-8">
-          <h2 className="text-xl font-bold text-gray-900 mb-4">Growth Metrics</h2>
+          <h2 className="text-xl font-bold text-foreground mb-4">Growth Metrics</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
             <KPICard title="New Members (MTD)" value={formatNumber(dashboard.growth_metrics.new_members_mtd)} change={{ value: 12.5, isPositive: true }}/>
             <KPICard title="Member Growth Rate" value={"".concat(dashboard.growth_metrics.member_growth_rate.toFixed(2), "%")}/>
@@ -285,7 +285,7 @@ export default function ExecutiveDashboard() {
 
         {/* Risk Metrics */}
         <div className="mb-8">
-          <h2 className="text-xl font-bold text-gray-900 mb-4">Risk Metrics</h2>
+          <h2 className="text-xl font-bold text-foreground mb-4">Risk Metrics</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
             <KPICard title="PAR Ratio" value={"".concat(dashboard.risk_metrics.par_ratio.toFixed(2), "%")} status={dashboard.risk_metrics.par_ratio > 10 ? 'critical' : 'warning'}/>
             <KPICard title="NPL Ratio" value={"".concat(dashboard.risk_metrics.npl_ratio.toFixed(2), "%")} status={dashboard.risk_metrics.npl_ratio > 5 ? 'warning' : 'normal'}/>
@@ -296,7 +296,7 @@ export default function ExecutiveDashboard() {
 
         {/* Operational Metrics */}
         <div className="mb-8">
-          <h2 className="text-xl font-bold text-gray-900 mb-4">Operational Metrics</h2>
+          <h2 className="text-xl font-bold text-foreground mb-4">Operational Metrics</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
             <KPICard title="Avg Processing Time" value={"".concat(dashboard.operational_metrics.avg_processing_time_days.toFixed(1))} unit="days"/>
             <KPICard title="Approval Rate" value={"".concat(dashboard.operational_metrics.approval_rate.toFixed(1), "%")} status="success"/>
@@ -366,7 +366,7 @@ export default function ExecutiveDashboard() {
         </div>
 
         {/* Last Updated */}
-        <div className="text-center text-sm text-gray-500">
+        <div className="text-center text-sm text-muted-foreground">
           Last updated: {new Date(dashboard.timestamp).toLocaleString()}
         </div>
       </div>

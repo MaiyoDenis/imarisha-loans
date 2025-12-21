@@ -100,7 +100,7 @@ export function ApplyLoanForm({ memberId, onSuccess }: ApplyLoanFormProps) {
           </div>
 
           {selectedLoanType && (
-            <div className="text-sm bg-blue-50 p-3 rounded-md text-blue-900">
+            <div className="text-sm bg-primary/10 p-3 rounded-md text-blue-900">
               <p>Min: KES {parseFloat(selectedLoanType.minAmount).toLocaleString()}</p>
               <p>Max: KES {parseFloat(selectedLoanType.maxAmount).toLocaleString()}</p>
               <p>Duration: {selectedLoanType.durationMonths} months</p>
@@ -121,21 +121,21 @@ export function ApplyLoanForm({ memberId, onSuccess }: ApplyLoanFormProps) {
           </div>
 
           {mutation.isPending && (
-            <div className="flex items-center gap-2 text-blue-600">
+            <div className="flex items-center gap-2 text-primary">
               <div className="h-4 w-4 animate-spin rounded-full border-2 border-blue-600 border-t-transparent" />
               <span>Processing...</span>
             </div>
           )}
 
           {mutation.isSuccess && (
-            <div className="flex items-center gap-2 text-green-600">
+            <div className="flex items-center gap-2 text-secondary">
               <CheckCircle className="h-5 w-5" />
               <span>Loan application created successfully</span>
             </div>
           )}
 
           {mutation.isError && (
-            <div className="flex items-center gap-2 text-red-600">
+            <div className="flex items-center gap-2 text-destructive">
               <AlertCircle className="h-5 w-5" />
               <span>{(mutation.error as Error).message}</span>
             </div>

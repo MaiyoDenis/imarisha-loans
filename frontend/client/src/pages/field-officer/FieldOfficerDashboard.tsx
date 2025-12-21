@@ -146,14 +146,14 @@ export function FieldOfficerDashboard() {
 
         <TabsContent value="groups" className="space-y-8">
           {error && (
-            <div className="flex items-center gap-3 rounded-lg bg-red-50 p-4 text-red-800">
+            <div className="flex items-center gap-3 rounded-lg bg-destructive/10 p-4 text-red-800">
               <AlertCircle className="h-5 w-5" />
               <span>{(error as Error).message}</span>
             </div>
           )}
 
           <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-5">
-            <Card className="bg-gradient-to-br from-blue-50 to-blue-100 border-blue-200">
+            <Card className="bg-gradient-to-br from-blue-50 to-blue-100 border-primary/30">
               <CardHeader className="pb-3">
                 <CardTitle className="text-sm font-medium text-blue-900">
                   Total Groups
@@ -164,7 +164,7 @@ export function FieldOfficerDashboard() {
                   <p className="text-3xl font-bold text-blue-900">
                     {analytics.totalGroups}
                   </p>
-                  <Users className="h-5 w-5 text-blue-600" />
+                  <Users className="h-5 w-5 text-primary" />
                 </div>
               </CardContent>
             </Card>
@@ -180,7 +180,7 @@ export function FieldOfficerDashboard() {
                   <p className="text-3xl font-bold text-green-900">
                     {analytics.totalMembers}
                   </p>
-                  <Users className="h-5 w-5 text-green-600" />
+                  <Users className="h-5 w-5 text-secondary" />
                 </div>
               </CardContent>
             </Card>
@@ -309,15 +309,15 @@ export function FieldOfficerDashboard() {
                   </CardHeader>
                   <CardContent className="space-y-4">
                     <div className="grid grid-cols-2 gap-4">
-                      <div className="bg-blue-50 p-3 rounded-lg">
+                      <div className="bg-primary/10 p-3 rounded-lg">
                         <p className="text-xs text-muted-foreground mb-1">Members</p>
-                        <p className="text-2xl font-bold text-blue-600">
+                        <p className="text-2xl font-bold text-primary">
                           {group.totalMembers}
                         </p>
                       </div>
                       <div className="bg-green-50 p-3 rounded-lg">
                         <p className="text-xs text-muted-foreground mb-1">Savings</p>
-                        <p className="text-sm font-bold text-green-600">
+                        <p className="text-sm font-bold text-secondary">
                           KES {parseFloat(group.totalSavings || "0").toLocaleString()}
                         </p>
                       </div>
@@ -339,7 +339,7 @@ export function FieldOfficerDashboard() {
                           e.stopPropagation();
                           setLocation(`/field-officer/groups/${group.id}`);
                         }}
-                        className="w-full bg-blue-600 hover:bg-blue-700"
+                        className="w-full bg-primary hover:bg-primary/80"
                       >
                         View Members
                       </Button>

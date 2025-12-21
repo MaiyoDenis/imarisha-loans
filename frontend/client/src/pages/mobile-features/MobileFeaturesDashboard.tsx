@@ -367,7 +367,7 @@ export function MobileFeaturesDashboard({ embedded = false }: { embedded?: boole
                 )}
 
                 {cameraError && (
-                  <div className="text-sm text-red-500 p-2 bg-red-50 rounded">
+                  <div className="text-sm text-red-500 p-2 bg-destructive/10 rounded">
                     {cameraError}
                   </div>
                 )}
@@ -432,7 +432,7 @@ export function MobileFeaturesDashboard({ embedded = false }: { embedded?: boole
               )}
 
               {qrError && (
-                <div className="text-sm text-red-500 p-2 bg-red-50 rounded">
+                <div className="text-sm text-red-500 p-2 bg-destructive/10 rounded">
                   {qrError}
                 </div>
               )}
@@ -494,7 +494,7 @@ export function MobileFeaturesDashboard({ embedded = false }: { embedded?: boole
               )}
 
               {biometricSupported && biometricAvailable && !isEnrolled && (
-                <div className="text-sm text-blue-600 p-3 bg-blue-50 rounded">
+                <div className="text-sm text-primary p-3 bg-primary/10 rounded">
                   Biometric authentication is available but you haven't enrolled yet. Please set up biometrics in your device settings.
                 </div>
               )}

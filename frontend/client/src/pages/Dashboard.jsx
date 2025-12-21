@@ -115,7 +115,7 @@ export default function Dashboard() {
             <Card className="stat-card" role="region" aria-label="Active members">
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                 <CardTitle className="text-xs md:text-sm font-medium text-muted-foreground">Active Members</CardTitle>
-                <Users className="h-3 w-3 md:h-4 md:w-4 text-blue-500 flex-shrink-0" aria-hidden="true"/>
+                <Users className="h-3 w-3 md:h-4 md:w-4 text-primary flex-shrink-0" aria-hidden="true"/>
               </CardHeader>
               <CardContent>
                 <div className="text-xl md:text-2xl font-bold font-heading" data-testid="stat-active-members">
@@ -176,7 +176,7 @@ export default function Dashboard() {
               <CardContent>
                 <div className="space-y-4 md:space-y-6">
                   {[
-            { user: "Sarah K.", action: "Applied for Business Loan", amount: "KES 50,000", time: "2m ago", icon: Activity, color: "text-blue-500" },
+            { user: "Sarah K.", action: "Applied for Business Loan", amount: "KES 50,000", time: "2m ago", icon: Activity, color: "text-primary" },
             { user: "Group A", action: "Weekly Repayment", amount: "KES 12,000", time: "15m ago", icon: ArrowDownRight, color: "text-green-500" },
             { user: "John D.", action: "New Member Registration", amount: "Fee Paid", time: "1h ago", icon: Users, color: "text-orange-500" },
             { user: "Stock Alert", action: "Solar Batteries Low", amount: "5 units left", time: "2h ago", icon: AlertTriangle, color: "text-red-500" },
@@ -241,17 +241,17 @@ export default function Dashboard() {
             <Card>
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                 <CardTitle className="text-sm font-medium text-muted-foreground">Performance</CardTitle>
-                <TrendingDown className="h-4 w-4 text-green-600"/>
+                <TrendingDown className="h-4 w-4 text-secondary"/>
               </CardHeader>
               <CardContent>
                 <div className="space-y-2">
                   <div className="flex justify-between items-center">
                     <span className="text-xs text-muted-foreground">Loan Recovery</span>
-                    <span className="font-bold text-green-600">94%</span>
+                    <span className="font-bold text-secondary">94%</span>
                   </div>
                   <div className="flex justify-between items-center">
                     <span className="text-xs text-muted-foreground">Member Retention</span>
-                    <span className="font-bold text-blue-600">89%</span>
+                    <span className="font-bold text-primary">89%</span>
                   </div>
                 </div>
               </CardContent>

@@ -83,7 +83,7 @@ export function AddCustomerModal(_a) {
           </DialogDescription>
         </DialogHeader>
 
-        {mutation.error && (<div className="flex items-start gap-3 rounded-lg bg-red-50 p-3 text-red-800">
+        {mutation.error && (<div className="flex items-start gap-3 rounded-lg bg-destructive/10 p-3 text-red-800">
             <AlertCircle className="h-5 w-5 mt-0.5 flex-shrink-0"/>
             <span className="text-sm">{mutation.error.message}</span>
           </div>)}
@@ -129,7 +129,7 @@ export function AddCustomerModal(_a) {
             <Button type="button" variant="outline" onClick={function () { return onOpenChange(false); }} disabled={mutation.isPending}>
               Cancel
             </Button>
-            <Button type="submit" disabled={mutation.isPending} className="bg-blue-600 hover:bg-blue-700">
+            <Button type="submit" disabled={mutation.isPending} className="bg-primary hover:bg-primary/80">
               {mutation.isPending ? "Adding..." : "Add Customer"}
             </Button>
           </DialogFooter>

@@ -57,7 +57,7 @@ export const RewardsPanel: React.FC<RewardsPanelProps> = ({ userId }) => {
                     background: reward.canRedeem
                       ? "linear-gradient(135deg, #667eea 0%, #764ba2 100%)"
                       : "linear-gradient(135deg, #e0e0e0 0%, #bdbdbd 100%)",
-                    color: reward.canRedeem ? "white" : "#666",
+                    color: reward.canRedeem ? "card" : "#666",
                   }}
                 >
                   <CardContent>
@@ -105,7 +105,7 @@ export const RewardsPanel: React.FC<RewardsPanelProps> = ({ userId }) => {
                         size="small"
                         variant="contained"
                         sx={{
-                          backgroundColor: "white",
+                          backgroundColor: "card",
                           color: "#667eea",
                           "&:hover": {
                             backgroundColor: "#f5f5f5",

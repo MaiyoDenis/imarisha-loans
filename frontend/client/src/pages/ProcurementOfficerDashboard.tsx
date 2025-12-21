@@ -241,13 +241,13 @@ export default function ProcurementOfficerDashboard() {
     switch (status) {
       case "pending":
         return [
-          { action: 'under_review', label: 'Mark Under Review', color: 'text-blue-600' },
-          { action: 'reject', label: 'Reject', color: 'text-red-600' }
+          { action: 'under_review', label: 'Mark Under Review', color: 'text-primary' },
+          { action: 'reject', label: 'Reject', color: 'text-destructive' }
         ];
       case "under_review":
         return [
-          { action: 'approve', label: 'Approve', color: 'text-green-600' },
-          { action: 'reject', label: 'Reject', color: 'text-red-600' }
+          { action: 'approve', label: 'Approve', color: 'text-secondary' },
+          { action: 'reject', label: 'Reject', color: 'text-destructive' }
         ];
       case "approved":
         return [
@@ -270,7 +270,7 @@ export default function ProcurementOfficerDashboard() {
             <h1 className="text-4xl font-heading font-extrabold tracking-tight text-gradient">Procurement Officer</h1>
             <p className="text-muted-foreground mt-1">Manage loan approvals, store inventory, and suppliers for your branch.</p>
             {user?.branch_id && (
-              <p className="text-sm text-blue-600 mt-2 font-medium">
+              <p className="text-sm text-primary mt-2 font-medium">
                 Branch ID: {user.branch_id}
               </p>
             )}
@@ -285,7 +285,7 @@ export default function ProcurementOfficerDashboard() {
             </CardHeader>
             <CardContent>
               <p className="text-3xl font-bold">{pendingLoans.length}</p>
-              <p className="text-xs text-green-600 mt-1">Awaiting review</p>
+              <p className="text-xs text-secondary mt-1">Awaiting review</p>
             </CardContent>
           </Card>
 
@@ -295,7 +295,7 @@ export default function ProcurementOfficerDashboard() {
             </CardHeader>
             <CardContent>
               <p className="text-3xl font-bold">{underReviewLoans.length}</p>
-              <p className="text-xs text-blue-600 mt-1">In processing</p>
+              <p className="text-xs text-primary mt-1">In processing</p>
             </CardContent>
           </Card>
 
@@ -305,7 +305,7 @@ export default function ProcurementOfficerDashboard() {
             </CardHeader>
             <CardContent>
               <p className="text-3xl font-bold">{approvedLoans.length}</p>
-              <p className="text-xs text-green-600 mt-1">Ready to disburse</p>
+              <p className="text-xs text-secondary mt-1">Ready to disburse</p>
             </CardContent>
           </Card>
 
@@ -315,7 +315,7 @@ export default function ProcurementOfficerDashboard() {
             </CardHeader>
             <CardContent>
               <p className="text-3xl font-bold">{lowStockProducts.filter(p => p.status === 'critical').length}</p>
-              <p className="text-xs text-red-600 mt-1">Restock needed</p>
+              <p className="text-xs text-destructive mt-1">Restock needed</p>
             </CardContent>
           </Card>
         </div>
@@ -390,7 +390,7 @@ export default function ProcurementOfficerDashboard() {
                               <DropdownMenuItem onClick={() => { setSelectedLoan(loan); setActionType('under_review'); setIsActionDialogOpen(true); }}>
                                 Mark Under Review
                               </DropdownMenuItem>
-                              <DropdownMenuItem className="text-red-600" onClick={() => { setSelectedLoan(loan); setActionType('reject'); setIsActionDialogOpen(true); }}>
+                              <DropdownMenuItem className="text-destructive" onClick={() => { setSelectedLoan(loan); setActionType('reject'); setIsActionDialogOpen(true); }}>
                                 Reject
                               </DropdownMenuItem>
                             </DropdownMenuContent>
@@ -409,7 +409,7 @@ export default function ProcurementOfficerDashboard() {
             {underReviewLoans.length === 0 ? (
               <Card>
                 <CardContent className="py-12 text-center">
-                  <Eye className="h-12 w-12 text-blue-500 mx-auto mb-4" />
+                  <Eye className="h-12 w-12 text-primary mx-auto mb-4" />
                   <p className="text-muted-foreground">No loans under review</p>
                 </CardContent>
               </Card>
@@ -446,10 +446,10 @@ export default function ProcurementOfficerDashboard() {
                             </DropdownMenuTrigger>
                             <DropdownMenuContent align="end">
                               <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                              <DropdownMenuItem className="text-green-600" onClick={() => { setSelectedLoan(loan); setActionType('approve'); setIsActionDialogOpen(true); }}>
+                              <DropdownMenuItem className="text-secondary" onClick={() => { setSelectedLoan(loan); setActionType('approve'); setIsActionDialogOpen(true); }}>
                                 Approve
                               </DropdownMenuItem>
-                              <DropdownMenuItem className="text-red-600" onClick={() => { setSelectedLoan(loan); setActionType('reject'); setIsActionDialogOpen(true); }}>
+                              <DropdownMenuItem className="text-destructive" onClick={() => { setSelectedLoan(loan); setActionType('reject'); setIsActionDialogOpen(true); }}>
                                 Reject
                               </DropdownMenuItem>
                             </DropdownMenuContent>
@@ -652,7 +652,7 @@ export default function ProcurementOfficerDashboard() {
             )}
             
             {actionType === 'disburse' && (
-              <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+              <div className="bg-primary/10 border border-primary/30 rounded-lg p-4">
                 <p className="text-sm text-blue-800">
                   Disbursing this loan will deduct stock items and set the due date based on the loan term.
                 </p>
@@ -660,7 +660,7 @@ export default function ProcurementOfficerDashboard() {
             )}
 
             {actionType === 'under_review' && (
-              <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+              <div className="bg-primary/10 border border-primary/30 rounded-lg p-4">
                 <p className="text-sm text-blue-800">
                   Mark this loan as under review for internal processing.
                 </p>
@@ -685,8 +685,8 @@ export default function ProcurementOfficerDashboard() {
                 actionType === 'reject' 
                   ? 'bg-red-600 hover:bg-red-700'
                   : actionType === 'approve'
-                  ? 'bg-green-600 hover:bg-green-700'
-                  : 'bg-blue-600 hover:bg-blue-700'
+                  ? 'bg-secondary hover:bg-secondary/80'
+                  : 'bg-primary hover:bg-primary/80'
               }
             >
               {actionType === 'reject' ? 'Reject Loan' : `${actionType.replace('_', ' ')} Loan`}

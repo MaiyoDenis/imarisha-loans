@@ -53,12 +53,12 @@ export var AIAnalyticsDashboard = function () {
     if (hasErrors && !arrearsForcast.data && !memberBehavior.data && !atRiskMembers.data && !cohortAnalysis.data) {
         return (<Layout>
         <div className="p-6">
-          <div className="bg-red-50 border border-red-200 rounded-lg p-6">
+          <div className="bg-destructive/10 border border-destructive/30 rounded-lg p-6">
             <div className="flex items-start gap-4">
-              <AlertCircle className="w-6 h-6 text-red-600 mt-0.5 flex-shrink-0"/>
+              <AlertCircle className="w-6 h-6 text-destructive mt-0.5 flex-shrink-0"/>
               <div className="flex-1">
-                <h3 className="text-lg font-semibold text-red-900">Failed to load AI Analytics</h3>
-                <p className="text-sm text-red-700 mt-2">
+                <h3 className="text-lg font-semibold text-destructive">Failed to load AI Analytics</h3>
+                <p className="text-sm text-destructive mt-2">
                   There was an error loading the AI analytics data. Please try again.
                 </p>
                 <button onClick={handleRefresh} className="mt-4 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition">
@@ -75,7 +75,7 @@ export var AIAnalyticsDashboard = function () {
         <div className="flex items-center justify-center h-screen">
           <div className="text-center">
             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-600 mx-auto mb-4"></div>
-            <p className="text-gray-600">Loading AI analytics...</p>
+            <p className="text-muted-foreground">Loading AI analytics...</p>
           </div>
         </div>
       </Layout>);
@@ -87,7 +87,7 @@ export var AIAnalyticsDashboard = function () {
             <div className="flex justify-between items-start mb-6">
               <div>
                 <h1 className="text-3xl md:text-4xl font-heading font-extrabold tracking-tight text-gradient flex items-center gap-3">
-                  <Brain className="w-8 h-8 text-purple-600"/>
+                  <Brain className="w-8 h-8 text-primary"/>
                   AI Analytics Dashboard
                 </h1>
                 <p className="text-sm text-muted-foreground mt-1">
@@ -117,11 +117,11 @@ export var AIAnalyticsDashboard = function () {
         </div>
 
         {hasErrors && (<div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-            <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4 flex items-start gap-3">
-              <AlertCircle className="w-5 h-5 text-yellow-600 mt-0.5 flex-shrink-0"/>
+            <div className="bg-accent/10 border border-accent/30 rounded-lg p-4 flex items-start gap-3">
+              <AlertCircle className="w-5 h-5 text-accent mt-0.5 flex-shrink-0"/>
               <div className="flex-1">
-                <h3 className="font-semibold text-yellow-900">Some data failed to load</h3>
-                <p className="text-sm text-yellow-700 mt-1">
+                <h3 className="font-semibold text-accent">Some data failed to load</h3>
+                <p className="text-sm text-accent mt-1">
                   Some AI analytics sections may not be available. Showing cached data where available.
                 </p>
               </div>
@@ -134,7 +134,7 @@ export var AIAnalyticsDashboard = function () {
               <div className="glass-card gradient-border hover-tilt relative overflow-hidden p-4 md:p-6">
                 <span className="aura"></span>
                 {arrearsForcast.data && (<ArrearsForcastChart data={arrearsForcast.data} isLoading={arrearsForcast.isLoading}/>)}
-                {arrearsForcast.isError && !arrearsForcast.data && (<div className="h-96 flex items-center justify-center text-gray-500">
+                {arrearsForcast.isError && !arrearsForcast.data && (<div className="h-96 flex items-center justify-center text-muted-foreground">
                     Failed to load arrears forecast
                   </div>)}
               </div>
@@ -142,7 +142,7 @@ export var AIAnalyticsDashboard = function () {
               <div className="glass-card gradient-border hover-tilt relative overflow-hidden p-4 md:p-6">
                 <span className="aura"></span>
                 <MemberSegmentationChart segments={((_a = memberBehavior.data) === null || _a === void 0 ? void 0 : _a.segments) || {}} totalMembers={((_b = memberBehavior.data) === null || _b === void 0 ? void 0 : _b.total_members) || 0} isLoading={memberBehavior.isLoading}/>
-                {memberBehavior.isError && !memberBehavior.data && (<div className="h-96 flex items-center justify-center text-gray-500">
+                {memberBehavior.isError && !memberBehavior.data && (<div className="h-96 flex items-center justify-center text-muted-foreground">
                     Failed to load member behavior analysis
                   </div>)}
               </div>
@@ -150,7 +150,7 @@ export var AIAnalyticsDashboard = function () {
 
             {(atRiskMembers.data || !atRiskMembers.isError) && (<div className="glass-card gradient-border hover-tilt relative overflow-hidden p-4 md:p-6">
                 <span className="aura"></span>
-                {atRiskMembers.data ? (<AtRiskMembersTable members={atRiskMembers.data.members} totalScanned={atRiskMembers.data.total_members_scanned} isLoading={atRiskMembers.isLoading}/>) : (<div className="h-96 flex items-center justify-center text-gray-500">
+                {atRiskMembers.data ? (<AtRiskMembersTable members={atRiskMembers.data.members} totalScanned={atRiskMembers.data.total_members_scanned} isLoading={atRiskMembers.isLoading}/>) : (<div className="h-96 flex items-center justify-center text-muted-foreground">
                     Failed to load at-risk members
                   </div>)}
               </div>)}
@@ -158,7 +158,7 @@ export var AIAnalyticsDashboard = function () {
             <div className="glass-card gradient-border hover-tilt relative overflow-hidden p-4 md:p-6">
               <span className="aura"></span>
               <CohortAnalysisChart cohorts={((_c = cohortAnalysis.data) === null || _c === void 0 ? void 0 : _c.cohorts) || []} insights={((_d = cohortAnalysis.data) === null || _d === void 0 ? void 0 : _d.insights) || { best_performing_cohort: null, average_active_rate: 0, average_default_rate: 0 }} isLoading={cohortAnalysis.isLoading}/>
-              {cohortAnalysis.isError && !cohortAnalysis.data && (<div className="h-96 flex items-center justify-center text-gray-500">
+              {cohortAnalysis.isError && !cohortAnalysis.data && (<div className="h-96 flex items-center justify-center text-muted-foreground">
                   Failed to load cohort analysis
                 </div>)}
             </div>
@@ -168,25 +168,25 @@ export var AIAnalyticsDashboard = function () {
                 <span className="aura"></span>
                 <h3 className="text-lg font-heading font-semibold text-foreground mb-4">Key Metrics</h3>
                 <div className="space-y-4">
-                  <div className="flex justify-between items-center pb-4 border-b border-gray-200">
-                    <span className="text-gray-600">Portfolio Health Score</span>
-                    <span className="text-2xl font-bold text-green-600">78%</span>
+                  <div className="flex justify-between items-center pb-4 border-b border-border/50">
+                    <span className="text-muted-foreground">Portfolio Health Score</span>
+                    <span className="text-2xl font-bold text-secondary">78%</span>
                   </div>
-                  <div className="flex justify-between items-center pb-4 border-b border-gray-200">
-                    <span className="text-gray-600">Members at Risk</span>
-                    <span className="text-2xl font-bold text-red-600">
+                  <div className="flex justify-between items-center pb-4 border-b border-border/50">
+                    <span className="text-muted-foreground">Members at Risk</span>
+                    <span className="text-2xl font-bold text-destructive">
                       {((_e = atRiskMembers.data) === null || _e === void 0 ? void 0 : _e.at_risk_count) || 0}
                     </span>
                   </div>
-                  <div className="flex justify-between items-center pb-4 border-b border-gray-200">
-                    <span className="text-gray-600">Average Active Rate</span>
-                    <span className="text-2xl font-bold text-blue-600">
+                  <div className="flex justify-between items-center pb-4 border-b border-border/50">
+                    <span className="text-muted-foreground">Average Active Rate</span>
+                    <span className="text-2xl font-bold text-primary">
                       {((_h = (_g = (_f = cohortAnalysis.data) === null || _f === void 0 ? void 0 : _f.insights) === null || _g === void 0 ? void 0 : _g.average_active_rate) === null || _h === void 0 ? void 0 : _h.toFixed(1)) || 0}%
                     </span>
                   </div>
                   <div className="flex justify-between items-center">
-                    <span className="text-gray-600">Forecast Confidence</span>
-                    <span className="text-2xl font-bold text-purple-600">95%</span>
+                    <span className="text-muted-foreground">Forecast Confidence</span>
+                    <span className="text-2xl font-bold text-primary">95%</span>
                   </div>
                 </div>
               </div>
@@ -196,26 +196,26 @@ export var AIAnalyticsDashboard = function () {
                 <h3 className="text-lg font-heading font-semibold text-foreground mb-4">Recommendations</h3>
                 <div className="space-y-3">
                   <div className="flex gap-3">
-                    <div className="w-2 h-2 rounded-full bg-red-500 flex-shrink-0 mt-1.5"></div>
-                    <p className="text-sm text-gray-700">
+                    <div className="w-2 h-2 rounded-full bg-destructive/100 flex-shrink-0 mt-1.5"></div>
+                    <p className="text-sm text-muted-foreground">
                       Immediate follow-up required for {((_k = (_j = atRiskMembers.data) === null || _j === void 0 ? void 0 : _j.members) === null || _k === void 0 ? void 0 : _k.filter(function (m) { return m.risk_score > 0.8; }).length) || 0} critical risk members
                     </p>
                   </div>
                   <div className="flex gap-3">
                     <div className="w-2 h-2 rounded-full bg-orange-500 flex-shrink-0 mt-1.5"></div>
-                    <p className="text-sm text-gray-700">
+                    <p className="text-sm text-muted-foreground">
                       Arrears forecasting shows {((_o = (_m = (_l = arrearsForcast.data) === null || _l === void 0 ? void 0 : _l.predictions) === null || _m === void 0 ? void 0 : _m[0]) === null || _o === void 0 ? void 0 : _o.trend) === 'increasing' ? 'increasing' : 'decreasing'} trend
                     </p>
                   </div>
                   <div className="flex gap-3">
-                    <div className="w-2 h-2 rounded-full bg-blue-500 flex-shrink-0 mt-1.5"></div>
-                    <p className="text-sm text-gray-700">
+                    <div className="w-2 h-2 rounded-full bg-primary flex-shrink-0 mt-1.5"></div>
+                    <p className="text-sm text-muted-foreground">
                       Focus engagement efforts on Growth Potential segment for portfolio expansion
                     </p>
                   </div>
                   <div className="flex gap-3">
                     <div className="w-2 h-2 rounded-full bg-green-500 flex-shrink-0 mt-1.5"></div>
-                    <p className="text-sm text-gray-700">
+                    <p className="text-sm text-muted-foreground">
                       {(_q = (_p = cohortAnalysis.data) === null || _p === void 0 ? void 0 : _p.insights) === null || _q === void 0 ? void 0 : _q.best_performing_cohort} shows best retention metrics
                     </p>
                   </div>

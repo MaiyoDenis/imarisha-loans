@@ -114,7 +114,7 @@ export default function Register() {
       <Card className="w-full max-w-md border-border/50 shadow-xl relative z-10 backdrop-blur-sm bg-card/90">
         <CardHeader className="space-y-4 text-center pb-8">
           <div className="mx-auto h-16 w-16 rounded-xl bg-gradient-to-br from-primary to-secondary p-0.5 shadow-lg">
-            <div className="h-full w-full rounded-[10px] bg-white flex items-center justify-center overflow-hidden">
+            <div className="h-full w-full rounded-[10px] bg-card flex items-center justify-center overflow-hidden">
               <img src={logo} alt="Imarisha" className="h-12 w-12 object-contain"/>
             </div>
           </div>

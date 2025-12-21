@@ -53,7 +53,7 @@ export var LeaderboardChart = function (_a) {
                     color: entry.rank <= 3
                         ? entry.rank === 1
                             ? "black"
-                            : "white"
+                            : "card"
                         : "black",
                 }}>
                       {getMedalEmoji(entry.rank)}

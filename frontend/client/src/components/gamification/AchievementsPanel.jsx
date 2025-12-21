@@ -66,7 +66,7 @@ export var AchievementsPanel = function (_a) {
                         : badge.category === "expert"
                             ? "#FF4444"
                             : "#44B4AA", " 100%)"),
-                    color: "white",
+                    color: "card",
                 }}>
                   <CardContent>
                     <Box sx={{ textAlign: "center", mb: 1 }}>

@@ -13,7 +13,7 @@ export function PWAUpdateBanner({ className = '' }: PWAUpdateBannerProps) {
   if (!updateAvailable) return null;
 
   return (
-    <div className={`fixed bottom-4 left-4 right-4 z-50 bg-blue-600 text-white p-4 rounded-lg shadow-lg border border-blue-700 md:left-auto md:right-4 md:max-w-sm ${className}`}>
+    <div className={`fixed bottom-4 left-4 right-4 z-50 bg-primary text-white p-4 rounded-lg shadow-lg border border-blue-700 md:left-auto md:right-4 md:max-w-sm ${className}`}>
       <div className="flex items-start justify-between">
         <div className="flex-1">
           <div className="flex items-center mb-2">
@@ -27,7 +27,7 @@ export function PWAUpdateBanner({ className = '' }: PWAUpdateBannerProps) {
             <Button
               onClick={update}
               size="sm"
-              className="bg-white text-blue-600 hover:bg-blue-50"
+              className="bg-card text-primary hover:bg-primary/10"
             >
               Update Now
             </Button>
@@ -35,7 +35,7 @@ export function PWAUpdateBanner({ className = '' }: PWAUpdateBannerProps) {
               onClick={dismiss}
               variant="ghost"
               size="sm"
-              className="text-blue-100 hover:text-white hover:bg-blue-700"
+              className="text-blue-100 hover:text-white hover:bg-primary/80"
             >
               Later
             </Button>
@@ -43,7 +43,7 @@ export function PWAUpdateBanner({ className = '' }: PWAUpdateBannerProps) {
         </div>
         <button
           onClick={dismiss}
-          className="ml-2 p-1 rounded hover:bg-blue-700 transition-colors"
+          className="ml-2 p-1 rounded hover:bg-primary/80 transition-colors"
           aria-label="Dismiss update"
         >
           <X className="w-4 h-4" />

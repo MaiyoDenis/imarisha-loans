@@ -135,12 +135,12 @@ export default function OperationsDashboard() {
     return (
       <Layout>
         <div className="p-6">
-          <div className="bg-red-50 border border-red-200 rounded-lg p-4">
+          <div className="bg-destructive/10 border border-destructive/30 rounded-lg p-4">
             <div className="flex items-start gap-3">
-              <AlertCircle className="w-5 h-5 text-red-600 mt-0.5 flex-shrink-0" />
+              <AlertCircle className="w-5 h-5 text-destructive mt-0.5 flex-shrink-0" />
               <div className="flex-1">
-                <h3 className="font-semibold text-red-900">Failed to load dashboard</h3>
-                <p className="text-sm text-red-700 mt-1">{errorMsg}</p>
+                <h3 className="font-semibold text-destructive">Failed to load dashboard</h3>
+                <p className="text-sm text-destructive mt-1">{errorMsg}</p>
                 <button
                   onClick={handleRefresh}
                   disabled={isRefreshing}
@@ -196,7 +196,7 @@ export default function OperationsDashboard() {
 
         {/* Daily Summary */}
         <div className="mb-8">
-          <h2 className="text-xl font-bold text-gray-900 mb-4">Today's Summary</h2>
+          <h2 className="text-xl font-bold text-foreground mb-4">Today's Summary</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
             <KPICard
               title="Applications Today"
@@ -250,21 +250,21 @@ export default function OperationsDashboard() {
           
           <div className="overflow-x-auto">
             <table className="w-full">
-              <thead className="bg-gray-50">
+              <thead className="bg-accent">
                 <tr>
-                  <th className="px-4 py-2 text-left text-sm font-semibold text-gray-600">Member</th>
-                  <th className="px-4 py-2 text-left text-sm font-semibold text-gray-600">Amount</th>
-                  <th className="px-4 py-2 text-left text-sm font-semibold text-gray-600">Days Pending</th>
-                  <th className="px-4 py-2 text-left text-sm font-semibold text-gray-600">Status</th>
+                  <th className="px-4 py-2 text-left text-sm font-semibold text-card-foreground">Member</th>
+                  <th className="px-4 py-2 text-left text-sm font-semibold text-card-foreground">Amount</th>
+                  <th className="px-4 py-2 text-left text-sm font-semibold text-card-foreground">Days Pending</th>
+                  <th className="px-4 py-2 text-left text-sm font-semibold text-card-foreground">Status</th>
                 </tr>
               </thead>
-              <tbody className="divide-y">
+              <tbody className="divide-y divide-border/50">
                 {dashboard.member_queue.oldest_pending.map((loan) => (
-                  <tr key={loan.loan_id} className="hover:bg-gray-50">
+                  <tr key={loan.loan_id} className="hover:bg-accent">
                     <td className="px-4 py-3 text-sm">{loan.member_name}</td>
                     <td className="px-4 py-3 text-sm font-semibold">KES {loan.amount.toLocaleString()}</td>
                     <td className="px-4 py-3 text-sm">
-                      <span className={loan.days_pending > 3 ? 'text-red-600 font-semibold' : ''}>
+                      <span className={loan.days_pending > 3 ? 'text-destructive font-semibold' : ''}>
                         {loan.days_pending} days
                       </span>
                     </td>
@@ -324,14 +324,14 @@ export default function OperationsDashboard() {
                   key={task.id}
                   className={`p-4 rounded-lg border-l-4 ${
                     task.priority === 'high'
-                      ? 'border-l-red-500 bg-red-50'
-                      : 'border-l-yellow-500 bg-yellow-50'
+                      ? 'border-l-destructive bg-destructive/10'
+                      : 'border-l-accent bg-accent/10'
                   }`}
                 >
                   <div className="flex justify-between items-start">
                     <div>
-                      <h3 className="font-semibold text-gray-900">{task.title}</h3>
-                      <p className="text-sm text-gray-600 mt-1">Assigned to: {task.assigned_to}</p>
+                      <h3 className="font-semibold text-card-foreground">{task.title}</h3>
+                      <p className="text-sm text-muted-foreground mt-1">Assigned to: {task.assigned_to}</p>
                     </div>
                     <span className={`px-2 py-1 rounded text-xs font-semibold ${
                       task.priority === 'high'
@@ -353,17 +353,17 @@ export default function OperationsDashboard() {
           <h2 className="text-xl font-heading font-semibold text-foreground mb-4">Staff Performance (Top 5)</h2>
           <div className="overflow-x-auto">
             <table className="w-full">
-              <thead className="bg-gray-50">
+              <thead className="bg-accent">
                 <tr>
-                  <th className="px-4 py-2 text-left text-sm font-semibold text-gray-600">Staff Member</th>
-                  <th className="px-4 py-2 text-left text-sm font-semibold text-gray-600">Loans Processed</th>
-                  <th className="px-4 py-2 text-left text-sm font-semibold text-gray-600">Approval Rate</th>
-                  <th className="px-4 py-2 text-left text-sm font-semibold text-gray-600">Satisfaction</th>
+                  <th className="px-4 py-2 text-left text-sm font-semibold text-card-foreground">Staff Member</th>
+                  <th className="px-4 py-2 text-left text-sm font-semibold text-card-foreground">Loans Processed</th>
+                  <th className="px-4 py-2 text-left text-sm font-semibold text-card-foreground">Approval Rate</th>
+                  <th className="px-4 py-2 text-left text-sm font-semibold text-card-foreground">Satisfaction</th>
                 </tr>
               </thead>
-              <tbody className="divide-y">
+              <tbody className="divide-y divide-border/50">
                 {dashboard.staff_performance.map((staff) => (
-                  <tr key={staff.user_id} className="hover:bg-gray-50">
+                  <tr key={staff.user_id} className="hover:bg-accent">
                     <td className="px-4 py-3 text-sm font-semibold">{staff.name}</td>
                     <td className="px-4 py-3 text-sm">{staff.loans_processed}</td>
                     <td className="px-4 py-3 text-sm">{staff.approval_rate.toFixed(1)}%</td>

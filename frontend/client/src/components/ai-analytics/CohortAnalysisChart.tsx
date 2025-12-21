@@ -39,10 +39,10 @@ export const CohortAnalysisChart: React.FC<CohortAnalysisChartProps> = ({
 }) => {
   if (isLoading) {
     return (
-      <div className="bg-white rounded-lg shadow p-6">
+      <div className="bg-card rounded-xl border border-border/50 shadow-sm p-4 md:p-5">
         <div className="animate-pulse space-y-4">
-          <div className="h-4 bg-gray-200 rounded w-1/4"></div>
-          <div className="h-64 bg-gray-200 rounded"></div>
+          <div className="h-4 bg-muted rounded w-1/4"></div>
+          <div className="h-64 bg-muted rounded"></div>
         </div>
       </div>
     );
@@ -55,8 +55,8 @@ export const CohortAnalysisChart: React.FC<CohortAnalysisChartProps> = ({
 
   if (chartData.length === 0) {
     return (
-      <div className="bg-white rounded-lg shadow p-6">
-        <p className="text-gray-500 text-center py-12">No cohort data available</p>
+      <div className="bg-card rounded-xl border border-border/50 shadow-sm p-4 md:p-5">
+        <p className="text-muted-foreground text-center py-12">No cohort data available</p>
       </div>
     );
   }
@@ -80,21 +80,21 @@ export const CohortAnalysisChart: React.FC<CohortAnalysisChartProps> = ({
   ];
 
   return (
-    <div className="bg-white rounded-lg shadow p-6">
-      <div className="mb-6">
-        <h3 className="text-lg font-semibold text-gray-900 flex items-center gap-2">
-          <TrendingDown className="w-5 h-5" />
+    <div className="bg-card rounded-xl border border-border/50 shadow-sm p-4 md:p-5">
+      <div className="mb-4">
+        <h3 className="text-lg font-semibold text-card-foreground flex items-center gap-2">
+          <TrendingDown className="w-5 h-5 text-primary" />
           Cohort Analysis
         </h3>
-        <p className="text-sm text-gray-500 mt-1">
+        <p className="text-sm text-muted-foreground mt-1">
           Member retention and activity patterns by join cohort
         </p>
       </div>
 
-      <div className="grid grid-cols-3 gap-4 mb-6">
+      <div className="grid grid-cols-3 gap-3 mb-4">
         {metrics.map((metric) => (
-          <div key={metric.label} className="border border-gray-200 rounded-lg p-4">
-            <p className="text-xs font-medium text-gray-600">{metric.label}</p>
+          <div key={metric.label} className="border border-border/50 rounded-lg p-3 bg-accent">
+            <p className="text-xs font-medium text-muted-foreground">{metric.label}</p>
             <p className="text-2xl font-bold mt-2" style={{ color: metric.color }}>
               {metric.value.toFixed(1)}%
             </p>
@@ -117,23 +117,23 @@ export const CohortAnalysisChart: React.FC<CohortAnalysisChartProps> = ({
         </ResponsiveContainer>
       </div>
 
-      <div className="mt-6 grid grid-cols-1 md:grid-cols-2 gap-4">
-        <div className="bg-green-50 border border-green-200 rounded-lg p-4">
-          <p className="text-sm text-green-800 font-medium">Best Performing Cohort</p>
-          <p className="text-lg font-bold text-green-600 mt-1">
+      <div className="mt-4 grid grid-cols-1 md:grid-cols-2 gap-3">
+        <div className="bg-accent border border-border/50 rounded-lg p-3">
+          <p className="text-sm text-emerald-400 font-medium">Best Performing Cohort</p>
+          <p className="text-lg font-bold text-emerald-300 mt-1">
             {insights.best_performing_cohort || 'N/A'}
           </p>
         </div>
-        <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-          <p className="text-sm text-blue-800 font-medium">Total Cohorts Analyzed</p>
-          <p className="text-lg font-bold text-blue-600 mt-1">
+        <div className="bg-accent border border-border/50 rounded-lg p-3">
+          <p className="text-sm text-blue-300 font-medium">Total Cohorts Analyzed</p>
+          <p className="text-lg font-bold text-blue-300 mt-1">
             {cohorts.length}
           </p>
         </div>
       </div>
 
-      <div className="mt-6 bg-gray-50 border border-gray-200 rounded-lg p-4">
-        <div className="text-sm text-gray-700">
+      <div className="mt-4 bg-accent border border-border/50 rounded-lg p-3">
+        <div className="text-sm text-card-foreground/90">
           <strong>Key Insights:</strong>
           <ul className="mt-2 space-y-1 ml-4 list-disc">
             <li>

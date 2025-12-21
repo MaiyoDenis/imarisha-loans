@@ -141,23 +141,23 @@ export function ExportDataModal(_a) {
           </DialogDescription>
         </DialogHeader>
 
-        {groups.length === 0 && (<div className="flex items-start gap-3 rounded-lg bg-yellow-50 p-3 text-yellow-800">
+        {groups.length === 0 && (<div className="flex items-start gap-3 rounded-lg bg-accent/10 p-3 text-yellow-800">
             <AlertCircle className="h-5 w-5 mt-0.5 flex-shrink-0"/>
             <span className="text-sm">No groups available to export</span>
           </div>)}
 
         <div className="space-y-4 py-4">
-          <div className="bg-blue-50 p-4 rounded-lg">
+          <div className="bg-primary/10 p-4 rounded-lg">
             <h3 className="font-semibold text-blue-900 mb-2">Export Summary</h3>
             <div className="grid grid-cols-2 gap-4 text-sm">
               <div>
-                <p className="text-blue-600">Total Groups</p>
+                <p className="text-primary">Total Groups</p>
                 <p className="text-2xl font-bold text-blue-900">
                   {groups.length}
                 </p>
               </div>
               <div>
-                <p className="text-blue-600">Total Members</p>
+                <p className="text-primary">Total Members</p>
                 <p className="text-2xl font-bold text-blue-900">
                   {groups.reduce(function (sum, g) { return sum + g.totalMembers; }, 0)}
                 </p>

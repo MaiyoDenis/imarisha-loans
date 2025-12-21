@@ -213,26 +213,26 @@ export default function Savings() {
   const getTransactionIcon = (type: string) => {
     switch (type) {
       case 'deposit':
-        return <ArrowDownLeft className="h-4 w-4 text-green-600" />;
+        return <ArrowDownLeft className="h-4 w-4 text-secondary" />;
       case 'withdrawal':
-        return <ArrowUpRight className="h-4 w-4 text-red-600" />;
+        return <ArrowUpRight className="h-4 w-4 text-destructive" />;
       case 'transfer':
-        return <CreditCard className="h-4 w-4 text-blue-600" />;
+        return <CreditCard className="h-4 w-4 text-primary" />;
       default:
-        return <Wallet className="h-4 w-4 text-gray-600" />;
+        return <Wallet className="h-4 w-4 text-muted-foreground" />;
     }
   };
 
   const getTransactionColor = (type: string) => {
     switch (type) {
       case 'deposit':
-        return "text-green-600";
+        return "text-secondary";
       case 'withdrawal':
-        return "text-red-600";
+        return "text-destructive";
       case 'transfer':
-        return "text-blue-600";
+        return "text-primary";
       default:
-        return "text-gray-600";
+        return "text-muted-foreground";
     }
   };
 
@@ -414,10 +414,10 @@ export default function Savings() {
             <Card>
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                 <CardTitle className="text-sm font-medium">Today's Deposits</CardTitle>
-                <ArrowDownLeft className="h-4 w-4 text-green-600" />
+                <ArrowDownLeft className="h-4 w-4 text-secondary" />
               </CardHeader>
               <CardContent>
-                <div className="text-2xl font-bold text-green-600">
+                <div className="text-2xl font-bold text-secondary">
                   {transactions.filter((t: Transaction) => 
                     t.transactionType === 'deposit' && 
                     new Date(t.createdAt).toDateString() === new Date().toDateString()
@@ -428,10 +428,10 @@ export default function Savings() {
             <Card>
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                 <CardTitle className="text-sm font-medium">Today's Withdrawals</CardTitle>
-                <ArrowUpRight className="h-4 w-4 text-red-600" />
+                <ArrowUpRight className="h-4 w-4 text-destructive" />
               </CardHeader>
               <CardContent>
-                <div className="text-2xl font-bold text-red-600">
+                <div className="text-2xl font-bold text-destructive">
                   {transactions.filter((t: Transaction) => 
                     t.transactionType === 'withdrawal' && 
                     new Date(t.createdAt).toDateString() === new Date().toDateString()

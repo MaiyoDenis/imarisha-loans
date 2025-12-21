@@ -57,7 +57,7 @@ export function GroupMembersPage() {
         return <LoadingSpinner />;
     if (!groupId) {
         return (<div className="text-center">
-        <p className="text-red-600">Invalid group ID</p>
+        <p className="text-destructive">Invalid group ID</p>
       </div>);
     }
     return (<div className="space-y-8 px-4 sm:px-6 lg:px-8 py-6">
@@ -80,7 +80,7 @@ export function GroupMembersPage() {
             <Download className="h-5 w-5"/>
             Export
           </Button>
-          <Button onClick={function () { return setShowAddCustomer(true); }} className="gap-2 bg-blue-600 hover:bg-blue-700" size="lg">
+          <Button onClick={function () { return setShowAddCustomer(true); }} className="gap-2 bg-primary hover:bg-primary/80" size="lg">
             <Plus className="h-5 w-5"/>
             Add Customer
           </Button>
@@ -88,13 +88,13 @@ export function GroupMembersPage() {
         </div>
       </div>
 
-      {error && (<div className="flex items-center gap-3 rounded-lg bg-red-50 p-4 text-red-800">
+      {error && (<div className="flex items-center gap-3 rounded-lg bg-destructive/10 p-4 text-red-800">
           <AlertCircle className="h-5 w-5"/>
           <span>{error.message}</span>
         </div>)}
 
       {stats && (<div className="grid gap-4 md:grid-cols-2 lg:grid-cols-5">
-          <Card className="bg-gradient-to-br from-blue-50 to-blue-100 border-blue-200">
+          <Card className="bg-gradient-to-br from-blue-50 to-blue-100 border-primary/30">
             <CardHeader className="pb-3">
               <CardTitle className="text-sm font-medium text-blue-900">
                 Total Members
@@ -105,7 +105,7 @@ export function GroupMembersPage() {
                 <p className="text-3xl font-bold text-blue-900">
                   {stats.totalMembers}
                 </p>
-                <Users className="h-5 w-5 text-blue-600"/>
+                <Users className="h-5 w-5 text-primary"/>
               </div>
               <p className="text-xs text-blue-700 mt-2">
                 {stats.activeMembers} active
@@ -124,7 +124,7 @@ export function GroupMembersPage() {
                 <p className="text-2xl font-bold text-green-900">
                   KES {(parseFloat(stats.totalSavings || "0") / 1000000).toFixed(1)}M
                 </p>
-                <DollarSign className="h-5 w-5 text-green-600"/>
+                <DollarSign className="h-5 w-5 text-secondary"/>
               </div>
             </CardContent>
           </Card>
@@ -226,18 +226,18 @@ export function GroupMembersPage() {
                       </div>
                       <div className={"px-3 py-1 rounded-full text-xs font-semibold whitespace-nowrap ".concat(member.status === "active"
                     ? "bg-green-100 text-green-700"
-                    : "bg-gray-100 text-gray-700")}>
+                    : "bg-gray-100 text-foreground")}>
                         {member.status}
                       </div>
                     </div>
                   </div>
 
                   <div className="grid grid-cols-3 gap-4 sm:grid-cols-3 flex-1 sm:flex-none text-center">
-                    <div className="bg-blue-50 p-3 rounded-lg">
+                    <div className="bg-primary/10 p-3 rounded-lg">
                       <p className="text-xs text-muted-foreground mb-1">
                         Active Loans
                       </p>
-                      <p className="text-2xl font-bold text-blue-600">
+                      <p className="text-2xl font-bold text-primary">
                         {member.activeLoans}
                       </p>
                     </div>
@@ -253,7 +253,7 @@ export function GroupMembersPage() {
                       <p className="text-xs text-muted-foreground mb-1">
                         Savings
                       </p>
-                      <p className="text-sm font-bold text-green-600">
+                      <p className="text-sm font-bold text-secondary">
                         KES {parseFloat(member.savingsBalance || "0").toLocaleString()}
                       </p>
                     </div>
@@ -263,7 +263,7 @@ export function GroupMembersPage() {
                     <Button onClick={function (e) {
                     e.stopPropagation();
                     setLocation("/field-officer/members/".concat(member.id));
-                }} className="w-full bg-blue-600 hover:bg-blue-700" size="sm">
+                }} className="w-full bg-primary hover:bg-primary/80" size="sm">
                       View Dashboard
                     </Button>
                   </div>

@@ -81,7 +81,7 @@ export const LeaderboardChart: React.FC<LeaderboardChartProps> = ({
                           entry.rank <= 3
                             ? entry.rank === 1
                               ? "black"
-                              : "white"
+                              : "card"
                             : "black",
                       }}
                     >

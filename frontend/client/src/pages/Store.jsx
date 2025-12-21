@@ -315,7 +315,7 @@ export default function Store() {
                       </TableRow>
                     </TableHeader>
                     <TableBody>
-                      {criticalStockProducts.map(function (item) { return (<TableRow key={item.product.id} className="bg-red-50 dark:bg-red-950/10">
+                      {criticalStockProducts.map(function (item) { return (<TableRow key={item.product.id} className="bg-destructive/10 dark:bg-red-950/10">
                           <TableCell className="font-medium">{item.product.name}</TableCell>
                           <TableCell>{item.product.stockQuantity}</TableCell>
                           <TableCell>{item.product.criticalStockThreshold}</TableCell>

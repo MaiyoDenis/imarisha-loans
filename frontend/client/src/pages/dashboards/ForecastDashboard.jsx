@@ -150,11 +150,11 @@ export default function ForecastDashboard() {
         var errorMsg = (dashboard === null || dashboard === void 0 ? void 0 : dashboard.error) || 'Failed to load dashboard';
         return (<Layout>
         <div className="p-6">
-          <div className="bg-red-50 border border-red-200 rounded-lg p-4 flex items-start gap-3">
-            <AlertTriangle className="w-5 h-5 text-red-600 mt-0.5"/>
+          <div className="bg-destructive/10 border border-destructive/30 rounded-lg p-4 flex items-start gap-3">
+            <AlertTriangle className="w-5 h-5 text-destructive mt-0.5"/>
             <div>
-              <h3 className="font-semibold text-red-900">Failed to load dashboard</h3>
-              <p className="text-sm text-red-700 mt-1">{errorMsg}</p>
+              <h3 className="font-semibold text-destructive">Failed to load dashboard</h3>
+              <p className="text-sm text-destructive mt-1">{errorMsg}</p>
             </div>
           </div>
         </div>
@@ -236,25 +236,25 @@ export default function ForecastDashboard() {
 
         {/* Budget Variance Summary */}
         <div className="mb-8">
-          <h2 className="text-xl font-bold text-gray-900 mb-4">Budget vs Actual (YTD)</h2>
+          <h2 className="text-xl font-bold text-foreground mb-4">Budget vs Actual (YTD)</h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div className="glass-card gradient-border hover-tilt p-6 relative overflow-hidden">
               <span className="aura"></span>
               <h3 className="text-sm font-heading font-medium text-foreground mb-2">Revenue</h3>
-              <p className="text-2xl font-bold text-gray-900 mb-2">
+              <p className="text-2xl font-bold text-foreground mb-2">
                 {formatCurrency(dashboard.budget_variance.revenue.actual)}
               </p>
               <div className="flex items-center justify-between">
-                <span className="text-sm text-gray-600">
+                <span className="text-sm text-muted-foreground">
                   Target: {formatCurrency(dashboard.budget_variance.revenue.budgeted)}
                 </span>
-                <span className={"text-sm font-semibold ".concat(dashboard.budget_variance.revenue.variance_pct < 0 ? 'text-red-600' : 'text-green-600')}>
+                <span className={"text-sm font-semibold ".concat(dashboard.budget_variance.revenue.variance_pct < 0 ? 'text-destructive' : 'text-secondary')}>
                   {dashboard.budget_variance.revenue.variance_pct > 0 ? '+' : ''}
                   {dashboard.budget_variance.revenue.variance_pct.toFixed(1)}%
                 </span>
               </div>
               <div className="w-full bg-gray-200 rounded-full h-2 mt-3">
-                <div className="bg-blue-600 h-2 rounded-full" style={{
+                <div className="bg-primary h-2 rounded-full" style={{
             width: "".concat(Math.min((dashboard.budget_variance.revenue.actual / dashboard.budget_variance.revenue.budgeted) * 100, 100), "%")
         }}/>
               </div>
@@ -263,14 +263,14 @@ export default function ForecastDashboard() {
             <div className="glass-card gradient-border hover-tilt p-6 relative overflow-hidden">
               <span className="aura"></span>
               <h3 className="text-sm font-heading font-medium text-foreground mb-2">Expenses</h3>
-              <p className="text-2xl font-bold text-gray-900 mb-2">
+              <p className="text-2xl font-bold text-foreground mb-2">
                 {formatCurrency(dashboard.budget_variance.expenses.actual)}
               </p>
               <div className="flex items-center justify-between">
-                <span className="text-sm text-gray-600">
+                <span className="text-sm text-muted-foreground">
                   Budget: {formatCurrency(dashboard.budget_variance.expenses.budgeted)}
                 </span>
-                <span className={"text-sm font-semibold ".concat(dashboard.budget_variance.expenses.variance_pct > 0 ? 'text-red-600' : 'text-green-600')}>
+                <span className={"text-sm font-semibold ".concat(dashboard.budget_variance.expenses.variance_pct > 0 ? 'text-destructive' : 'text-secondary')}>
                   {dashboard.budget_variance.expenses.variance_pct > 0 ? '+' : ''}
                   {dashboard.budget_variance.expenses.variance_pct.toFixed(1)}%
                 </span>
@@ -285,20 +285,20 @@ export default function ForecastDashboard() {
             <div className="glass-card gradient-border hover-tilt p-6 relative overflow-hidden">
               <span className="aura"></span>
               <h3 className="text-sm font-heading font-medium text-foreground mb-2">Profit</h3>
-              <p className="text-2xl font-bold text-gray-900 mb-2">
+              <p className="text-2xl font-bold text-foreground mb-2">
                 {formatCurrency(dashboard.budget_variance.profit.actual)}
               </p>
               <div className="flex items-center justify-between">
-                <span className="text-sm text-gray-600">
+                <span className="text-sm text-muted-foreground">
                   Target: {formatCurrency(dashboard.budget_variance.profit.budgeted)}
                 </span>
-                <span className={"text-sm font-semibold ".concat(dashboard.budget_variance.profit.variance_pct < 0 ? 'text-red-600' : 'text-green-600')}>
+                <span className={"text-sm font-semibold ".concat(dashboard.budget_variance.profit.variance_pct < 0 ? 'text-destructive' : 'text-secondary')}>
                   {dashboard.budget_variance.profit.variance_pct > 0 ? '+' : ''}
                   {dashboard.budget_variance.profit.variance_pct.toFixed(1)}%
                 </span>
               </div>
               <div className="w-full bg-gray-200 rounded-full h-2 mt-3">
-                <div className="bg-green-600 h-2 rounded-full" style={{
+                <div className="bg-secondary h-2 rounded-full" style={{
             width: "".concat(Math.min((dashboard.budget_variance.profit.actual / dashboard.budget_variance.profit.budgeted) * 100, 100), "%")
         }}/>
               </div>
@@ -310,7 +310,7 @@ export default function ForecastDashboard() {
         <div className="mb-8 glass-card gradient-border hover-tilt p-6 relative overflow-hidden min-w-0">
           <span className="aura"></span>
           <h3 className="font-heading font-semibold text-foreground mb-4 flex items-center gap-2">
-            <TrendingUp size={20} className="text-green-600"/>
+            <TrendingUp size={20} className="text-secondary"/>
             12-Month Revenue Forecast
           </h3>
           <div style={{ width: "100%", height: "300px", minWidth: 0, display: "flex", overflow: "hidden" }}>
@@ -378,7 +378,7 @@ export default function ForecastDashboard() {
         <div className="glass-card gradient-border hover-tilt p-6 mb-8 relative overflow-hidden min-w-0">
           <span className="aura"></span>
           <h3 className="font-heading font-semibold text-foreground mb-4 flex items-center gap-2">
-            <AlertTriangle size={20} className="text-yellow-600"/>
+            <AlertTriangle size={20} className="text-accent"/>
             Arrears Rate Forecast (Confidence: {arrearsConfidenceLevel.toFixed(0)}%)
           </h3>
           <div style={{ width: "100%", height: "300px", minWidth: 0, display: "flex", overflow: "hidden" }}>
@@ -392,8 +392,8 @@ export default function ForecastDashboard() {
             </LineChart>
           </ResponsiveContainer>
             </div>
-          <div className="mt-4 p-4 bg-yellow-50 rounded-lg border border-yellow-200">
-            <p className="text-sm text-gray-700">
+          <div className="mt-4 p-4 bg-accent/10 rounded-lg border border-accent/30">
+            <p className="text-sm text-foreground">
               <strong>Insight:</strong> Arrears rate is expected to trend {arrearsData[arrearsData.length - 1].rate > arrearsData[0].rate ? 'upward' : 'downward'} over the forecast period. Monitor collections activities accordingly.
             </p>
           </div>
@@ -403,9 +403,9 @@ export default function ForecastDashboard() {
         <div className="glass-card gradient-border hover-tilt p-6 relative overflow-hidden min-w-0">
           <span className="aura"></span>
           <h3 className="font-heading font-semibold text-foreground mb-4">
-            Loan Volume Trend: <span className="text-green-600 uppercase text-sm ml-2">{dashboard.loan_volume_forecast.trend}</span>
+            Loan Volume Trend: <span className="text-secondary uppercase text-sm ml-2">{dashboard.loan_volume_forecast.trend}</span>
           </h3>
-          <p className="text-sm text-gray-600 mb-4">
+          <p className="text-sm text-muted-foreground mb-4">
             Based on current trends, loan applications are expected to {dashboard.loan_volume_forecast.trend} throughout the forecast period.
           </p>
           <div style={{ width: "100%", height: "250px", minWidth: 0, display: "flex", overflow: "hidden" }}>

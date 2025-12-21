@@ -76,21 +76,21 @@ export const ReportsPage: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <div className="sticky top-0 bg-white border-b border-gray-200 z-40">
+    <div className="min-h-screen bg-background">
+      <div className="sticky top-0 bg-card border border-border/50 shadow-sm z-40">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-          <h1 className="text-3xl font-bold text-gray-900 flex items-center gap-3">
-            <FileText className="w-8 h-8 text-blue-600" />
+          <h1 className="text-3xl font-bold text-foreground flex items-center gap-3">
+            <FileText className="w-8 h-8 text-primary" />
             Reports
           </h1>
-          <p className="text-gray-600 mt-1">Generate, export, and distribute reports</p>
+          <p className="text-muted-foreground mt-1">Generate, export, and distribute reports</p>
         </div>
       </div>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
           <div>
-            <h2 className="text-lg font-semibold text-gray-900 mb-4">Report Types</h2>
+            <h2 className="text-lg font-semibold text-foreground mb-4">Report Types</h2>
             <div className="space-y-2">
               {[
                 { id: 'compliance', label: 'Compliance Report' },
@@ -104,8 +104,8 @@ export const ReportsPage: React.FC = () => {
                   onClick={() => setSelectedReport(report.id as ReportType)}
                   className={`w-full text-left px-4 py-2 rounded-lg transition ${
                     selectedReport === report.id
-                      ? 'bg-blue-600 text-white'
-                      : 'bg-white text-gray-700 hover:bg-gray-100 border border-gray-200'
+                      ? 'bg-primary text-primary-foreground'
+                      : 'bg-card text-foreground/90 hover:bg-accent border border-border/50'
                   }`}
                 >
                   {report.label}
@@ -115,35 +115,35 @@ export const ReportsPage: React.FC = () => {
           </div>
 
           <div className="lg:col-span-3">
-            <div className="bg-white rounded-lg shadow p-6">
-              <h2 className="text-xl font-semibold text-gray-900 mb-6">
+            <div className="bg-card rounded-xl border border-border/50 shadow-sm p-4 md:p-5">
+              <h2 className="text-xl font-semibold text-foreground mb-6">
                 {templatesQuery.data?.templates?.[selectedReport]?.name || 'Report'}
               </h2>
 
               <div className="space-y-6 mb-6">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <label className="block text-sm font-medium text-card-foreground mb-2">
                     Branch (Optional)
                   </label>
                   <input
                     type="number"
                     value={branchId || ''}
                     onChange={(e) => setBranchId(e.target.value ? parseInt(e.target.value) : undefined)}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    className="neon-input w-full"
                     placeholder="Select branch"
                   />
                 </div>
 
                 {selectedReport === 'operations' && (
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                    <label className="block text-sm font-medium text-card-foreground mb-2">
                       Days Back
                     </label>
                     <input
                       type="number"
                       value={daysBack}
                       onChange={(e) => setDaysBack(parseInt(e.target.value) || 1)}
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg"
+                      className="neon-input w-full"
                       min="1"
                       max="365"
                     />
@@ -153,7 +153,7 @@ export const ReportsPage: React.FC = () => {
                 <button
                   onClick={handleGenerateReport}
                   disabled={currentQuery.isLoading}
-                  className="w-full bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 disabled:opacity-50 flex items-center justify-center gap-2"
+                  className="button-primary w-full disabled:opacity-50 flex items-center justify-center gap-2"
                 >
                   <RefreshCw className={`w-4 h-4 ${currentQuery.isLoading ? 'animate-spin' : ''}`} />
                   Generate Report
@@ -162,15 +162,15 @@ export const ReportsPage: React.FC = () => {
 
               {reportData && (
                 <>
-                  <div className="bg-gray-50 rounded-lg p-6 mb-6">
-                    <h3 className="text-lg font-semibold text-gray-900 mb-4">Summary</h3>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="bg-accent rounded-xl p-4 md:p-5 mb-6 border border-border/50">
+                    <h3 className="text-lg font-semibold text-foreground mb-4">Summary</h3>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                       {Object.entries(reportData.summary || {}).map(([key, value]) => (
-                        <div key={key} className="bg-white rounded p-4">
-                          <p className="text-sm text-gray-600 mb-1">
+                        <div key={key} className="bg-card rounded-xl p-3 border border-border/50">
+                          <p className="text-sm text-muted-foreground mb-1">
                             {key.replace(/_/g, ' ').toUpperCase()}
                           </p>
-                          <p className="text-2xl font-bold text-gray-900">
+                          <p className="text-2xl font-bold text-card-foreground">
                             {typeof value === 'number' ? value.toLocaleString() : String(value)}
                           </p>
                         </div>
@@ -179,7 +179,7 @@ export const ReportsPage: React.FC = () => {
                   </div>
 
                   <div className="space-y-4">
-                    <h3 className="text-lg font-semibold text-gray-900">Export & Share</h3>
+                    <h3 className="text-lg font-semibold text-foreground">Export & Share</h3>
 
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       <button
@@ -194,15 +194,15 @@ export const ReportsPage: React.FC = () => {
                       <button
                         onClick={handleExportExcel}
                         disabled={exportExcelMutation.isPending}
-                        className="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 disabled:opacity-50 flex items-center justify-center gap-2"
+                        className="bg-secondary text-white px-4 py-2 rounded-lg hover:bg-secondary/80 disabled:opacity-50 flex items-center justify-center gap-2"
                       >
                         <Download className="w-4 h-4" />
                         Export Excel
                       </button>
                     </div>
 
-                    <div className="border-t pt-4">
-                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                    <div className="border-t border-border pt-4">
+                      <label className="block text-sm font-medium text-muted-foreground mb-2">
                         Email Recipients (comma-separated)
                       </label>
                       <input
@@ -210,7 +210,7 @@ export const ReportsPage: React.FC = () => {
                         value={recipients}
                         onChange={(e) => setRecipients(e.target.value)}
                         placeholder="email1@example.com, email2@example.com"
-                        className="w-full px-4 py-2 border border-gray-300 rounded-lg mb-2 focus:ring-2 focus:ring-blue-500"
+                        className="neon-input w-full mb-2"
                       />
 
                       <input
@@ -218,13 +218,13 @@ export const ReportsPage: React.FC = () => {
                         value={subject}
                         onChange={(e) => setSubject(e.target.value)}
                         placeholder="Email subject"
-                        className="w-full px-4 py-2 border border-gray-300 rounded-lg mb-4 focus:ring-2 focus:ring-blue-500"
+                        className="neon-input w-full mb-4"
                       />
 
                       <button
                         onClick={handleSendEmail}
                         disabled={emailMutation.isPending || !recipients}
-                        className="w-full bg-purple-600 text-white px-4 py-2 rounded-lg hover:bg-purple-700 disabled:opacity-50 flex items-center justify-center gap-2"
+                        className="button-primary w-full disabled:opacity-50 flex items-center justify-center gap-2"
                       >
                         <Mail className="w-4 h-4" />
                         Send Email

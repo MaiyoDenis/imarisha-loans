@@ -62,139 +62,156 @@
 */
 
 :root {
-  /* Base - Clean & Bright */
-  --background: 210 40% 98%; /* Very subtle cool gray */
-  --foreground: 222 47% 11%; /* Deep navy text */
+  /* Luxury Wood & Gold Theme (Light) */
+  /* Background: warm walnut wood with soft vignette; Foreground: ivory */
+  --background: 32 35% 12%; /* deep walnut */
+  --foreground: 40 30% 96%; /* ivory */
 
-  /* Cards - Pure White with depth */
-  --card: 0 0% 100%;
-  --card-foreground: 222 47% 11%;
+  /* Cards: slightly lighter wood panel */
+  --card: 30 28% 16%;
+  --card-foreground: 40 30% 96%;
 
-  --popover: 0 0% 100%;
-  --popover-foreground: 222 47% 11%;
+  --popover: 30 28% 16%;
+  --popover-foreground: 40 30% 96%;
 
-  /* Primary - Trustworthy Vibrant Blue (No Purple) */
-  --primary: 215 100% 50%; /* Electric Blue */
-  --primary-foreground: 0 0% 100%;
+  /* Primary: polished gold */
+  --primary: 45 95% 55%;
+  --primary-foreground: 28 30% 12%;
 
-  /* Secondary - Growth/Success Teal */
-  --secondary: 160 84% 39%; /* Emerald */
-  --secondary-foreground: 0 0% 100%;
+  /* Secondary: bronze accents */
+  --secondary: 35 70% 45%;
+  --secondary-foreground: 28 30% 12%;
 
-  /* Muted - Sophisticated Grays */
-  --muted: 210 20% 96%;
-  --muted-foreground: 215 16% 47%;
+  /* Muted: satin wood tint */
+  --muted: 30 20% 20%;
+  --muted-foreground: 45 30% 80%;
 
   /* Accents */
-  --accent: 210 20% 96%;
-  --accent-foreground: 222 47% 11%;
+  --accent: 30 20% 22%;
+  --accent-foreground: 45 95% 55%;
 
-  --destructive: 0 84% 60%;
-  --destructive-foreground: 0 0% 100%;
+  --destructive: 0 70% 40%;
+  --destructive-foreground: 40 30% 96%;
 
-  /* Borders - Subtle */
-  --border: 214 32% 91%;
-  --input: 214 32% 91%;
-  --ring: 215 100% 50%;
+  /* Borders: soft brass */
+  --border: 45 50% 45% / 0.22;
+  --input: 30 20% 28%;
+  --ring: 45 95% 55%;
 
-  --radius: 0.75rem;
+  --radius: 1rem;
 
-  /* Charts - Professional Palette */
-  --chart-1: 215 100% 50%; /* Blue */
-  --chart-2: 160 84% 39%; /* Teal */
-  --chart-3: 200 90% 45%; /* Cyan */
-  --chart-4: 45 90% 55%;  /* Gold */
-  --chart-5: 10 80% 55%;  /* Coral */
+  /* Charts - gold family */
+  --chart-1: 45 95% 55%;
+  --chart-2: 35 70% 50%;
+  --chart-3: 28 65% 55%;
+  --chart-4: 50 90% 65%;
+  --chart-5: 15 85% 60%;
 
-  /* Sidebar - Deep Professional Navy */
-  --sidebar: 222 47% 11%;
-  --sidebar-foreground: 210 40% 98%;
-  --sidebar-primary: 215 100% 50%;
-  --sidebar-primary-foreground: 0 0% 100%;
-  --sidebar-accent: 217 33% 17%;
-  --sidebar-accent-foreground: 210 40% 98%;
-  --sidebar-border: 217 33% 17%;
-  --sidebar-ring: 215 100% 50%;
+  /* Sidebar - darker wood slab */
+  --sidebar: 30 28% 14%;
+  --sidebar-foreground: 40 30% 96%;
+  --sidebar-primary: 45 95% 55%;
+  --sidebar-primary-foreground: 28 30% 12%;
+  --sidebar-accent: 30 22% 18%;
+  --sidebar-accent-foreground: 45 95% 55%;
+  --sidebar-border: 30 20% 22%;
+  --sidebar-ring: 45 95% 55%;
 }
 
 .dark {
-  /* Dark Mode - Sleek & High Contrast */
-  --background: 222 47% 11%;
-  --foreground: 210 40% 98%;
+  /* Dark variant keeps the same luxury palette but slightly deeper */
+  --background: 28 35% 10%;
+  --foreground: 45 35% 96%;
 
-  --card: 217 33% 17%;
-  --card-foreground: 210 40% 98%;
+  --card: 28 28% 14%;
+  --card-foreground: 45 35% 96%;
 
-  --popover: 217 33% 17%;
-  --popover-foreground: 210 40% 98%;
+  --popover: 28 28% 14%;
+  --popover-foreground: 45 35% 96%;
 
-  --primary: 215 100% 60%;
-  --primary-foreground: 222 47% 11%;
+  --primary: 45 95% 62%;
+  --primary-foreground: 28 35% 12%;
 
-  --secondary: 160 84% 45%;
-  --secondary-foreground: 222 47% 11%;
+  --secondary: 35 70% 48%;
+  --secondary-foreground: 28 35% 12%;
 
-  --muted: 217 33% 20%;
-  --muted-foreground: 215 20% 65%;
+  --muted: 28 22% 18%;
+  --muted-foreground: 45 35% 85%;
 
-  --accent: 217 33% 20%;
-  --accent-foreground: 210 40% 98%;
+  --accent: 28 22% 20%;
+  --accent-foreground: 45 95% 62%;
 
-  --destructive: 0 62% 30%;
-  --destructive-foreground: 210 40% 98%;
+  --destructive: 0 62% 35%;
+  --destructive-foreground: 45 35% 96%;
 
-  --border: 217 33% 20%;
-  --input: 217 33% 20%;
-  --ring: 215 100% 60%;
+  --border: 45 60% 45% / 0.22;
+  --input: 28 22% 22%;
+  --ring: 45 95% 62%;
 
-  --chart-1: 215 100% 60%;
-  --chart-2: 160 84% 45%;
-  --chart-3: 200 90% 55%;
-  --chart-4: 45 90% 65%;
-  --chart-5: 10 80% 65%;
+  --chart-1: 45 95% 62%;
+  --chart-2: 35 70% 52%;
+  --chart-3: 28 65% 58%;
+  --chart-4: 50 90% 70%;
+  --chart-5: 15 85% 62%;
 
-  --sidebar: 222 47% 10%;
-  --sidebar-foreground: 210 40% 98%;
-  --sidebar-primary: 215 100% 60%;
-  --sidebar-primary-foreground: 0 0% 100%;
-  --sidebar-accent: 217 33% 20%;
-  --sidebar-accent-foreground: 210 40% 98%;
-  --sidebar-border: 217 33% 20%;
-  --sidebar-ring: 215 100% 60%;
+  --sidebar: 26 28% 10%;
+  --sidebar-foreground: 45 35% 96%;
+  --sidebar-primary: 45 95% 62%;
+  --sidebar-primary-foreground: 28 35% 12%;
+  --sidebar-accent: 26 22% 14%;
+  --sidebar-accent-foreground: 45 95% 62%;
+  --sidebar-border: 28 22% 18%;
+  --sidebar-ring: 45 95% 62%;
 }
 
 @layer base {
   * { @apply border-border; }
   body { 
     @apply font-sans antialiased bg-background text-foreground; 
-    background-image: radial-gradient(circle at top center, hsl(var(--primary) / 0.03), transparent 40%);
+    /* wood texture effect using layered gradients */
+    background-image:
+      radial-gradient(1200px 600px at 50% -10%, hsl(var(--primary) / 0.06), transparent 60%),
+      repeating-linear-gradient(90deg, hsl(30 25% 12%) 0px, hsl(30 25% 12%) 6px, hsl(30 20% 14%) 6px, hsl(30 20% 14%) 12px),
+      radial-gradient(circle at 20% 10%, hsl(28 30% 10% / 0.6), transparent 50%),
+      radial-gradient(circle at 80% 0%, hsl(28 25% 8% / 0.6), transparent 50%);
+    background-blend-mode: soft-light, normal, soft-light, soft-light;
     background-attachment: fixed;
   }
   h1, h2, h3, h4, h5, h6 { @apply font-heading font-semibold tracking-tight text-foreground; }
+
+  /* Force default surfaces to theme colors (eliminate whites) */
+  html, body, #root, main { background-color: hsl(var(--background)); }
+  :where(section, header, footer, aside, article) { background-color: transparent; }
+  :where(hr){ border-color: hsl(var(--border)); }
 }
 
 @layer components {
-  /* Modern Card - Clean, no glass/neon hacks */
+  /* Luxury Cards - compact sizes */
   .glass-card, .card {
-    @apply bg-card text-card-foreground rounded-xl border border-border/50 shadow-sm transition-all duration-300;
+    @apply bg-card text-card-foreground rounded-xl border shadow-sm transition-all duration-300;
+    border-color: hsl(var(--border));
+    box-shadow: 0 6px 20px hsl(28 40% 5% / 0.35), inset 0 1px 0 hsl(45 60% 70% / 0.15);
+    padding: 0.875rem 1rem; /* compact */
   }
   
   .glass-card:hover, .card:hover {
-    @apply shadow-md border-primary/20;
+    @apply shadow-md;
+    border-color: hsl(45 95% 55% / 0.5);
+    box-shadow: 0 10px 28px hsl(28 40% 5% / 0.45), 0 0 0 1px hsl(45 95% 55% / 0.25) inset;
     transform: translateY(-2px);
   }
 
   /* Primary Button - Modern & Clean */
   .btn-neon, .button-primary {
-    @apply relative inline-flex items-center justify-center rounded-lg px-4 py-2 font-medium text-primary-foreground transition-all duration-200 shadow-sm overflow-hidden;
-    background: hsl(var(--primary));
-    border: none;
+    @apply relative inline-flex items-center justify-center rounded-full px-5 py-2.5 font-semibold text-primary-foreground transition-all duration-200 shadow-sm overflow-hidden;
+    background: linear-gradient(180deg, hsl(45 95% 60%), hsl(42 85% 50%));
+    border: 1px solid hsl(45 80% 55%);
+    box-shadow: 0 8px 18px hsl(45 90% 40% / 0.35), inset 0 1px 0 hsl(0 0% 100% / 0.25);
   }
   
   .btn-neon:hover, .button-primary:hover {
-    background: hsl(var(--primary));
-    filter: brightness(110%);
-    box-shadow: 0 4px 12px hsl(var(--primary) / 0.3);
+    filter: brightness(105%);
+    box-shadow: 0 10px 24px hsl(45 90% 40% / 0.45);
     transform: translateY(-1px);
   }
 
@@ -202,18 +219,25 @@
     transform: translateY(0);
   }
 
-  /* Inputs - Clean */
+  /* Inputs - Brass framed */
   .neon-input {
-    @apply rounded-lg border border-input bg-background px-3 py-2 text-sm ring-offset-background transition-all duration-200;
+    @apply rounded-lg bg-card px-3 py-2 text-sm ring-offset-background transition-all duration-200;
+    color: hsl(var(--foreground));
+    border: 1px solid hsl(45 20% 35% / 0.5);
+    box-shadow: inset 0 1px 1px hsl(0 0% 100% / 0.05);
   }
   
   .neon-input:focus {
-    @apply outline-none ring-2 ring-ring ring-offset-2 border-primary;
+    @apply outline-none ring-2 ring-offset-2;
+    ring-color: hsl(45 95% 55% / 0.6);
+    border-color: hsl(45 90% 55%);
   }
 
   /* Stat Cards */
   .stat-card {
-    @apply relative overflow-hidden rounded-xl border border-border bg-card p-6 shadow-sm transition-all duration-300;
+    @apply relative overflow-hidden rounded-xl border border-border bg-card shadow-sm transition-all duration-300;
+    padding: 0.875rem 1rem; /* compact */
+    gap: 0.5rem;
   }
   
   .stat-card:hover {
@@ -223,7 +247,8 @@
 
   /* Text Gradients - Subtle Professional */
   .text-gradient {
-    @apply bg-clip-text text-transparent bg-gradient-to-r from-primary to-blue-600;
+    @apply bg-clip-text text-transparent;
+    background-image: linear-gradient(90deg, hsl(45 95% 60%), hsl(35 80% 55%));
   }
 
   /* Remove old decorative elements */
@@ -233,15 +258,18 @@
   
   .gradient-border {
     border: 1px solid hsl(var(--border));
+    border-radius: var(--radius);
+    box-shadow: inset 0 0 0 1px hsl(45 80% 55% / 0.08);
   }
 }
 
 /* Scrollbar */
-::-webkit-scrollbar { width: 8px; height: 8px; }
+::-webkit-scrollbar { width: 10px; height: 10px; }
 ::-webkit-scrollbar-track { background: transparent; }
 ::-webkit-scrollbar-thumb {
-  background: hsl(var(--muted-foreground) / 0.3);
+  background: linear-gradient(180deg, hsl(45 90% 50%), hsl(35 75% 45%));
   border-radius: 99px;
+  border: 1px solid hsl(45 80% 55% / 0.6);
 }
 ::-webkit-scrollbar-thumb:hover {
   background: hsl(var(--muted-foreground) / 0.5);

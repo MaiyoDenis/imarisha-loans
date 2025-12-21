@@ -179,7 +179,7 @@ export default function AdminDashboard() {
         <div className="flex items-center justify-center h-screen">
           <div className="text-center">
             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
-            <p className="text-gray-600">Loading admin dashboard...</p>
+            <p className="text-muted-foreground">Loading admin dashboard...</p>
           </div>
         </div>
       </Layout>);
@@ -187,12 +187,12 @@ export default function AdminDashboard() {
     if (isError || !dashboard) {
         return (<Layout>
         <div className="p-6">
-          <div className="bg-red-50 border border-red-200 rounded-lg p-4">
+          <div className="bg-destructive/10 border border-destructive/30 rounded-lg p-4">
             <div className="flex items-start gap-3">
-              <AlertCircle className="w-5 h-5 text-red-600 mt-0.5 flex-shrink-0"/>
+              <AlertCircle className="w-5 h-5 text-destructive mt-0.5 flex-shrink-0"/>
               <div className="flex-1">
-                <h3 className="font-semibold text-red-900">Failed to load dashboard</h3>
-                <p className="text-sm text-red-700 mt-1">There was an error loading your dashboard data.</p>
+                <h3 className="font-semibold text-destructive">Failed to load dashboard</h3>
+                <p className="text-sm text-destructive mt-1">There was an error loading your dashboard data.</p>
                 <button onClick={handleRefresh} disabled={isRefreshing} className="mt-4 px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700 transition disabled:opacity-50">
                   {isRefreshing ? 'Retrying...' : 'Retry'}
                 </button>
@@ -213,29 +213,29 @@ export default function AdminDashboard() {
         return new Intl.NumberFormat('en-KE').format(value);
     };
     return (<Layout>
-      <div className="min-h-screen p-6 bg-gradient-to-br from-slate-50 to-slate-100">
+      <div className="min-h-screen p-6 bg-background">
         <div className="max-w-7xl mx-auto">
           {/* Main Dashboard Header */}
           <div className="flex justify-between items-start mb-8">
             <div>
-              <h1 className="text-4xl font-bold tracking-tight text-slate-900">Reports & Analytics</h1>
-              <p className="text-slate-600 mt-2">Generate insights and monitor performance across your organization.</p>
-              {(dashboard === null || dashboard === void 0 ? void 0 : dashboard.timestamp) && (<p className="text-xs text-slate-500 mt-2">
+              <h1 className="text-4xl font-bold tracking-tight text-foreground">Reports & Analytics</h1>
+              <p className="text-muted-foreground mt-2">Generate insights and monitor performance across your organization.</p>
+              {(dashboard === null || dashboard === void 0 ? void 0 : dashboard.timestamp) && (<p className="text-xs text-muted-foreground mt-2">
                   Last updated: {new Date(dashboard.timestamp).toLocaleString()}
                 </p>)}
             </div>
             <div className="flex flex-col gap-3">
               <div className="flex gap-3">
-                <button onClick={handleRefresh} disabled={isRefreshing} className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition disabled:opacity-50">
+                <button onClick={handleRefresh} disabled={isRefreshing} className="flex items-center gap-2 px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary/80 transition disabled:opacity-50">
                   <RefreshCw size={18} className={isRefreshing ? 'animate-spin' : ''}/>
                   {isRefreshing ? 'Refreshing...' : 'Refresh'}
                 </button>
-                <button onClick={handleExport} className="flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition">
+                <button onClick={handleExport} className="flex items-center gap-2 px-4 py-2 bg-secondary text-white rounded-lg hover:bg-secondary/80 transition">
                   <Download size={18}/>
                   Export
                 </button>
               </div>
-              <select value={sectionFilter} onChange={function (e) { return setSectionFilter(e.target.value); }} className="px-4 py-2 border border-slate-300 rounded-lg bg-white text-slate-700 font-medium hover:border-slate-400 transition focus:outline-none focus:ring-2 focus:ring-blue-500">
+              <select value={sectionFilter} onChange={function (e) { return setSectionFilter(e.target.value); }} className="px-4 py-2 border border-border rounded-lg bg-card text-foreground font-medium hover:border-primary/40 transition focus:outline-none focus:ring-2 focus:ring-primary">
                 <option value="all">All Sections</option>
                 <option value="product">Product Inventory Overview</option>
                 <option value="lending">Lending Analytics</option>
@@ -248,16 +248,16 @@ export default function AdminDashboard() {
           {/* Alerts */}
           {dashboard.alerts && dashboard.alerts.length > 0 && (<div className="mb-6 space-y-3">
               {dashboard.alerts.map(function (alert, idx) { return (<div key={idx} className={"p-4 rounded-lg border flex items-start gap-3 ".concat(alert.severity === 'high'
-                    ? 'bg-red-50 border-red-200'
-                    : 'bg-yellow-50 border-yellow-200')}>
-                  <AlertCircle size={20} className={alert.severity === 'high' ? 'text-red-600' : 'text-yellow-600'}/>
+                    ? 'bg-destructive/10 border-destructive/30'
+                    : 'bg-accent/10 border-accent/30')}>
+                  <AlertCircle size={20} className={alert.severity === 'high' ? 'text-destructive' : 'text-accent'}/>
                   <div className="flex-1">
-                    <h3 className={"font-semibold ".concat(alert.severity === 'high' ? 'text-red-900' : 'text-yellow-900')}>
+                    <h3 className={"font-semibold ".concat(alert.severity === 'high' ? 'text-destructive' : 'text-accent')}>
                       {alert.title}
                     </h3>
                     <p className={"text-sm mt-1 ".concat(alert.severity === 'high'
-                    ? 'text-red-700'
-                    : 'text-yellow-700')}>
+                    ? 'text-destructive'
+                    : 'text-accent')}>
                       {alert.message}
                     </p>
                   </div>
@@ -266,8 +266,8 @@ export default function AdminDashboard() {
 
           {/* Product Overview */}
           {(sectionFilter === 'all' || sectionFilter === 'product') && (<div className="mb-8">
-              <h2 className="text-2xl font-bold text-slate-900 mb-4 flex items-center gap-2">
-                <Package className="text-blue-600" size={28}/>
+              <h2 className="text-2xl font-bold text-foreground mb-4 flex items-center gap-2">
+                <Package className="text-primary" size={28}/>
                 Product Inventory Overview
               </h2>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
@@ -282,11 +282,11 @@ export default function AdminDashboard() {
           {/* Lending Analytics */}
           {(sectionFilter === 'all' || sectionFilter === 'lending') && (<div className="mb-8">
               <div className="flex items-center justify-between mb-4">
-                <h2 className="text-2xl font-bold text-slate-900 flex items-center gap-2">
-                  <Activity className="text-purple-600" size={28}/>
+                <h2 className="text-2xl font-bold text-foreground flex items-center gap-2">
+                  <Activity className="text-primary" size={28}/>
                   Lending Analytics
                 </h2>
-                <select value={lendingAnalyticsFilter} onChange={function (e) { return setLendingAnalyticsFilter(e.target.value); }} className="px-4 py-2 border border-slate-300 rounded-lg bg-white text-slate-700 font-medium hover:border-slate-400 transition focus:outline-none focus:ring-2 focus:ring-blue-500">
+                <select value={lendingAnalyticsFilter} onChange={function (e) { return setLendingAnalyticsFilter(e.target.value); }} className="px-4 py-2 border border-border rounded-lg bg-card text-foreground font-medium hover:border-primary/40 transition focus:outline-none focus:ring-2 focus:ring-primary">
                   <option value="all">View All</option>
                   <option value="active">Active Loans</option>
                   <option value="completed">Completed Loans</option>
@@ -313,8 +313,8 @@ export default function AdminDashboard() {
 
           {/* Profit Analysis */}
           {(sectionFilter === 'all' || sectionFilter === 'lending') && (<div className="mb-8">
-              <h2 className="text-2xl font-bold text-slate-900 mb-4 flex items-center gap-2">
-                <TrendingUp className="text-green-600" size={28}/>
+              <h2 className="text-2xl font-bold text-foreground mb-4 flex items-center gap-2">
+                <TrendingUp className="text-secondary" size={28}/>
                 Profit Analysis & Financial Performance
               </h2>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
@@ -332,7 +332,7 @@ export default function AdminDashboard() {
 
           {/* Repayment Tracking */}
           {(sectionFilter === 'all' || sectionFilter === 'lending') && (<div className="mb-8">
-              <h2 className="text-2xl font-bold text-slate-900 mb-4 flex items-center gap-2">
+              <h2 className="text-2xl font-bold text-foreground mb-4 flex items-center gap-2">
                 <CheckCircle2 className="text-emerald-600" size={28}/>
                 Repayment Performance Tracking
               </h2>
@@ -350,65 +350,65 @@ export default function AdminDashboard() {
 
           {/* Growth Metrics */}
           {(sectionFilter === 'all' || sectionFilter === 'lending') && (<div className="mb-8">
-              <h2 className="text-2xl font-bold text-slate-900 mb-4 flex items-center gap-2">
-                <TrendingUp className="text-indigo-600" size={28}/>
+              <h2 className="text-2xl font-bold text-foreground mb-4 flex items-center gap-2">
+                <TrendingUp className="text-primary" size={28}/>
                 Growth Metrics
               </h2>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <div className="bg-white rounded-lg p-4 border border-slate-200">
-                  <h3 className="text-sm font-semibold text-slate-600 uppercase">Month to Date</h3>
-                  <p className="text-2xl font-bold text-slate-900 mt-2">{formatNumber(dashboard.growth_metrics.mtd_new_loans)}</p>
-                  <p className="text-xs text-slate-500 mt-1">New Loans</p>
-                  <p className="text-xl font-semibold text-slate-900 mt-3">{formatCurrency(dashboard.growth_metrics.mtd_amount)}</p>
-                  <p className="text-xs text-slate-500">Amount</p>
+                <div className="bg-card rounded-lg p-4 border border-border">
+                  <h3 className="text-sm font-semibold text-muted-foreground uppercase">Month to Date</h3>
+                  <p className="text-2xl font-bold text-foreground mt-2">{formatNumber(dashboard.growth_metrics.mtd_new_loans)}</p>
+                  <p className="text-xs text-muted-foreground mt-1">New Loans</p>
+                  <p className="text-xl font-semibold text-foreground mt-3">{formatCurrency(dashboard.growth_metrics.mtd_amount)}</p>
+                  <p className="text-xs text-muted-foreground">Amount</p>
                 </div>
-                <div className="bg-white rounded-lg p-4 border border-slate-200">
-                  <h3 className="text-sm font-semibold text-slate-600 uppercase">Quarter to Date</h3>
-                  <p className="text-2xl font-bold text-slate-900 mt-2">{formatNumber(dashboard.growth_metrics.qtd_new_loans)}</p>
-                  <p className="text-xs text-slate-500 mt-1">New Loans</p>
-                  <p className="text-xl font-semibold text-slate-900 mt-3">{formatCurrency(dashboard.growth_metrics.qtd_amount)}</p>
-                  <p className="text-xs text-slate-500">Amount</p>
+                <div className="bg-card rounded-lg p-4 border border-border">
+                  <h3 className="text-sm font-semibold text-muted-foreground uppercase">Quarter to Date</h3>
+                  <p className="text-2xl font-bold text-foreground mt-2">{formatNumber(dashboard.growth_metrics.qtd_new_loans)}</p>
+                  <p className="text-xs text-muted-foreground mt-1">New Loans</p>
+                  <p className="text-xl font-semibold text-foreground mt-3">{formatCurrency(dashboard.growth_metrics.qtd_amount)}</p>
+                  <p className="text-xs text-muted-foreground">Amount</p>
                 </div>
-                <div className="bg-white rounded-lg p-4 border border-slate-200">
-                  <h3 className="text-sm font-semibold text-slate-600 uppercase">Year to Date</h3>
-                  <p className="text-2xl font-bold text-slate-900 mt-2">{formatNumber(dashboard.growth_metrics.ytd_new_loans)}</p>
-                  <p className="text-xs text-slate-500 mt-1">New Loans</p>
-                  <p className="text-xl font-semibold text-slate-900 mt-3">{formatCurrency(dashboard.growth_metrics.ytd_amount)}</p>
-                  <p className="text-xs text-slate-500">Amount</p>
+                <div className="bg-card rounded-lg p-4 border border-border">
+                  <h3 className="text-sm font-semibold text-muted-foreground uppercase">Year to Date</h3>
+                  <p className="text-2xl font-bold text-foreground mt-2">{formatNumber(dashboard.growth_metrics.ytd_new_loans)}</p>
+                  <p className="text-xs text-muted-foreground mt-1">New Loans</p>
+                  <p className="text-xl font-semibold text-foreground mt-3">{formatCurrency(dashboard.growth_metrics.ytd_amount)}</p>
+                  <p className="text-xs text-muted-foreground">Amount</p>
                 </div>
               </div>
             </div>)}
 
           {/* Top Products */}
-          {(sectionFilter === 'all' || sectionFilter === 'topproducts') && dashboard.top_products && dashboard.top_products.length > 0 && (<div className="mb-8 bg-white rounded-lg border border-slate-200 p-6">
-              <h2 className="text-2xl font-bold text-slate-900 mb-4 flex items-center gap-2">
-                <ShoppingCart className="text-rose-600" size={28}/>
+          {(sectionFilter === 'all' || sectionFilter === 'topproducts') && dashboard.top_products && dashboard.top_products.length > 0 && (<div className="mb-8 bg-card rounded-lg border border-border p-6">
+              <h2 className="text-2xl font-bold text-foreground mb-4 flex items-center gap-2">
+                <ShoppingCart className="text-destructive" size={28}/>
                 Top Performing Products
               </h2>
               <div className="overflow-x-auto">
                 <table className="w-full">
-                  <thead className="bg-slate-50 border-b border-slate-200">
+                  <thead className="bg-background border-b border-border">
                     <tr>
-                      <th className="px-4 py-3 text-left text-sm font-semibold text-slate-600">Product</th>
-                      <th className="px-4 py-3 text-right text-sm font-semibold text-slate-600">Market Price</th>
-                      <th className="px-4 py-3 text-right text-sm font-semibold text-slate-600">Selling Price</th>
-                      <th className="px-4 py-3 text-right text-sm font-semibold text-slate-600">Loans</th>
-                      <th className="px-4 py-3 text-right text-sm font-semibold text-slate-600">Units Sold</th>
-                      <th className="px-4 py-3 text-right text-sm font-semibold text-slate-600">Revenue</th>
-                      <th className="px-4 py-3 text-right text-sm font-semibold text-slate-600">Profit</th>
-                      <th className="px-4 py-3 text-right text-sm font-semibold text-slate-600">Margin</th>
+                      <th className="px-4 py-3 text-left text-sm font-semibold text-muted-foreground">Product</th>
+                      <th className="px-4 py-3 text-right text-sm font-semibold text-muted-foreground">Market Price</th>
+                      <th className="px-4 py-3 text-right text-sm font-semibold text-muted-foreground">Selling Price</th>
+                      <th className="px-4 py-3 text-right text-sm font-semibold text-muted-foreground">Loans</th>
+                      <th className="px-4 py-3 text-right text-sm font-semibold text-muted-foreground">Units Sold</th>
+                      <th className="px-4 py-3 text-right text-sm font-semibold text-muted-foreground">Revenue</th>
+                      <th className="px-4 py-3 text-right text-sm font-semibold text-muted-foreground">Profit</th>
+                      <th className="px-4 py-3 text-right text-sm font-semibold text-muted-foreground">Margin</th>
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-slate-200">
-                    {dashboard.top_products.map(function (product) { return (<tr key={product.product_id} className="hover:bg-slate-50 transition">
-                        <td className="px-4 py-3 text-sm font-medium text-slate-900">{product.product_name}</td>
-                        <td className="px-4 py-3 text-sm text-right text-slate-600">{formatCurrency(product.buying_price)}</td>
-                        <td className="px-4 py-3 text-sm text-right text-slate-600">{formatCurrency(product.selling_price)}</td>
-                        <td className="px-4 py-3 text-sm text-right text-slate-600">{formatNumber(product.loans_count)}</td>
-                        <td className="px-4 py-3 text-sm text-right text-slate-600">{formatNumber(product.units_sold)}</td>
-                        <td className="px-4 py-3 text-sm text-right font-semibold text-slate-900">{formatCurrency(product.total_revenue)}</td>
-                        <td className="px-4 py-3 text-sm text-right font-semibold text-green-600">{formatCurrency(product.profit)}</td>
-                        <td className="px-4 py-3 text-sm text-right font-semibold text-green-600">{product.margin.toFixed(1)}%</td>
+                  <tbody className="divide-y divide-border">
+                    {dashboard.top_products.map(function (product) { return (<tr key={product.product_id} className="hover:bg-background transition">
+                        <td className="px-4 py-3 text-sm font-medium text-foreground">{product.product_name}</td>
+                        <td className="px-4 py-3 text-sm text-right text-muted-foreground">{formatCurrency(product.buying_price)}</td>
+                        <td className="px-4 py-3 text-sm text-right text-muted-foreground">{formatCurrency(product.selling_price)}</td>
+                        <td className="px-4 py-3 text-sm text-right text-muted-foreground">{formatNumber(product.loans_count)}</td>
+                        <td className="px-4 py-3 text-sm text-right text-muted-foreground">{formatNumber(product.units_sold)}</td>
+                        <td className="px-4 py-3 text-sm text-right font-semibold text-foreground">{formatCurrency(product.total_revenue)}</td>
+                        <td className="px-4 py-3 text-sm text-right font-semibold text-secondary">{formatCurrency(product.profit)}</td>
+                        <td className="px-4 py-3 text-sm text-right font-semibold text-secondary">{product.margin.toFixed(1)}%</td>
                       </tr>); })}
                   </tbody>
                 </table>
@@ -416,31 +416,31 @@ export default function AdminDashboard() {
             </div>)}
 
           {/* Branch Comparison */}
-          {(sectionFilter === 'all' || sectionFilter === 'branch') && dashboard.branch_comparison && dashboard.branch_comparison.length > 0 && (<div className="bg-white rounded-lg border border-slate-200 p-6">
-              <h2 className="text-2xl font-bold text-slate-900 mb-4 flex items-center gap-2">
-                <Target className="text-cyan-600" size={28}/>
+          {(sectionFilter === 'all' || sectionFilter === 'branch') && dashboard.branch_comparison && dashboard.branch_comparison.length > 0 && (<div className="bg-card rounded-lg border border-border p-6">
+              <h2 className="text-2xl font-bold text-foreground mb-4 flex items-center gap-2">
+                <Target className="text-primary" size={28}/>
                 Branch Comparison
               </h2>
               <div className="overflow-x-auto">
                 <table className="w-full">
-                  <thead className="bg-slate-50 border-b border-slate-200">
+                  <thead className="bg-background border-b border-border">
                     <tr>
-                      <th className="px-4 py-3 text-left text-sm font-semibold text-slate-600">Branch</th>
-                      <th className="px-4 py-3 text-left text-sm font-semibold text-slate-600">Location</th>
-                      <th className="px-4 py-3 text-right text-sm font-semibold text-slate-600">Loans</th>
-                      <th className="px-4 py-3 text-right text-sm font-semibold text-slate-600">Total Amount</th>
-                      <th className="px-4 py-3 text-right text-sm font-semibold text-slate-600">Completed</th>
-                      <th className="px-4 py-3 text-right text-sm font-semibold text-slate-600">Active</th>
+                      <th className="px-4 py-3 text-left text-sm font-semibold text-muted-foreground">Branch</th>
+                      <th className="px-4 py-3 text-left text-sm font-semibold text-muted-foreground">Location</th>
+                      <th className="px-4 py-3 text-right text-sm font-semibold text-muted-foreground">Loans</th>
+                      <th className="px-4 py-3 text-right text-sm font-semibold text-muted-foreground">Total Amount</th>
+                      <th className="px-4 py-3 text-right text-sm font-semibold text-muted-foreground">Completed</th>
+                      <th className="px-4 py-3 text-right text-sm font-semibold text-muted-foreground">Active</th>
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-slate-200">
-                    {dashboard.branch_comparison.map(function (branch) { return (<tr key={branch.branch_id} className="hover:bg-slate-50 transition">
-                        <td className="px-4 py-3 text-sm font-medium text-slate-900">{branch.branch_name}</td>
-                        <td className="px-4 py-3 text-sm text-slate-600">{branch.location}</td>
-                        <td className="px-4 py-3 text-sm text-right font-semibold text-slate-900">{formatNumber(branch.loans_count)}</td>
-                        <td className="px-4 py-3 text-sm text-right font-semibold text-slate-900">{formatCurrency(branch.total_amount)}</td>
-                        <td className="px-4 py-3 text-sm text-right text-green-600">{formatNumber(branch.completed_loans)}</td>
-                        <td className="px-4 py-3 text-sm text-right text-blue-600">{formatNumber(branch.active_loans)}</td>
+                  <tbody className="divide-y divide-border">
+                    {dashboard.branch_comparison.map(function (branch) { return (<tr key={branch.branch_id} className="hover:bg-background transition">
+                        <td className="px-4 py-3 text-sm font-medium text-foreground">{branch.branch_name}</td>
+                        <td className="px-4 py-3 text-sm text-muted-foreground">{branch.location}</td>
+                        <td className="px-4 py-3 text-sm text-right font-semibold text-foreground">{formatNumber(branch.loans_count)}</td>
+                        <td className="px-4 py-3 text-sm text-right font-semibold text-foreground">{formatCurrency(branch.total_amount)}</td>
+                        <td className="px-4 py-3 text-sm text-right text-secondary">{formatNumber(branch.completed_loans)}</td>
+                        <td className="px-4 py-3 text-sm text-right text-primary">{formatNumber(branch.active_loans)}</td>
                       </tr>); })}
                   </tbody>
                 </table>

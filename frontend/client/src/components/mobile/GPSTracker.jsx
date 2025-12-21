@@ -108,7 +108,7 @@ export function GPSTracker(_a) {
           </div>)}
 
         {/* Error Display */}
-        {error && (<div className="text-sm text-red-500 p-2 bg-red-50 rounded">
+        {error && (<div className="text-sm text-red-500 p-2 bg-destructive/10 rounded">
             {error}
           </div>)}
 

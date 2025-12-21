@@ -115,8 +115,8 @@ export default function Members() {
                           variant="outline" 
                           className={
                             member.status === "active" ? "bg-green-50 text-green-700 border-green-200" :
-                            member.status === "pending" ? "bg-yellow-50 text-yellow-700 border-yellow-200" :
-                            "bg-red-50 text-red-700 border-red-200"
+                            member.status === "pending" ? "bg-accent/10 text-yellow-700 border-accent/30" :
+                            "bg-destructive/10 text-red-700 border-destructive/30"
                           }
                         >
                           {member.status}

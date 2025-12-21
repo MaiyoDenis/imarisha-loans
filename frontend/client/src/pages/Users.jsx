@@ -339,19 +339,19 @@ export default function Users() {
             <Card>
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                 <CardTitle className="text-sm font-medium">Active Users</CardTitle>
-                <Shield className="h-4 w-4 text-green-600"/>
+                <Shield className="h-4 w-4 text-secondary"/>
               </CardHeader>
               <CardContent>
-                <div className="text-2xl font-bold text-green-600">{activeUsers}</div>
+                <div className="text-2xl font-bold text-secondary">{activeUsers}</div>
               </CardContent>
             </Card>
             <Card>
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                 <CardTitle className="text-sm font-medium">Administrators</CardTitle>
-                <Shield className="h-4 w-4 text-red-600"/>
+                <Shield className="h-4 w-4 text-destructive"/>
               </CardHeader>
               <CardContent>
-                <div className="text-2xl font-bold text-red-600">
+                <div className="text-2xl font-bold text-destructive">
                   {users.filter(function (u) { return u.role === 'admin'; }).length}
                 </div>
               </CardContent>
@@ -359,10 +359,10 @@ export default function Users() {
             <Card>
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                 <CardTitle className="text-sm font-medium">Loan Officers</CardTitle>
-                <UserPlus className="h-4 w-4 text-blue-600"/>
+                <UserPlus className="h-4 w-4 text-primary"/>
               </CardHeader>
               <CardContent>
-                <div className="text-2xl font-bold text-blue-600">
+                <div className="text-2xl font-bold text-primary">
                   {users.filter(function (u) { return u.role === 'loan_officer'; }).length}
                 </div>
               </CardContent>

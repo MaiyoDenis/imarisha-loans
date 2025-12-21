@@ -87,7 +87,7 @@ export function GPSTracker({ autoStart = false, showControls = false, className 
 
         {/* Error Display */}
         {error && (
-          <div className="text-sm text-red-500 p-2 bg-red-50 rounded">
+          <div className="text-sm text-red-500 p-2 bg-destructive/10 rounded">
             {error}
           </div>
         )}

@@ -35,13 +35,13 @@ export default function Loans() {
 
   const getStatusStyle = (status: string) => {
     switch (status) {
-      case "active": return "bg-blue-50 text-blue-700 border-blue-200";
-      case "pending": return "bg-yellow-50 text-yellow-700 border-yellow-200";
+      case "active": return "bg-primary/10 text-blue-700 border-primary/30";
+      case "pending": return "bg-accent/10 text-yellow-700 border-accent/30";
       case "approved": return "bg-green-50 text-green-700 border-green-200";
       case "disbursed": return "bg-purple-50 text-purple-700 border-purple-200";
       case "completed": return "bg-green-50 text-green-700 border-green-200";
-      case "defaulted": return "bg-red-50 text-red-700 border-red-200";
-      default: return "bg-gray-50 text-gray-700 border-gray-200";
+      case "defaulted": return "bg-destructive/10 text-red-700 border-destructive/30";
+      default: return "bg-background text-foreground border-border";
     }
   };
 
@@ -126,7 +126,7 @@ export default function Loans() {
                             <DropdownMenuSeparator />
                             {loan.status === "pending" && (
                               <>
-                                <DropdownMenuItem className="text-green-600">Approve Loan</DropdownMenuItem>
+                                <DropdownMenuItem className="text-secondary">Approve Loan</DropdownMenuItem>
                                 <DropdownMenuItem className="text-destructive">Reject Loan</DropdownMenuItem>
                               </>
                             )}

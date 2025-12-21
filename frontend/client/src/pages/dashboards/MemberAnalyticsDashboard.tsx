@@ -129,12 +129,12 @@ export default function MemberAnalyticsDashboard() {
     return (
       <Layout>
         <div className="p-6">
-          <div className="bg-red-50 border border-red-200 rounded-lg p-4">
+          <div className="bg-destructive/10 border border-destructive/30 rounded-lg p-4">
             <div className="flex items-start gap-3">
-              <Users className="w-5 h-5 text-red-600 mt-0.5 flex-shrink-0" />
+              <Users className="w-5 h-5 text-destructive mt-0.5 flex-shrink-0" />
               <div className="flex-1">
-                <h3 className="font-semibold text-red-900">Failed to load dashboard</h3>
-                <p className="text-sm text-red-700 mt-1">{errorMsg}</p>
+                <h3 className="font-semibold text-destructive">Failed to load dashboard</h3>
+                <p className="text-sm text-destructive mt-1">{errorMsg}</p>
                 <button
                   onClick={handleRefresh}
                   disabled={isRefreshing}
@@ -212,7 +212,7 @@ export default function MemberAnalyticsDashboard() {
 
         {/* Retention Metrics */}
         <div className="mb-8">
-          <h2 className="text-xl font-bold text-gray-900 mb-4">Retention Metrics</h2>
+          <h2 className="text-xl font-bold text-foreground mb-4">Retention Metrics</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
             <KPICard
               title="Active Members"
@@ -320,15 +320,15 @@ export default function MemberAnalyticsDashboard() {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
             {dashboard.journey_map.stages.map((stageInfo, idx) => (
               <div key={idx} className="p-4 rounded-lg glass-card">
-                <h4 className="font-bold text-gray-900 text-lg">{stageInfo.stage}</h4>
-                <p className="text-sm text-gray-600 mt-2">
+                <h4 className="font-bold text-foreground text-lg">{stageInfo.stage}</h4>
+                <p className="text-sm text-muted-foreground mt-2">
                   <strong>Duration:</strong> {stageInfo.average_duration}
                 </p>
-                <p className="text-sm text-gray-600 mt-1">
+                <p className="text-sm text-muted-foreground mt-1">
                   <strong>Key Action:</strong> {stageInfo.key_action}
                 </p>
                 {idx < dashboard.journey_map.stages.length - 1 && (
-                  <div className="text-center mt-3 text-blue-500 text-2xl">→</div>
+                  <div className="text-center mt-3 text-primary text-2xl">→</div>
                 )}
               </div>
             ))}
