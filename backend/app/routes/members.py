@@ -1,8 +1,9 @@
-from flask import Blueprint, request, jsonify, send_file
+from flask import Blueprint, request, jsonify, send_file, session
 from app.models import Member, User, Group, SavingsAccount, DrawdownAccount
 from app import db
 import qrcode
 from io import BytesIO
+from datetime import datetime
 
 bp = Blueprint('members', __name__, url_prefix='/api/members')
 
@@ -53,6 +54,7 @@ def create_member():
     
     user_id = data.get('userId')
     group_id = data.get('groupId')
+    branch_id = data.get('branchId')
     registration_fee = data.get('registrationFee', 800)
     
     if not user_id:
@@ -69,33 +71,47 @@ def create_member():
         group = Group.query.get(group_id)
         if not group:
             return jsonify({'error': 'Group not found'}), 404
+        # Use group branch_id if member branch_id not provided
+        if not branch_id:
+            branch_id = group.branch_id
             
-    # Generate member code
-    # Format: MB-{Year}-{ID}
-    # Since we don't have the ID yet, we can use a temporary placeholder or count
-    count = Member.query.count() + 1
-    member_code = f"MB{count:04d}"
+    # Generate unique member code with format: MEM-{branch_id}-{group_id}-{sequence}
+    # Get the next sequence number for this branch/group combination
+    if group_id:
+        existing_count = Member.query.filter_by(group_id=group_id).count()
+        sequence = existing_count + 1
+        member_code = f"MEM-{branch_id or 'UNK'}-{group_id}-{sequence:03d}"
+    else:
+        existing_count = Member.query.filter_by(branch_id=branch_id).count()
+        sequence = existing_count + 1
+        member_code = f"MEM-{branch_id or 'UNK'}-G{sequence:03d}"
     
+    # Create member with pending status (requires approval)
     member = Member(
         user_id=user_id,
         group_id=group_id,
+        branch_id=branch_id,
         member_code=member_code,
         registration_fee=registration_fee,
-        status='pending'
+        registration_fee_paid=False,  # Will be set when first deposit is made
+        status='pending'  # Must be approved by procurement officer/branch manager/admin
     )
     
     db.session.add(member)
     db.session.flush() # Get ID
     
-    # Create accounts
+    # Create savings account with 0 balance
     savings = SavingsAccount(
         member_id=member.id,
-        account_number=f"SAV-{member_code}"
+        account_number=f"SAV-{member_code}",
+        balance=0.0
     )
     
+    # Create drawdown account with -800 balance (registration fee debt)
     drawdown = DrawdownAccount(
         member_id=member.id,
-        account_number=f"DRD-{member_code}"
+        account_number=f"DRD-{member_code}",
+        balance=-float(registration_fee)  # Negative balance representing debt
     )
     
     db.session.add_all([savings, drawdown])
@@ -109,3 +125,127 @@ def get_member(id):
     if not member:
         return jsonify({'error': 'Member not found'}), 404
     return jsonify(member.to_dict())
+
+@bp.route('/<int:id>/approve', methods=['POST'])
+def approve_member(id):
+    """Approve a pending member - only for procurement officer, branch manager, or admin"""
+    member = Member.query.get(id)
+    if not member:
+        return jsonify({'error': 'Member not found'}), 404
+    
+    if member.status != 'pending':
+        return jsonify({'error': 'Member is not pending approval'}), 400
+    
+    # Check if user has permission to approve
+    user_id = session.get('user_id')
+    if not user_id:
+        return jsonify({'error': 'Unauthorized'}), 401
+    
+    user = User.query.get(user_id)
+    if not user:
+        return jsonify({'error': 'User not found'}), 404
+    
+    # Only procurement officer, branch manager, or admin can approve
+    allowed_roles = ['procurement_officer', 'branch_manager', 'admin']
+    if user.role.name not in allowed_roles:
+        return jsonify({'error': 'Insufficient permissions'}), 403
+    
+    # Update member status to inactive (waiting for registration fee payment)
+    member.status = 'inactive'
+    db.session.commit()
+    
+    return jsonify({
+        'message': 'Member approved successfully. Status set to inactive pending registration fee payment.',
+        'member': member.to_dict()
+    })
+
+@bp.route('/<int:id>/process-registration-fee', methods=['POST'])
+def process_registration_fee(id):
+    """Process registration fee deduction and activate member if not already active"""
+    member = Member.query.get(id)
+    if not member:
+        return jsonify({'error': 'Member not found'}), 404
+    
+    # Check if registration fee is already paid
+    if member.registration_fee_paid:
+        return jsonify({'message': 'Registration fee already processed'}), 200
+    
+    # Process registration fee deduction
+    # This would typically be called after first deposit transaction
+    member.registration_fee_paid = True
+    
+    # If member is still pending (hasn't been approved yet), keep pending
+    # If member was already approved, ensure they're active
+    if member.status == 'pending':
+        # Wait for approval from procurement officer/branch manager/admin
+        pass
+    elif member.status == 'pending_approval':
+        member.status = 'active'
+    
+    db.session.commit()
+    
+    return jsonify({
+        'message': 'Registration fee processed successfully',
+        'member': member.to_dict()
+    })
+
+@bp.route('/pending-approval', methods=['GET'])
+def get_pending_members():
+    """Get all members pending approval - for procurement officer/branch manager/admin dashboard"""
+    # Check if user has permission
+    user_id = session.get('user_id')
+    if not user_id:
+        return jsonify({'error': 'Unauthorized'}), 401
+    
+    user = User.query.get(user_id)
+    if not user:
+        return jsonify({'error': 'User not found'}), 404
+    
+    # Only procurement officer, branch manager, or admin can view pending approvals
+    allowed_roles = ['procurement_officer', 'branch_manager', 'admin']
+    if user.role.name not in allowed_roles:
+        return jsonify({'error': 'Insufficient permissions'}), 403
+    
+    # Get pending members for this branch (or all if admin)
+    query = Member.query.filter_by(status='pending')
+    
+    if user.role.name != 'admin' and user.branch_id:
+        query = query.filter_by(branch_id=user.branch_id)
+    
+    pending_members = query.order_by(Member.created_at.desc()).all()
+    
+    return jsonify([{
+        'member': member.to_dict(),
+        'user': {
+            'id': member.user.id,
+            'firstName': member.user.first_name,
+            'lastName': member.user.last_name,
+            'email': member.user.email,
+            'phone': member.user.phone
+        },
+        'group': {
+            'id': member.group.id,
+            'name': member.group.name
+        } if member.group else None
+    } for member in pending_members])
+
+@bp.route('/<int:id>/loan-limit', methods=['GET'])
+def get_loan_limit(id):
+    """Get calculated loan limit for a member (4x savings balance)"""
+    member = Member.query.get(id)
+    if not member:
+        return jsonify({'error': 'Member not found'}), 404
+    
+    if member.status != 'active':
+        return jsonify({'error': 'Member must be active to apply for loans'}), 400
+    
+    # Calculate loan limit: 4x total savings
+    total_savings = member.savings_account.balance if member.savings_account else 0
+    loan_limit = total_savings * 4
+    
+    return jsonify({
+        'member_id': id,
+        'total_savings': float(total_savings),
+        'loan_limit': float(loan_limit),
+        'calculation': f"4 × {total_savings} = {loan_limit}"
+    })

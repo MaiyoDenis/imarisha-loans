@@ -6,28 +6,34 @@ import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Search, Plus, Filter, Battery, Smartphone, Sun, Zap, Package } from "lucide-react";
 import { api } from "@/lib/api";
-var iconMap = {
-    "Battery": Battery,
-    "Phone": Smartphone,
-    "Solar": Sun,
-    "Pump": Zap,
-    "Default": Package,
+
+const iconMap = {
+  "Battery": Battery,
+  "Phone": Smartphone,
+  "Solar": Sun,
+  "Pump": Zap,
+  "Default": Package,
 };
+
 function getProductIcon(name) {
-    var key = Object.keys(iconMap).find(function (k) { return name.toLowerCase().includes(k.toLowerCase()); });
-    return key ? iconMap[key] : iconMap.Default;
+  const key = Object.keys(iconMap).find(k => name.toLowerCase().includes(k.toLowerCase()));
+  return key ? iconMap[key] : iconMap.Default;
 }
-var categoryColors = {
-    "Energy": "bg-accent/100/10 text-yellow-500",
-    "Electronics": "bg-primary/10 text-primary",
-    "Agriculture": "bg-green-500/10 text-green-500",
+
+const categoryColors = {
+  "Energy": "bg-accent/100/10 text-yellow-500",
+  "Electronics": "bg-primary/10 text-primary",
+  "Agriculture": "bg-green-500/10 text-green-500",
 };
+
 export default function LoanProducts() {
-    var _a = useQuery({
-        queryKey: ["loan-products"],
-        queryFn: api.getLoanProducts,
-    }), _b = _a.data, products = _b === void 0 ? [] : _b, isLoading = _a.isLoading;
-    return (<Layout>
+  const { data: products = [], isLoading } = useQuery({
+    queryKey: ["loan-products"],
+    queryFn: api.getLoanProducts,
+  });
+
+  return (
+    <Layout>
         <div className="p-8 space-y-8">
           <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
             <div>
@@ -35,31 +41,38 @@ export default function LoanProducts() {
               <p className="text-muted-foreground mt-1">Manage physical inventory available for lending.</p>
             </div>
             <Button className="shadow-lg shadow-primary/20" data-testid="button-add-product">
-              <Plus className="mr-2 h-4 w-4"/> Add New Product
+              <Plus className="mr-2 h-4 w-4" /> Add New Product
             </Button>
           </div>
 
           <div className="flex items-center gap-4 bg-card p-4 rounded-lg border border-border/50 shadow-sm">
             <div className="relative flex-1">
-              <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground"/>
-              <Input placeholder="Search products..." className="pl-9 bg-background" data-testid="input-search"/>
+              <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+              <Input placeholder="Search products..." className="pl-9 bg-background" data-testid="input-search" />
             </div>
             <Button variant="outline" className="gap-2">
-              <Filter className="h-4 w-4"/> Filter
+              <Filter className="h-4 w-4" /> Filter
             </Button>
           </div>
 
-          {isLoading ? (<div className="text-center py-12">Loading products...</div>) : (<div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-              {products.map(function (product) {
-                var Icon = getProductIcon(product.name);
-                var isLowStock = product.stockQuantity <= product.lowStockThreshold;
-                var colorClass = categoryColors[product.categoryId === 1 ? "Energy" : product.categoryId === 2 ? "Electronics" : "Agriculture"] || "bg-background0/10 text-gray-500";
-                return (<Card key={product.id} className="overflow-hidden border-border/50 hover:shadow-lg transition-all duration-200 group" data-testid={"card-product-".concat(product.id)}>
+          {isLoading ? (
+            <div className="text-center py-12">Loading products...</div>
+          ) : (
+            <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+              {products.map((product) => {
+                const Icon = getProductIcon(product.name);
+                const isLowStock = product.stockQuantity <= product.lowStockThreshold;
+                const colorClass = categoryColors[product.categoryId === 1 ? "Energy" : product.categoryId === 2 ? "Electronics" : "Agriculture"] || "bg-background0/10 text-gray-500";
+                
+                return (
+                  <Card key={product.id} className="overflow-hidden border-border/50 hover:shadow-lg transition-all duration-200 group" data-testid={`card-product-${product.id}`}>
                     <div className="h-48 bg-muted/30 flex items-center justify-center relative group-hover:bg-muted/50 transition-colors">
-                      <div className={"h-20 w-20 rounded-full flex items-center justify-center ".concat(colorClass)}>
-                        <Icon className="h-10 w-10"/>
+                      <div className={`h-20 w-20 rounded-full flex items-center justify-center ${colorClass}`}>
+                        <Icon className="h-10 w-10" />
                       </div>
-                      {isLowStock && (<Badge variant="destructive" className="absolute top-3 right-3 animate-pulse">Low Stock</Badge>)}
+                      {isLowStock && (
+                        <Badge variant="destructive" className="absolute top-3 right-3 animate-pulse">Low Stock</Badge>
+                      )}
                     </div>
                     <CardHeader className="pb-2">
                       <CardTitle className="text-lg font-heading">{product.name}</CardTitle>
@@ -68,13 +81,13 @@ export default function LoanProducts() {
                       <div className="flex justify-between items-end">
                         <div>
                           <p className="text-xs text-muted-foreground uppercase tracking-wider font-semibold">Price</p>
-                          <p className="text-xl font-bold text-primary" data-testid={"price-".concat(product.id)}>
+                          <p className="text-xl font-bold text-primary" data-testid={`price-${product.id}`}>
                             KES {parseFloat(product.sellingPrice).toLocaleString()}
                           </p>
                         </div>
                         <div className="text-right">
                           <p className="text-xs text-muted-foreground uppercase tracking-wider font-semibold">Stock</p>
-                          <p className={"text-lg font-bold ".concat(isLowStock ? "text-destructive" : "text-foreground")} data-testid={"stock-".concat(product.id)}>
+                          <p className={`text-lg font-bold ${isLowStock ? "text-destructive" : "text-foreground"}`} data-testid={`stock-${product.id}`}>
                             {product.stockQuantity}
                           </p>
                         </div>
@@ -85,9 +98,12 @@ export default function LoanProducts() {
                         View Details
                       </Button>
                     </CardFooter>
-                  </Card>);
-            })}
-            </div>)}
+                  </Card>
+                );
+              })}
+            </div>
+          )}
         </div>
-    </Layout>);
+    </Layout>
+  );
 }

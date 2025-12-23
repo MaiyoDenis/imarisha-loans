@@ -93,6 +93,15 @@ class LoanService:
     def get_member_loan_limit(self, member: Member) -> Dict[str, Any]:
         """Calculate loan limit based on savings balance (4x rule)"""
         try:
+            # If member is not active, loan limit is 0
+            if member.status != 'active':
+                return {
+                    'savings_balance': Decimal(0),
+                    'loan_limit': Decimal(0),
+                    'available_to_borrow': Decimal(0),
+                    'rule': 'Member not active'
+                }
+
             savings = SavingsAccount.query.filter_by(member_id=member.id).first()
             
             if not savings:

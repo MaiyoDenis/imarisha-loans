@@ -60,7 +60,7 @@ def seed_data():
     # Ensure Admin exists
     admin_user = User.query.filter_by(username='admin').first()
     if not admin_user:
-        hashed_password = bcrypt.generate_password_hash('adminpassword').decode('utf-8')
+        hashed_password = bcrypt.generate_password_hash('admin123').decode('utf-8')
         admin_user = User(
             username='admin',
             phone='0700000000',
@@ -72,7 +72,7 @@ def seed_data():
         )
         db.session.add(admin_user)
         db.session.commit()
-        created_users.append({'role': 'Admin', 'username': 'admin', 'password': 'adminpassword', 'branch': 'All'})
+        created_users.append({'role': 'Admin', 'username': 'admin', 'password': 'admin123', 'branch': 'All'})
 
     for branch_name in branches_data:
         branch = Branch.query.filter_by(name=branch_name).first()

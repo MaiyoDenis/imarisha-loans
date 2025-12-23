@@ -164,7 +164,22 @@ export default function Savings() {
     e.preventDefault();
     
     try {
-      // In real implementation, you'd call api.createTransaction
+      // Find the selected account to get memberId
+      const selectedAccount = savingsAccounts.find((acc: SavingsAccount) => acc.accountNumber === depositForm.accountNumber);
+      
+      if (!selectedAccount) {
+        throw new Error("Please select an account");
+      }
+
+      await api.createTransaction({
+        memberId: selectedAccount.memberId,
+        accountType: 'drawdown', // Always deposit to drawdown first for registration fee check
+        transactionType: 'deposit',
+        amount: depositForm.amount,
+        reference: depositForm.reference || 'Manual Deposit',
+        mpesaCode: depositForm.reference // Using reference as mpesa code for manual entry
+      });
+
       toast({
         title: "Success",
         description: `Deposit of KES ${depositForm.amount} processed successfully`,
@@ -176,6 +191,9 @@ export default function Savings() {
         amount: "",
         reference: "",
       });
+      
+      // Refetch data
+      // In a real app, you would invalidate queries here
     } catch (error) {
       toast({
         title: "Error",

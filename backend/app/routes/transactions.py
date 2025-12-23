@@ -40,6 +40,9 @@ def create_transaction():
     
     if not all([member_id, account_type, transaction_type, amount_str]):
         return jsonify({'error': 'Missing required fields'}), 400
+    
+    if transaction_type == 'deposit' and not mpesa_code:
+        return jsonify({'error': 'M-Pesa code is required for deposits'}), 400
         
     try:
         amount = Decimal(str(amount_str))
@@ -78,8 +81,7 @@ def create_transaction():
     if transaction_type == 'deposit':
         if account_type == 'loan':
              return jsonify({'error': 'Cannot deposit to loan account directly'}), 400
-        account.balance += amount
-        balance_after = account.balance
+        balance_after = account.balance + amount
         
     elif transaction_type == 'withdrawal':
         if account_type == 'loan':
@@ -147,6 +149,8 @@ def create_transaction():
     else:
         return jsonify({'error': 'Invalid transaction type'}), 400
     
+    transaction_status = 'pending' if transaction_type == 'deposit' else 'confirmed'
+    
     transaction = Transaction(
         transaction_id=str(uuid.uuid4()),
         member_id=member_id,
@@ -157,10 +161,183 @@ def create_transaction():
         balance_after=balance_after,
         reference=reference,
         mpesa_code=mpesa_code,
-        loan_id=loan_id
+        loan_id=loan_id,
+        status=transaction_status
     )
     
     db.session.add(transaction)
     db.session.commit()
     
     return jsonify(transaction.to_dict()), 201
+
+@bp.route('/<int:transaction_id>/approve', methods=['POST'])
+def approve_deposit(transaction_id):
+    from flask import session
+    from app.models import User
+    
+    transaction = Transaction.query.get(transaction_id)
+    if not transaction:
+        return jsonify({'error': 'Transaction not found'}), 404
+    
+    if transaction.transaction_type != 'deposit':
+        return jsonify({'error': 'Only deposit transactions can be approved'}), 400
+    
+    if transaction.status != 'pending':
+        return jsonify({'error': f'Transaction is already {transaction.status}'}), 400
+    
+    user_id = session.get('user_id')
+    user = User.query.get(user_id)
+    if not user:
+        return jsonify({'error': 'User not found'}), 401
+    
+    if user.role.name not in ['procurement_officer', 'branch_manager', 'admin']:
+        return jsonify({'error': 'Only procurement officers can approve deposits'}), 403
+    
+    account = None
+    if transaction.account_type == 'savings':
+        account = SavingsAccount.query.filter_by(member_id=transaction.member_id).first()
+    elif transaction.account_type == 'drawdown':
+        account = DrawdownAccount.query.filter_by(member_id=transaction.member_id).first()
+    
+    if not account:
+        return jsonify({'error': f'{transaction.account_type} account not found'}), 404
+    
+    account.balance += transaction.amount
+    transaction.status = 'confirmed'
+    transaction.confirmed_by = user_id
+    transaction.confirmed_at = datetime.utcnow()
+    
+    db.session.commit()
+    
+    return jsonify({
+        'message': 'Deposit approved successfully',
+        'transaction': transaction.to_dict()
+    }), 200
+
+@bp.route('/<int:transaction_id>/reject', methods=['POST'])
+def reject_deposit(transaction_id):
+    from flask import session
+    from app.models import User
+    
+    data = request.get_json() or {}
+    reason = data.get('reason', 'No reason provided')
+    
+    transaction = Transaction.query.get(transaction_id)
+    if not transaction:
+        return jsonify({'error': 'Transaction not found'}), 404
+    
+    if transaction.transaction_type != 'deposit':
+        return jsonify({'error': 'Only deposit transactions can be rejected'}), 400
+    
+    if transaction.status != 'pending':
+        return jsonify({'error': f'Transaction is already {transaction.status}'}), 400
+    
+    user_id = session.get('user_id')
+    user = User.query.get(user_id)
+    if not user:
+        return jsonify({'error': 'User not found'}), 401
+    
+    if user.role.name not in ['procurement_officer', 'branch_manager', 'admin']:
+        return jsonify({'error': 'Only procurement officers can reject deposits'}), 403
+    
+    transaction.status = 'failed'
+    transaction.confirmed_by = user_id
+    transaction.confirmed_at = datetime.utcnow()
+    transaction.reference = f"{transaction.reference or ''} [REJECTED: {reason}]".strip()
+    
+    db.session.commit()
+    
+    return jsonify({
+        'message': 'Deposit rejected successfully',
+        'transaction': transaction.to_dict()
+    }), 200
+
+@bp.route('/stk-push', methods=['POST'])
+def initiate_stk_push():
+    data = request.get_json()
+    
+    member_id = data.get('memberId')
+    amount_str = data.get('amount')
+    account_type = data.get('accountType', 'savings')
+    
+    if not all([member_id, amount_str]):
+        return jsonify({'error': 'Missing required fields'}), 400
+    
+    try:
+        amount = Decimal(str(amount_str))
+        if amount <= 0:
+            return jsonify({'error': 'Amount must be positive'}), 400
+    except:
+        return jsonify({'error': 'Invalid amount'}), 400
+    
+    member = Member.query.get(member_id)
+    if not member:
+        return jsonify({'error': 'Member not found'}), 404
+    
+    from app.models import User
+    user = member.user
+    if not user or not user.phone:
+        return jsonify({'error': 'Member phone number not found'}), 400
+    
+    phone = user.phone.replace('+', '').replace(' ', '')
+    if not phone.startswith('254'):
+        if phone.startswith('0'):
+            phone = '254' + phone[1:]
+        else:
+            phone = '254' + phone
+    
+    try:
+        import os
+        import requests
+        from datetime import datetime
+        
+        mpesa_url = "https://api.safaricom.co.ke/mpesa/stkpush/v1/processrequest"
+        
+        business_short_code = os.getenv('MPESA_SHORTCODE', '174379')
+        passkey = os.getenv('MPESA_PASSKEY', 'bfb279f9ba9b9d1380007480acacu1405068114f2fcb987000f202d898cd2c49')
+        callback_url = os.getenv('MPESA_CALLBACK_URL', 'https://imarisha-loans.onrender.com/api/mpesa-callback')
+        
+        timestamp = datetime.now().strftime('%Y%m%d%H%M%S')
+        
+        from hashlib import sha256
+        import base64
+        password = base64.b64encode(f"{business_short_code}{passkey}{timestamp}".encode()).decode()
+        
+        payload = {
+            "BusinessShortCode": business_short_code,
+            "Password": password,
+            "Timestamp": timestamp,
+            "TransactionType": "CustomerPayBillOnline",
+            "Amount": int(amount),
+            "PartyA": phone,
+            "PartyB": business_short_code,
+            "PhoneNumber": phone,
+            "CallBackURL": callback_url,
+            "AccountReference": f"MEM-{member.member_code}",
+            "TransactionDesc": f"Deposit to {account_type} account"
+        }
+        
+        response = requests.post(mpesa_url, json=payload, timeout=10)
+        
+        if response.status_code == 200:
+            result = response.json()
+            if result.get('ResponseCode') == '0':
+                return jsonify({
+                    'message': 'STK push initiated successfully',
+                    'requestId': result.get('CheckoutRequestID'),
+                    'phone': phone,
+                    'amount': str(amount)
+                }), 200
+            else:
+                return jsonify({
+                    'error': result.get('ResponseDescription', 'Failed to initiate STK push')
+                }), 400
+        else:
+            return jsonify({
+                'error': 'Failed to connect to M-Pesa API'
+            }), 500
+            
+    except Exception as e:
+        return jsonify({
+            'error': f'STK push failed: {str(e)}'
+        }), 500

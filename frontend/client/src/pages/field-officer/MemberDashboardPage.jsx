@@ -20,6 +20,7 @@ import {
 } from "lucide-react";
 import { ApplyLoanForm } from "@/components/field-officer/ApplyLoanForm";
 import { TransferFundsForm } from "@/components/field-officer/TransferFundsForm";
+import { DepositForm } from "@/components/field-officer/DepositForm";
 import Layout from "@/components/layout/Layout";
 import KPICard from "@/components/dashboards/KPICard";
 
@@ -28,6 +29,8 @@ export function MemberDashboardPage() {
   const [, params] = useRoute("/field-officer/members/:memberId");
   const [showLoanForm, setShowLoanForm] = useState(false);
   const [showTransferForm, setShowTransferForm] = useState(false);
+  const [showDepositForm, setShowDepositForm] = useState(false);
+  const [depositAccountType, setDepositAccountType] = useState(null);
 
   const memberId = params?.memberId ? parseInt(params.memberId) : null;
 
@@ -163,13 +166,25 @@ export function MemberDashboardPage() {
                 KES {new Intl.NumberFormat('en-KE').format(parseFloat(m.savingsBalance))}
               </p>
             </div>
-            <Button
-              onClick={() => setShowTransferForm(true)}
-              variant="outline"
-              className="w-full"
-            >
-              Add to Savings
-            </Button>
+            <div className="flex gap-2">
+              <Button
+                onClick={() => {
+                  setDepositAccountType("savings");
+                  setShowDepositForm(true);
+                }}
+                className="flex-1"
+              >
+                <DollarSign className="h-4 w-4 mr-2" />
+                Deposit
+              </Button>
+              <Button
+                onClick={() => setShowTransferForm(true)}
+                variant="outline"
+                className="flex-1"
+              >
+                Transfer
+              </Button>
+            </div>
           </CardContent>
         </Card>
 
@@ -189,12 +204,25 @@ export function MemberDashboardPage() {
                 KES {new Intl.NumberFormat('en-KE').format(parseFloat(m.drawdownBalance))}
               </p>
             </div>
-            <Button
-              onClick={() => setShowLoanForm(true)}
-              className="w-full bg-primary hover:bg-primary/80"
-            >
-              Withdraw Funds
-            </Button>
+            <div className="flex gap-2">
+              <Button
+                onClick={() => {
+                  setDepositAccountType("drawdown");
+                  setShowDepositForm(true);
+                }}
+                className="flex-1 bg-primary hover:bg-primary/80"
+              >
+                <DollarSign className="h-4 w-4 mr-2" />
+                Deposit
+              </Button>
+              <Button
+                onClick={() => setShowLoanForm(true)}
+                variant="outline"
+                className="flex-1"
+              >
+                Withdraw
+              </Button>
+            </div>
           </CardContent>
         </Card>
       </div>
@@ -226,6 +254,36 @@ export function MemberDashboardPage() {
               memberId={memberId}
               onSuccess={() => {
                 setShowTransferForm(false);
+                refetch();
+              }}
+            />
+          </CardContent>
+        </Card>
+      )}
+
+      {showDepositForm && (
+        <Card className="border-secondary/50 bg-secondary/5">
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-4">
+            <div>
+              <CardTitle>Record Deposit</CardTitle>
+              <CardDescription>
+                Deposit to {depositAccountType === "savings" ? "Savings" : "Drawdown"} Account
+              </CardDescription>
+            </div>
+            <Button
+              variant="ghost"
+              onClick={() => setShowDepositForm(false)}
+              className="text-muted-foreground hover:text-foreground"
+            >
+              ✕
+            </Button>
+          </CardHeader>
+          <CardContent>
+            <DepositForm
+              memberId={memberId}
+              defaultAccountType={depositAccountType || "savings"}
+              onSuccess={() => {
+                setShowDepositForm(false);
                 refetch();
               }}
             />

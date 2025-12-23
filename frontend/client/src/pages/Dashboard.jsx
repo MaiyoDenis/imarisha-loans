@@ -8,60 +8,67 @@ import { Users, CreditCard, TrendingUp, AlertTriangle, ArrowUpRight, ArrowDownRi
 import { Area, AreaChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 import { api } from "@/lib/api";
 import { useRoleRedirect } from "@/hooks/use-role-redirect";
+
 function generateDashboardChartData(stats) {
-    if (!stats) {
-        return [
-            { name: "Jan", loans: 4000, repayments: 2400 },
-            { name: "Feb", loans: 3000, repayments: 1398 },
-            { name: "Mar", loans: 2000, repayments: 9800 },
-            { name: "Apr", loans: 2780, repayments: 3908 },
-            { name: "May", loans: 1890, repayments: 4800 },
-            { name: "Jun", loans: 2390, repayments: 3800 },
-            { name: "Jul", loans: 3490, repayments: 4300 },
-        ];
-    }
-    var avgLoan = (stats.totalActiveLoans ? stats.totalActiveLoans / Math.max(stats.activeMembers, 1) : 5000);
-    var avgRepayment = avgLoan * 0.6;
+  if (!stats) {
     return [
-        { name: "Jan", loans: avgLoan * 0.8, repayments: avgRepayment * 0.7 },
-        { name: "Feb", loans: avgLoan * 0.7, repayments: avgRepayment * 0.6 },
-        { name: "Mar", loans: avgLoan * 0.6, repayments: avgRepayment * 0.9 },
-        { name: "Apr", loans: avgLoan * 0.9, repayments: avgRepayment * 0.75 },
-        { name: "May", loans: avgLoan * 0.5, repayments: avgRepayment * 0.85 },
-        { name: "Jun", loans: avgLoan * 0.8, repayments: avgRepayment * 0.65 },
-        { name: "Jul", loans: avgLoan * 1.1, repayments: avgRepayment * 0.95 },
+      { name: "Jan", loans: 4000, repayments: 2400 },
+      { name: "Feb", loans: 3000, repayments: 1398 },
+      { name: "Mar", loans: 2000, repayments: 9800 },
+      { name: "Apr", loans: 2780, repayments: 3908 },
+      { name: "May", loans: 1890, repayments: 4800 },
+      { name: "Jun", loans: 2390, repayments: 3800 },
+      { name: "Jul", loans: 3490, repayments: 4300 },
     ];
+  }
+
+  const avgLoan = (stats.totalActiveLoans ? stats.totalActiveLoans / Math.max(stats.activeMembers, 1) : 5000);
+  const avgRepayment = avgLoan * 0.6;
+
+  return [
+    { name: "Jan", loans: avgLoan * 0.8, repayments: avgRepayment * 0.7 },
+    { name: "Feb", loans: avgLoan * 0.7, repayments: avgRepayment * 0.6 },
+    { name: "Mar", loans: avgLoan * 0.6, repayments: avgRepayment * 0.9 },
+    { name: "Apr", loans: avgLoan * 0.9, repayments: avgRepayment * 0.75 },
+    { name: "May", loans: avgLoan * 0.5, repayments: avgRepayment * 0.85 },
+    { name: "Jun", loans: avgLoan * 0.8, repayments: avgRepayment * 0.65 },
+    { name: "Jul", loans: avgLoan * 1.1, repayments: avgRepayment * 0.95 },
+  ];
 }
+
 export default function Dashboard() {
-    var _a = useLocation(), setLocation = _a[1];
-    useEffect(function () {
-        var userStr = localStorage.getItem('user');
-        if (userStr) {
-            try {
-                var user = JSON.parse(userStr);
-                if (user.role === 'procurement_officer') {
-                    setLocation('/procurement');
-                }
-                else if (user.role === 'branch_manager') {
-                    setLocation('/dashboards/branch-manager');
-                }
-            }
-            catch (e) {
-                console.error('Failed to parse user from localStorage', e);
-            }
+  const [, setLocation] = useLocation();
+
+  useEffect(() => {
+    const userStr = localStorage.getItem('user');
+    if (userStr) {
+      try {
+        const user = JSON.parse(userStr);
+        if (user.role === 'procurement_officer') {
+          setLocation('/procurement');
+        } else if (user.role === 'branch_manager') {
+          setLocation('/dashboards/branch-manager');
         }
-    }, [setLocation]);
-    useRoleRedirect({
-        allowedRoles: ['admin', 'branch_manager', 'loan_officer', 'procurement_officer', 'customer'],
-        fallbackPath: '/field-officer'
-    });
-    var _b = useQuery({
-        queryKey: ["dashboard-stats"],
-        queryFn: api.getDashboardStats,
-        staleTime: 5 * 60 * 1000,
-        refetchInterval: 30 * 1000,
-    }), stats = _b.data, refetch = _b.refetch, isRefetching = _b.isRefetching;
-    return (<Layout>
+      } catch (e) {
+        console.error('Failed to parse user from localStorage', e);
+      }
+    }
+  }, [setLocation]);
+
+  useRoleRedirect({
+    allowedRoles: ['admin', 'branch_manager', 'loan_officer', 'procurement_officer', 'customer'],
+    fallbackPath: '/field-officer'
+  });
+
+  const { data: stats, refetch, isRefetching } = useQuery({
+    queryKey: ["dashboard-stats"],
+    queryFn: api.getDashboardStats,
+    staleTime: 5 * 60 * 1000,
+    refetchInterval: 30 * 1000,
+  });
+
+  return (
+    <Layout>
         <div className="space-y-6 md:space-y-8">
           <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
             <div>
@@ -69,8 +76,13 @@ export default function Dashboard() {
               <p className="text-xs md:text-sm text-muted-foreground mt-1">Overview of your branch performance and loan portfolio.</p>
             </div>
             <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 sm:gap-3">
-              <button onClick={function () { return refetch(); }} disabled={isRefetching} className="button-primary px-4 py-2 text-xs md:text-sm rounded-lg disabled:opacity-50" aria-label={isRefetching ? "Refreshing dashboard data" : "Refresh dashboard data"}>
-                <RefreshCw size={16} className={isRefetching ? 'animate-spin' : ''} aria-hidden="true"/>
+              <button
+                onClick={() => refetch()}
+                disabled={isRefetching}
+                className="button-primary px-4 py-2 text-xs md:text-sm rounded-lg disabled:opacity-50"
+                aria-label={isRefetching ? "Refreshing dashboard data" : "Refresh dashboard data"}
+              >
+                <RefreshCw size={16} className={isRefetching ? 'animate-spin' : ''} aria-hidden="true" />
                 <span className="hidden sm:inline ml-2">Refresh</span>
               </button>
               <div className="flex items-center justify-center gap-2 text-xs md:text-sm text-foreground bg-card border border-border px-3 py-2 md:py-1 rounded-full shadow-sm">
@@ -85,14 +97,14 @@ export default function Dashboard() {
             <Card className="stat-card" role="region" aria-label="Total active loans">
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                 <CardTitle className="text-xs md:text-sm font-medium text-muted-foreground">Total Active Loans</CardTitle>
-                <CreditCard className="h-3 w-3 md:h-4 md:w-4 text-primary flex-shrink-0" aria-hidden="true"/>
+                <CreditCard className="h-3 w-3 md:h-4 md:w-4 text-primary flex-shrink-0" aria-hidden="true" />
               </CardHeader>
               <CardContent>
                 <div className="text-xl md:text-2xl font-bold font-heading truncate" data-testid="stat-total-loans">
                   KES {stats ? (parseFloat(stats.totalActiveLoans) / 1000000).toFixed(1) : "0"}M
                 </div>
                 <p className="text-xs text-muted-foreground mt-1 flex items-center">
-                  <ArrowUpRight className="h-3 w-3 text-green-500 mr-1 flex-shrink-0" aria-hidden="true"/>
+                  <ArrowUpRight className="h-3 w-3 text-green-500 mr-1 flex-shrink-0" aria-hidden="true" />
                   <span className="text-green-500 font-medium">Live</span>
                 </p>
               </CardContent>
@@ -100,14 +112,14 @@ export default function Dashboard() {
             <Card className="stat-card" role="region" aria-label="Total savings">
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                 <CardTitle className="text-xs md:text-sm font-medium text-muted-foreground">Total Savings</CardTitle>
-                <TrendingUp className="h-3 w-3 md:h-4 md:w-4 text-secondary flex-shrink-0" aria-hidden="true"/>
+                <TrendingUp className="h-3 w-3 md:h-4 md:w-4 text-secondary flex-shrink-0" aria-hidden="true" />
               </CardHeader>
               <CardContent>
                 <div className="text-xl md:text-2xl font-bold font-heading truncate" data-testid="stat-total-savings">
                   KES {stats ? (parseFloat(stats.totalSavings) / 1000000).toFixed(1) : "0"}M
                 </div>
                 <p className="text-xs text-muted-foreground mt-1 flex items-center">
-                  <ArrowUpRight className="h-3 w-3 text-green-500 mr-1 flex-shrink-0"/>
+                  <ArrowUpRight className="h-3 w-3 text-green-500 mr-1 flex-shrink-0" />
                   <span className="text-green-500 font-medium">Deposits</span>
                 </p>
               </CardContent>
@@ -115,11 +127,11 @@ export default function Dashboard() {
             <Card className="stat-card" role="region" aria-label="Active members">
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                 <CardTitle className="text-xs md:text-sm font-medium text-muted-foreground">Active Members</CardTitle>
-                <Users className="h-3 w-3 md:h-4 md:w-4 text-primary flex-shrink-0" aria-hidden="true"/>
+                <Users className="h-3 w-3 md:h-4 md:w-4 text-primary flex-shrink-0" aria-hidden="true" />
               </CardHeader>
               <CardContent>
                 <div className="text-xl md:text-2xl font-bold font-heading" data-testid="stat-active-members">
-                  {(stats === null || stats === void 0 ? void 0 : stats.activeMembers) || 0}
+                  {stats?.activeMembers || 0}
                 </div>
                 <p className="text-xs text-muted-foreground mt-1">Active customers</p>
               </CardContent>
@@ -127,11 +139,11 @@ export default function Dashboard() {
             <Card className="stat-card" role="region" aria-label="Arrears alert">
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                 <CardTitle className="text-xs md:text-sm font-medium text-destructive">Arrears Alert</CardTitle>
-                <AlertTriangle className="h-3 w-3 md:h-4 md:w-4 text-destructive flex-shrink-0" aria-hidden="true"/>
+                <AlertTriangle className="h-3 w-3 md:h-4 md:w-4 text-destructive flex-shrink-0" aria-hidden="true" />
               </CardHeader>
               <CardContent>
                 <div className="text-xl md:text-2xl font-bold font-heading text-destructive" data-testid="stat-arrears">
-                  {(stats === null || stats === void 0 ? void 0 : stats.arrearsCount) || 0}
+                  {stats?.arrearsCount || 0}
                 </div>
                 <p className="text-xs text-destructive/80 mt-1">Overdue {'>'} 7 days</p>
               </CardContent>
@@ -157,12 +169,15 @@ export default function Dashboard() {
                           <stop offset="95%" stopColor="hsl(var(--secondary))" stopOpacity={0}/>
                         </linearGradient>
                       </defs>
-                      <XAxis dataKey="name" stroke="#888888" fontSize={12} tickLine={false} axisLine={false}/>
-                      <YAxis stroke="#888888" fontSize={12} tickLine={false} axisLine={false} tickFormatter={function (value) { return "K".concat(value); }}/>
-                      <Tooltip contentStyle={{ backgroundColor: 'hsl(var(--card))', borderColor: 'hsl(var(--border))', borderRadius: '8px' }} itemStyle={{ color: 'hsl(var(--foreground))' }}/>
-                      <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="hsl(var(--border))" opacity={0.4}/>
-                      <Area type="monotone" dataKey="loans" stroke="hsl(var(--primary))" strokeWidth={2} fillOpacity={1} fill="url(#colorLoans)"/>
-                      <Area type="monotone" dataKey="repayments" stroke="hsl(var(--secondary))" strokeWidth={2} fillOpacity={1} fill="url(#colorRepayments)"/>
+                      <XAxis dataKey="name" stroke="#888888" fontSize={12} tickLine={false} axisLine={false} />
+                      <YAxis stroke="#888888" fontSize={12} tickLine={false} axisLine={false} tickFormatter={(value) => `K${value}`} />
+                      <Tooltip 
+                        contentStyle={{ backgroundColor: 'hsl(var(--card))', borderColor: 'hsl(var(--border))', borderRadius: '8px' }}
+                        itemStyle={{ color: 'hsl(var(--foreground))' }}
+                      />
+                      <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="hsl(var(--border))" opacity={0.4} />
+                      <Area type="monotone" dataKey="loans" stroke="hsl(var(--primary))" strokeWidth={2} fillOpacity={1} fill="url(#colorLoans)" />
+                      <Area type="monotone" dataKey="repayments" stroke="hsl(var(--secondary))" strokeWidth={2} fillOpacity={1} fill="url(#colorRepayments)" />
                     </AreaChart>
                   </ResponsiveContainer>
                 </div>
@@ -176,13 +191,14 @@ export default function Dashboard() {
               <CardContent>
                 <div className="space-y-4 md:space-y-6">
                   {[
-            { user: "Sarah K.", action: "Applied for Business Loan", amount: "KES 50,000", time: "2m ago", icon: Activity, color: "text-primary" },
-            { user: "Group A", action: "Weekly Repayment", amount: "KES 12,000", time: "15m ago", icon: ArrowDownRight, color: "text-green-500" },
-            { user: "John D.", action: "New Member Registration", amount: "Fee Paid", time: "1h ago", icon: Users, color: "text-orange-500" },
-            { user: "Stock Alert", action: "Solar Batteries Low", amount: "5 units left", time: "2h ago", icon: AlertTriangle, color: "text-red-500" },
-        ].map(function (item, i) { return (<div key={i} className="flex items-start md:items-center gap-2 md:gap-4">
-                      <div className={"h-8 w-8 md:h-9 md:w-9 rounded-full bg-muted flex items-center justify-center flex-shrink-0 ".concat(item.color, " bg-opacity-10")}>
-                        <item.icon className={"h-4 w-4 md:h-5 md:w-5 ".concat(item.color)}/>
+                    { user: "Sarah K.", action: "Applied for Business Loan", amount: "KES 50,000", time: "2m ago", icon: Activity, color: "text-primary" },
+                    { user: "Group A", action: "Weekly Repayment", amount: "KES 12,000", time: "15m ago", icon: ArrowDownRight, color: "text-green-500" },
+                    { user: "John D.", action: "New Member Registration", amount: "Fee Paid", time: "1h ago", icon: Users, color: "text-orange-500" },
+                    { user: "Stock Alert", action: "Solar Batteries Low", amount: "5 units left", time: "2h ago", icon: AlertTriangle, color: "text-red-500" },
+                  ].map((item, i) => (
+                    <div key={i} className="flex items-start md:items-center gap-2 md:gap-4">
+                      <div className={`h-8 w-8 md:h-9 md:w-9 rounded-full bg-muted flex items-center justify-center flex-shrink-0 ${item.color} bg-opacity-10`}>
+                        <item.icon className={`h-4 w-4 md:h-5 md:w-5 ${item.color}`} />
                       </div>
                       <div className="space-y-1 flex-1 min-w-0">
                         <p className="text-xs md:text-sm font-medium leading-none truncate">{item.user}</p>
@@ -192,7 +208,8 @@ export default function Dashboard() {
                         <div className="truncate">{item.amount}</div>
                         <div className="text-xs text-muted-foreground font-normal whitespace-nowrap">{item.time}</div>
                       </div>
-                    </div>); })}
+                    </div>
+                  ))}
                 </div>
               </CardContent>
             </Card>
@@ -202,7 +219,7 @@ export default function Dashboard() {
             <Card>
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                 <CardTitle className="text-xs md:text-sm font-medium text-muted-foreground">AI Insights</CardTitle>
-                <Sparkles className="h-3 w-3 md:h-4 md:w-4 text-primary flex-shrink-0"/>
+                <Sparkles className="h-3 w-3 md:h-4 md:w-4 text-primary flex-shrink-0" />
               </CardHeader>
               <CardContent>
                 <div className="space-y-3">
@@ -221,7 +238,7 @@ export default function Dashboard() {
             <Card>
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                 <CardTitle className="text-sm font-medium text-muted-foreground">System Instructions</CardTitle>
-                <AlertCircle className="h-4 w-4 text-orange-600"/>
+                <AlertCircle className="h-4 w-4 text-orange-600" />
               </CardHeader>
               <CardContent>
                 <div className="space-y-2">
@@ -241,7 +258,7 @@ export default function Dashboard() {
             <Card>
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                 <CardTitle className="text-sm font-medium text-muted-foreground">Performance</CardTitle>
-                <TrendingDown className="h-4 w-4 text-secondary"/>
+                <TrendingDown className="h-4 w-4 text-secondary" />
               </CardHeader>
               <CardContent>
                 <div className="space-y-2">
@@ -258,5 +275,6 @@ export default function Dashboard() {
             </Card>
           </div>
         </div>
-    </Layout>);
+    </Layout>
+  );
 }

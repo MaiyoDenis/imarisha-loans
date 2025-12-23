@@ -2,9 +2,7 @@ import React from "react";
 import { Switch, Route } from "wouter";
 import { queryClient } from "./lib/queryClient";
 import { QueryClientProvider } from "@tanstack/react-query";
-import { Toaster } from "@/components/ui/toaster";
-import { TooltipProvider } from "@/components/ui/tooltip";
-import { ProtectedRoute } from "@/components/ProtectedRoute";
+import { ProtectedRoute } from "@/components/ProtectedRoute.jsx";
 import NotFound from "@/pages/not-found";
 import Login from "@/pages/Login";
 import Register from "@/pages/Register";
@@ -35,6 +33,7 @@ import { FieldOfficerDashboard } from "@/pages/field-officer/FieldOfficerDashboa
 import { GroupMembersPage } from "@/pages/field-officer/GroupMembersPage";
 import { MemberDashboardPage } from "@/pages/field-officer/MemberDashboardPage";
 import { SchedulePage } from "@/pages/field-officer/SchedulePage";
+import { MemberApprovalPage } from "@/components/field-officer/MemberApprovalPage";
 // import UserList from "@/pages/Admin/Users/UserList";
 // import BranchList from "@/pages/Admin/Branches/BranchList";
 import LoanProductList from "@/pages/Admin/LoanProductList";
@@ -184,6 +183,13 @@ function Router() {
           </ProtectedRoute>
         )}
       </Route>
+      <Route path="/member-approval">
+        {(params) => (
+          <ProtectedRoute allowedRoles={["procurement_officer", "branch_manager", "admin"]} fallbackPath="/dashboard">
+            <MemberApprovalPage {...params} />
+          </ProtectedRoute>
+        )}
+      </Route>
       <Route path="/users">
         {(params) => (
           <ProtectedRoute allowedRoles={["admin"]} fallbackPath="/dashboard">
@@ -270,12 +276,10 @@ function Router() {
 function App() {
   return (
     <QueryClientProvider client={queryClient}>
-      <TooltipProvider>
-        <Toaster />
-        <Router />
-      </TooltipProvider>
+      <Router />
     </QueryClientProvider>
   );
 }
 
 export default App;
+

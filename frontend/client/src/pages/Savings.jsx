@@ -59,6 +59,7 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel,
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
+import { api } from "@/lib/api";
 import { useState } from "react";
 export default function Savings() {
     var _this = this;
@@ -170,29 +171,49 @@ export default function Savings() {
         return matchesSearch && matchesType;
     });
     var handleDeposit = function (e) { return __awaiter(_this, void 0, void 0, function () {
+        var selectedAccount, error_1;
         return __generator(this, function (_a) {
-            e.preventDefault();
-            try {
-                // In real implementation, you'd call api.createTransaction
-                toast({
-                    title: "Success",
-                    description: "Deposit of KES ".concat(depositForm.amount, " processed successfully"),
-                });
-                setIsDepositOpen(false);
-                setDepositForm({
-                    accountNumber: "",
-                    amount: "",
-                    reference: "",
-                });
+            switch (_a.label) {
+                case 0:
+                    e.preventDefault();
+                    _a.label = 1;
+                case 1:
+                    _a.trys.push([1, 3, , 4]);
+                    selectedAccount = savingsAccounts.find(function (acc) { return acc.accountNumber === depositForm.accountNumber; });
+                    if (!selectedAccount) {
+                        throw new Error("Please select an account");
+                    }
+                    return [4 /*yield*/, api.createTransaction({
+                            memberId: selectedAccount.memberId,
+                            accountType: 'drawdown', // Always deposit to drawdown first for registration fee check
+                            transactionType: 'deposit',
+                            amount: depositForm.amount,
+                            reference: depositForm.reference || 'Manual Deposit',
+                            mpesaCode: depositForm.reference // Using reference as mpesa code for manual entry
+                        })];
+                case 2:
+                    _a.sent();
+                    toast({
+                        title: "Success",
+                        description: "Deposit of KES ".concat(depositForm.amount, " processed successfully"),
+                    });
+                    setIsDepositOpen(false);
+                    setDepositForm({
+                        accountNumber: "",
+                        amount: "",
+                        reference: "",
+                    });
+                    return [3 /*break*/, 4];
+                case 3:
+                    error_1 = _a.sent();
+                    toast({
+                        title: "Error",
+                        description: error_1 instanceof Error ? error_1.message : "Failed to process deposit",
+                        variant: "destructive",
+                    });
+                    return [3 /*break*/, 4];
+                case 4: return [2 /*return*/];
             }
-            catch (error) {
-                toast({
-                    title: "Error",
-                    description: error instanceof Error ? error.message : "Failed to process deposit",
-                    variant: "destructive",
-                });
-            }
-            return [2 /*return*/];
         });
     }); };
     var handleWithdraw = function (e) { return __awaiter(_this, void 0, void 0, function () {

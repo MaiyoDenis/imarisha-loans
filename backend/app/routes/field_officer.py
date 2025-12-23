@@ -6,6 +6,7 @@ import uuid
 from datetime import datetime, timedelta
 from app.utils.decorators import login_required, role_required
 from flask_bcrypt import Bcrypt
+from sqlalchemy import func
 
 bcrypt = Bcrypt()
 
@@ -31,18 +32,30 @@ def get_officer_groups():
         if not data or not data.get('name'):
             return jsonify({'error': 'Group name is required'}), 400
         
+        # Check for unique group name within the branch
+        existing_group = Group.query.filter_by(
+            name=data.get('name').strip(),
+            branch_id=user.branch_id or 1
+        ).first()
+        
+        if existing_group:
+            return jsonify({'error': 'Group name already exists in this branch'}), 400
+        
         group = Group(
-            name=data.get('name'),
+            name=data.get('name').strip(),
             location=data.get('location', ''),
             description=data.get('description', ''),
             branch_id=user.branch_id or 1,
             loan_officer_id=user_id
         )
         
-        db.session.add(group)
-        db.session.commit()
-        
-        return jsonify(group.to_dict()), 201
+        try:
+            db.session.add(group)
+            db.session.commit()
+            return jsonify(group.to_dict()), 201
+        except Exception as e:
+            db.session.rollback()
+            return jsonify({'error': f'Failed to create group: {str(e)}'}), 500
     
     query = Group.query
     if user.role.name == 'admin':
@@ -218,6 +231,9 @@ def get_member_dashboard(member_id):
     if not member:
         return jsonify({'error': 'Member not found'}), 404
     
+    if member.status != 'active':
+        return jsonify({'error': 'Member must have active status to apply for loans'}), 400
+    
     if user.role.name != 'admin':
         group = member.group
         if not group or group.loan_officer_id != user_id:
@@ -264,11 +280,14 @@ def get_member_dashboard(member_id):
     ).all()
     total_repaid = sum([Decimal(t.amount) for t in repayments])
     
-    max_loan_limit = Decimal('50000')
-    if member.risk_category == 'high_risk':
-        max_loan_limit = Decimal('10000')
-    elif member.risk_category == 'medium_risk':
-        max_loan_limit = Decimal('25000')
+    # Calculate loan limit as 4 times savings balance
+    if member.status != 'active':
+        max_loan_limit = Decimal('0')
+    else:
+        max_loan_limit = savings_balance * Decimal('4')
+        # Apply minimum and maximum limits only if active
+        max_loan_limit = max(max_loan_limit, Decimal('5000'))  # Minimum 5000
+        max_loan_limit = min(max_loan_limit, Decimal('50000'))  # Maximum 50000
     
     available_loan = max(Decimal('0'), max_loan_limit - total_outstanding)
     
@@ -301,6 +320,9 @@ def apply_loan_for_member(member_id):
     member = Member.query.get(member_id)
     if not member:
         return jsonify({'error': 'Member not found'}), 404
+    
+    if member.status != 'active':
+        return jsonify({'error': 'Member must have active status to apply for loans'}), 400
     
     if user.role.name != 'admin':
         group = member.group
@@ -407,6 +429,9 @@ def transfer_funds(member_id):
     member = Member.query.get(member_id)
     if not member:
         return jsonify({'error': 'Member not found'}), 404
+    
+    if member.status != 'active':
+        return jsonify({'error': 'Member must have active status to apply for loans'}), 400
     
     if user.role.name != 'admin':
         group = member.group
@@ -572,7 +597,7 @@ def add_member_to_group():
             return jsonify({'error': 'User is already a member of this group'}), 409
     else:
         new_user = User(
-            username=data.get('memberCode', f"member_{uuid.uuid4().hex[:8]}"),
+            username=f"member_{uuid.uuid4().hex[:8]}",
             phone=data.get('phone'),
             first_name=data.get('firstName'),
             last_name=data.get('lastName'),
@@ -581,39 +606,61 @@ def add_member_to_group():
             password=bcrypt.generate_password_hash('defaultpassword').decode('utf-8')
         )
         db.session.add(new_user)
-        db.session.commit()
+        db.session.flush()
         existing_user = new_user
     
-    member_code = data.get('memberCode', f"MEM{str(uuid.uuid4().hex[:6]).upper()}")
+    # Generate unique member code in format: MEM-{branch_id}-{group_id}-{sequence}
+    def generate_member_code():
+        # Get the next sequence number for this branch and group
+        max_code = db.session.query(func.max(Member.id)).filter_by(
+            branch_id=group.branch_id,
+            group_id=group_id
+        ).scalar() or 0
+        
+        sequence = max_code + 1
+        return f"MEM-{group.branch_id}-{group_id}-{sequence:04d}"
+    
+    member_code = generate_member_code()
+    
+    # Ensure member code is truly unique
+    while Member.query.filter_by(member_code=member_code).first():
+        member_code = generate_member_code()
     
     member = Member(
         user_id=existing_user.id,
         group_id=group_id,
         branch_id=group.branch_id,
         member_code=member_code,
-        status='active'
+        status='pending'  # Start as pending, not active
     )
     
-    db.session.add(member)
-    db.session.flush()
-    
-    savings_account = SavingsAccount(
-        member_id=member.id,
-        account_number=f"SAV{member.id}{uuid.uuid4().hex[:6].upper()}",
-        balance=Decimal('0')
-    )
-    
-    drawdown_account = DrawdownAccount(
-        member_id=member.id,
-        account_number=f"DRD{member.id}{uuid.uuid4().hex[:6].upper()}",
-        balance=Decimal('0')
-    )
-    
-    db.session.add(savings_account)
-    db.session.add(drawdown_account)
-    db.session.commit()
-    
-    return jsonify(member.to_dict()), 201
+    try:
+        db.session.add(member)
+        db.session.flush()
+        
+        # Create savings account with 0 balance
+        savings_account = SavingsAccount(
+            member_id=member.id,
+            account_number=f"SAV{member.id}{uuid.uuid4().hex[:6].upper()}",
+            balance=Decimal('0')
+        )
+        
+        # Create drawdown account with -800 (registration fee)
+        drawdown_account = DrawdownAccount(
+            member_id=member.id,
+            account_number=f"DRD{member.id}{uuid.uuid4().hex[:6].upper()}",
+            balance=Decimal('-800')  # Registration fee
+        )
+        
+        db.session.add(savings_account)
+        db.session.add(drawdown_account)
+        db.session.commit()
+        
+        return jsonify(member.to_dict()), 201
+        
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({'error': f'Failed to create member: {str(e)}'}), 500
 
 @bp.route('/groups/<int:group_id>/visits', methods=['GET', 'POST'])
 @login_required
@@ -668,3 +715,296 @@ def manage_group_visits(group_id):
     visits = GroupVisit.query.filter_by(group_id=group_id).order_by(GroupVisit.visit_date.desc()).all()
     
     return jsonify([visit.to_dict() for visit in visits])
+
+@bp.route('/members/pending-approval', methods=['GET'])
+@login_required
+@role_required(['procurement_officer', 'branch_manager', 'admin'])
+def get_pending_members():
+    """Get all members pending approval"""
+    from flask import session
+    user_id = session.get('user_id')
+    user = User.query.get(user_id)
+    
+    query = Member.query.filter_by(status='pending')
+    
+    # If not admin, show only members from the user's branch
+    if user.role.name != 'admin':
+        query = query.filter_by(branch_id=user.branch_id)
+    
+    pending_members = query.options(
+        db.joinedload(Member.user),
+        db.joinedload(Member.group),
+        db.joinedload(Member.branch)
+    ).all()
+    
+    members_data = []
+    for member in pending_members:
+        member_dict = member.to_dict()
+        member_dict['user'] = {
+            'id': member.user.id,
+            'firstName': member.user.first_name,
+            'lastName': member.user.last_name,
+            'phone': member.user.phone,
+            'username': member.user.username
+        }
+        if member.group:
+            member_dict['group'] = {
+                'id': member.group.id,
+                'name': member.group.name
+            }
+        if member.branch:
+            member_dict['branch'] = {
+                'id': member.branch.id,
+                'name': member.branch.name,
+                'location': member.branch.location
+            }
+        members_data.append(member_dict)
+    
+    return jsonify(members_data)
+
+@bp.route('/members/<int:member_id>/approve', methods=['POST'])
+@login_required
+@role_required(['procurement_officer', 'branch_manager', 'admin'])
+def approve_member(member_id):
+    """Approve a pending member"""
+    from flask import session
+    user_id = session.get('user_id')
+    user = User.query.get(user_id)
+    
+    member = Member.query.get(member_id)
+    if not member:
+        return jsonify({'error': 'Member not found'}), 404
+    
+    if member.status != 'pending':
+        return jsonify({'error': 'Member is not in pending status'}), 400
+    
+    # If not admin, ensure member is from the user's branch
+    if user.role.name != 'admin' and member.branch_id != user.branch_id:
+        return jsonify({'error': 'Unauthorized to approve members from other branches'}), 403
+    
+    try:
+        member.status = 'active'
+        db.session.commit()
+        
+        return jsonify({
+            'message': 'Member approved successfully',
+            'member': member.to_dict()
+        })
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({'error': f'Failed to approve member: {str(e)}'}), 500
+
+@bp.route('/members/<int:member_id>/reject', methods=['POST'])
+@login_required
+@role_required(['procurement_officer', 'branch_manager', 'admin'])
+def reject_member(member_id):
+    """Reject a pending member"""
+    from flask import session
+    user_id = session.get('user_id')
+    user = User.query.get(user_id)
+    
+    member = Member.query.get(member_id)
+    if not member:
+        return jsonify({'error': 'Member not found'}), 404
+    
+    if member.status != 'pending':
+        return jsonify({'error': 'Member is not in pending status'}), 400
+    
+    # If not admin, ensure member is from the user's branch
+    if user.role.name != 'admin' and member.branch_id != user.branch_id:
+        return jsonify({'error': 'Unauthorized to reject members from other branches'}), 403
+    
+    try:
+        member.status = 'blocked'  # Set to blocked instead of deleting
+        db.session.commit()
+        
+        return jsonify({
+            'message': 'Member rejected successfully',
+            'member': member.to_dict()
+        })
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({'error': f'Failed to reject member: {str(e)}'}), 500
+
+@bp.route('/members/bulk-approve', methods=['POST'])
+@login_required
+@role_required(['procurement_officer', 'branch_manager', 'admin'])
+def bulk_approve_members():
+    """Bulk approve multiple pending members"""
+    from flask import session
+    user_id = session.get('user_id')
+    user = User.query.get(user_id)
+    
+    data = request.get_json()
+    member_ids = data.get('memberIds', [])
+    
+    if not member_ids:
+        return jsonify({'error': 'No member IDs provided'}), 400
+    
+    try:
+        # Get pending members that can be approved by this user
+        query = Member.query.filter(
+            Member.id.in_(member_ids),
+            Member.status == 'pending'
+        )
+        
+        # If not admin, filter by branch
+        if user.role.name != 'admin':
+            query = query.filter_by(branch_id=user.branch_id)
+        
+        members_to_approve = query.all()
+        
+        if not members_to_approve:
+            return jsonify({'error': 'No valid members found for approval'}), 400
+        
+        approved_count = 0
+        for member in members_to_approve:
+            member.status = 'active'
+            approved_count += 1
+        
+        db.session.commit()
+        
+        return jsonify({
+            'message': f'Successfully approved {approved_count} members',
+            'approvedCount': approved_count
+        })
+        
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({'error': f'Failed to bulk approve members: {str(e)}'}), 500
+
+@bp.route('/transactions/first-deposit', methods=['POST'])
+@login_required
+def process_first_deposit():
+    """Process first deposit and handle registration fee deduction"""
+    from flask import session
+    user_id = session.get('user_id')
+    user = User.query.get(user_id)
+    
+    data = request.get_json()
+    member_id = data.get('memberId')
+    deposit_amount = data.get('amount')
+    transaction_reference = data.get('reference', '')
+    
+    if not all([member_id, deposit_amount]):
+        return jsonify({'error': 'Member ID and amount are required'}), 400
+    
+    try:
+        deposit_amount_decimal = Decimal(str(deposit_amount))
+    except:
+        return jsonify({'error': 'Invalid deposit amount'}), 400
+    
+    if deposit_amount_decimal <= 0:
+        return jsonify({'error': 'Deposit amount must be greater than 0'}), 400
+    
+    member = Member.query.get(member_id)
+    if not member:
+        return jsonify({'error': 'Member not found'}), 404
+    
+    # Check if this is the first deposit
+    existing_deposits = Transaction.query.filter_by(
+        member_id=member_id,
+        transaction_type='deposit',
+        account_type='savings'
+    ).count()
+    
+    if existing_deposits > 0:
+        # Regular deposit, no special handling needed
+        if not member.savings_account:
+            return jsonify({'error': 'Savings account not found'}), 404
+        
+        balance_before = member.savings_account.balance
+        member.savings_account.balance += deposit_amount_decimal
+        
+        transaction_id = f"TXN-{datetime.now().strftime('%Y%m%d%H%M%S')}-{uuid.uuid4().hex[:6].upper()}"
+        
+        transaction = Transaction(
+            transaction_id=transaction_id,
+            member_id=member_id,
+            account_type='savings',
+            transaction_type='deposit',
+            amount=deposit_amount_decimal,
+            balance_before=balance_before,
+            balance_after=member.savings_account.balance,
+            reference=transaction_reference or 'Regular deposit',
+            processed_by=user_id,
+            status='confirmed',
+            confirmed_by=user_id,
+            confirmed_at=datetime.utcnow()
+        )
+        
+        db.session.add(transaction)
+        db.session.commit()
+        
+        return jsonify({
+            'message': 'Deposit processed successfully',
+            'transaction': transaction.to_dict()
+        }), 201
+    
+    # This is the first deposit - handle registration fee deduction
+    if not member.savings_account or not member.drawdown_account:
+        return jsonify({'error': 'Member accounts not found'}), 404
+    
+    if member.status == 'pending':
+        # Change status to active upon first deposit
+        member.status = 'active'
+    
+    # Process the deposit
+    balance_before = member.savings_account.balance
+    member.savings_account.balance += deposit_amount_decimal
+    
+    # Check if we can deduct the registration fee from drawdown
+    registration_fee = Decimal('800')
+    
+    if member.drawdown_account.balance < 0:
+        # Deduct registration fee from the deposit
+        drawdown_balance_before = member.drawdown_account.balance
+        member.drawdown_account.balance += registration_fee  # Moving towards 0
+        
+        # Create transaction for registration fee deduction
+        transaction_id = f"TXN-{datetime.now().strftime('%Y%m%d%H%M%S')}-{uuid.uuid4().hex[:6].upper()}"
+        
+        transaction = Transaction(
+            transaction_id=transaction_id,
+            member_id=member_id,
+            account_type='drawdown',
+            transaction_type='registration_fee',
+            amount=registration_fee,
+            balance_before=drawdown_balance_before,
+            balance_after=member.drawdown_account.balance,
+            reference='Registration fee deducted from first deposit',
+            processed_by=user_id,
+            status='confirmed',
+            confirmed_by=user_id,
+            confirmed_at=datetime.utcnow()
+        )
+        
+        db.session.add(transaction)
+    
+    # Create deposit transaction
+    transaction_id = f"TXN-{datetime.now().strftime('%Y%m%d%H%M%S')}-{uuid.uuid4().hex[:6].upper()}"
+    
+    transaction = Transaction(
+        transaction_id=transaction_id,
+        member_id=member_id,
+        account_type='savings',
+        transaction_type='deposit',
+        amount=deposit_amount_decimal,
+        balance_before=balance_before,
+        balance_after=member.savings_account.balance,
+        reference=transaction_reference or 'First deposit',
+        processed_by=user_id,
+        status='confirmed',
+        confirmed_by=user_id,
+        confirmed_at=datetime.utcnow()
+    )
+    
+    db.session.add(transaction)
+    db.session.commit()
+    
+    return jsonify({
+        'message': 'First deposit processed successfully with registration fee deduction',
+        'memberStatus': member.status,
+        'registrationFeeDeducted': str(registration_fee),
+        'transaction': transaction.to_dict()
+    }), 201

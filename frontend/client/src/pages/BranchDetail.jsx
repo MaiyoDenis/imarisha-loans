@@ -1,39 +1,3 @@
-var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
-    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
-var __generator = (this && this.__generator) || function (thisArg, body) {
-    var _ = { label: 0, sent: function() { if (t[0] & 1) throw t[1]; return t[1]; }, trys: [], ops: [] }, f, y, t, g = Object.create((typeof Iterator === "function" ? Iterator : Object).prototype);
-    return g.next = verb(0), g["throw"] = verb(1), g["return"] = verb(2), typeof Symbol === "function" && (g[Symbol.iterator] = function() { return this; }), g;
-    function verb(n) { return function (v) { return step([n, v]); }; }
-    function step(op) {
-        if (f) throw new TypeError("Generator is already executing.");
-        while (g && (g = 0, op[0] && (_ = 0)), _) try {
-            if (f = 1, y && (t = op[0] & 2 ? y["return"] : op[0] ? y["throw"] || ((t = y["return"]) && t.call(y), 0) : y.next) && !(t = t.call(y, op[1])).done) return t;
-            if (y = 0, t) op = [op[0] & 2, t.value];
-            switch (op[0]) {
-                case 0: case 1: t = op; break;
-                case 4: _.label++; return { value: op[1], done: false };
-                case 5: _.label++; y = op[1]; op = [0]; continue;
-                case 7: op = _.ops.pop(); _.trys.pop(); continue;
-                default:
-                    if (!(t = _.trys, t = t.length > 0 && t[t.length - 1]) && (op[0] === 6 || op[0] === 2)) { _ = 0; continue; }
-                    if (op[0] === 3 && (!t || (op[1] > t[0] && op[1] < t[3]))) { _.label = op[1]; break; }
-                    if (op[0] === 6 && _.label < t[1]) { _.label = t[1]; t = op; break; }
-                    if (t && _.label < t[2]) { _.label = t[2]; _.ops.push(op); break; }
-                    if (t[2]) _.ops.pop();
-                    _.trys.pop(); continue;
-            }
-            op = body.call(thisArg, _);
-        } catch (e) { op = [6, e]; y = 0; } finally { f = t = 0; }
-        if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
-    }
-};
 import { useState } from "react";
 import { useParams, useLocation } from "wouter";
 import { useQuery } from "@tanstack/react-query";
@@ -49,220 +13,214 @@ import { ArrowLeft, Users, DollarSign, Package, TrendingUp, Loader2, Search, Fil
 import { api } from "@/lib/api";
 import { useToast } from "@/hooks/use-toast";
 import { downloadCSV, downloadJSON, downloadExcel } from "@/lib/exportUtils";
+
 export default function BranchDetail() {
-    var _this = this;
-    var branchId = useParams().branchId;
-    var _a = useLocation(), navigate = _a[1];
-    var toast = useToast().toast;
-    var _b = useState(null), selectedGroup = _b[0], setSelectedGroup = _b[1];
-    var _c = useState(null), selectedMember = _c[0], setSelectedMember = _c[1];
-    var _d = useState(false), isGroupDetailsOpen = _d[0], setIsGroupDetailsOpen = _d[1];
-    var _e = useState(false), isMemberDetailsOpen = _e[0], setIsMemberDetailsOpen = _e[1];
-    var _f = useState(""), groupSearchQuery = _f[0], setGroupSearchQuery = _f[1];
-    var _g = useState(""), memberSearchQuery = _g[0], setMemberSearchQuery = _g[1];
-    var _h = useQuery({
-        queryKey: ["branch", branchId],
-        queryFn: function () { return api.getBranch(parseInt(branchId)); },
-        staleTime: 10 * 60 * 1000,
-        gcTime: 15 * 60 * 1000,
-        enabled: !!branchId,
-    }), branch = _h.data, branchLoading = _h.isLoading;
-    var _j = useQuery({
-        queryKey: ["branch-groups", branchId],
-        queryFn: function () { return __awaiter(_this, void 0, void 0, function () {
-            var allGroups;
-            return __generator(this, function (_a) {
-                switch (_a.label) {
-                    case 0: return [4 /*yield*/, api.getGroups()];
-                    case 1:
-                        allGroups = _a.sent();
-                        return [2 /*return*/, allGroups.filter(function (g) { return g.branchId === parseInt(branchId); })];
-                }
-            });
-        }); },
-        enabled: !!branchId,
-        staleTime: 10 * 60 * 1000,
-        gcTime: 15 * 60 * 1000,
-    }).data, groups = _j === void 0 ? [] : _j;
-    var _k = useQuery({
-        queryKey: ["branch-members", branchId],
-        queryFn: function () { return __awaiter(_this, void 0, void 0, function () {
-            var allMembers;
-            return __generator(this, function (_a) {
-                switch (_a.label) {
-                    case 0: return [4 /*yield*/, api.getMembers()];
-                    case 1:
-                        allMembers = _a.sent();
-                        return [2 /*return*/, allMembers.filter(function (m) { return m.branchId === parseInt(branchId); })];
-                }
-            });
-        }); },
-        enabled: !!branchId,
-        staleTime: 10 * 60 * 1000,
-        gcTime: 15 * 60 * 1000,
-    }).data, members = _k === void 0 ? [] : _k;
-    var _l = useQuery({
-        queryKey: ["branch-loans", branchId],
-        queryFn: function () { return __awaiter(_this, void 0, void 0, function () {
-            var allLoans, memberIds;
-            return __generator(this, function (_a) {
-                switch (_a.label) {
-                    case 0: return [4 /*yield*/, api.getLoans()];
-                    case 1:
-                        allLoans = _a.sent();
-                        memberIds = members.map(function (m) { return m.id; });
-                        return [2 /*return*/, allLoans.filter(function (l) { return memberIds.includes(l.memberId); })];
-                }
-            });
-        }); },
-        enabled: !!branchId && members.length > 0,
-        staleTime: 10 * 60 * 1000,
-        gcTime: 15 * 60 * 1000,
-    }).data, loans = _l === void 0 ? [] : _l;
-    var _m = useQuery({
-        queryKey: ["loan-products"],
-        queryFn: api.getLoanProducts,
-        staleTime: 15 * 60 * 1000,
-        gcTime: 20 * 60 * 1000,
-    }).data, products = _m === void 0 ? [] : _m;
-    var _o = useQuery({
-        queryKey: ["branch-staff", branchId],
-        queryFn: function () { return api.getBranchStaff(parseInt(branchId)); },
-        enabled: !!branchId,
-        staleTime: 5 * 60 * 1000,
-        gcTime: 10 * 60 * 1000,
-    }).data, branchStaff = _o === void 0 ? [] : _o;
-    var _p = useQuery({
-        queryKey: ["group-members", selectedGroup === null || selectedGroup === void 0 ? void 0 : selectedGroup.id],
-        queryFn: function () { return __awaiter(_this, void 0, void 0, function () {
-            var allMembers;
-            return __generator(this, function (_a) {
-                switch (_a.label) {
-                    case 0:
-                        if (!selectedGroup)
-                            return [2 /*return*/, []];
-                        return [4 /*yield*/, api.getMembers()];
-                    case 1:
-                        allMembers = _a.sent();
-                        return [2 /*return*/, allMembers.filter(function (m) { return m.groupId === selectedGroup.id; })];
-                }
-            });
-        }); },
-        enabled: !!selectedGroup && isGroupDetailsOpen,
-        staleTime: 5 * 60 * 1000,
-        gcTime: 10 * 60 * 1000,
-    }).data, groupMembers = _p === void 0 ? [] : _p;
-    var _q = useQuery({
-        queryKey: ["member-loans", selectedMember === null || selectedMember === void 0 ? void 0 : selectedMember.id],
-        queryFn: function () { return __awaiter(_this, void 0, void 0, function () {
-            var allLoans;
-            return __generator(this, function (_a) {
-                switch (_a.label) {
-                    case 0:
-                        if (!selectedMember)
-                            return [2 /*return*/, []];
-                        return [4 /*yield*/, api.getLoans()];
-                    case 1:
-                        allLoans = _a.sent();
-                        return [2 /*return*/, allLoans.filter(function (l) { return l.memberId === selectedMember.id; })];
-                }
-            });
-        }); },
-        enabled: !!selectedMember && isMemberDetailsOpen,
-        staleTime: 5 * 60 * 1000,
-        gcTime: 10 * 60 * 1000,
-    }).data, memberLoans = _q === void 0 ? [] : _q;
-    var filteredGroups = groups.filter(function (group) {
-        var searchLower = groupSearchQuery.toLowerCase();
-        return (group.name.toLowerCase().includes(searchLower) ||
-            group.id.toString().includes(searchLower));
-    });
-    var filteredMembers = members.filter(function (member) {
-        var _a, _b;
-        var searchLower = memberSearchQuery.toLowerCase();
-        return (((_a = member.memberCode) === null || _a === void 0 ? void 0 : _a.toLowerCase().includes(searchLower)) ||
-            ((_b = member.id) === null || _b === void 0 ? void 0 : _b.toString().includes(searchLower)));
-    });
-    var handleExportGroups = function (format) {
-        var reportData = filteredGroups.map(function (group) { return ({
-            id: group.id,
-            name: group.name,
-            members: members.filter(function (m) { return m.groupId === group.id; }).length,
-            maxMembers: group.maxMembers,
-            status: group.isActive ? "Active" : "Inactive",
-        }); });
-        var timestamp = new Date().toISOString().split("T")[0];
-        var filename = "".concat(branch === null || branch === void 0 ? void 0 : branch.name, "-groups-").concat(timestamp);
-        if (format === "csv") {
-            downloadCSV(reportData, filename);
-        }
-        else if (format === "json") {
-            downloadJSON(reportData, filename);
-        }
-        else if (format === "excel") {
-            downloadExcel(reportData, filename);
-        }
-        toast({
-            title: "Success",
-            description: "Groups report exported as ".concat(format.toUpperCase()),
-        });
-    };
-    var handleExportMembers = function (format) {
-        var reportData = filteredMembers.map(function (member) { return ({
-            id: member.id,
-            memberCode: member.memberCode,
-            groupId: member.groupId || "N/A",
-            status: member.status,
-            riskScore: member.riskScore,
-            riskCategory: member.riskCategory,
-        }); });
-        var timestamp = new Date().toISOString().split("T")[0];
-        var filename = "".concat(branch === null || branch === void 0 ? void 0 : branch.name, "-members-").concat(timestamp);
-        if (format === "csv") {
-            downloadCSV(reportData, filename);
-        }
-        else if (format === "json") {
-            downloadJSON(reportData, filename);
-        }
-        else if (format === "excel") {
-            downloadExcel(reportData, filename);
-        }
-        toast({
-            title: "Success",
-            description: "Members report exported as ".concat(format.toUpperCase()),
-        });
-    };
-    if (branchLoading) {
-        return (<Layout>
-        <div className="flex items-center justify-center py-12">
-          <Loader2 className="h-6 w-6 animate-spin"/>
-        </div>
-      </Layout>);
+  const { branchId } = useParams();
+  const [, navigate] = useLocation();
+  const { toast } = useToast();
+  
+  const [selectedGroup, setSelectedGroup] = useState(null);
+  const [selectedMember, setSelectedMember] = useState(null);
+  const [isGroupDetailsOpen, setIsGroupDetailsOpen] = useState(false);
+  const [isMemberDetailsOpen, setIsMemberDetailsOpen] = useState(false);
+  
+  const [groupSearchQuery, setGroupSearchQuery] = useState("");
+  const [memberSearchQuery, setMemberSearchQuery] = useState("");
+
+  const { data: branch, isLoading: branchLoading } = useQuery({
+    queryKey: ["branch", branchId],
+    queryFn: () => api.getBranch(parseInt(branchId)),
+    staleTime: 10 * 60 * 1000,
+    gcTime: 15 * 60 * 1000,
+    enabled: !!branchId,
+  });
+
+  const { data: groups = [] } = useQuery({
+    queryKey: ["branch-groups", branchId],
+    queryFn: async () => {
+      const allGroups = await api.getGroups();
+      return allGroups.filter(g => g.branchId === parseInt(branchId));
+    },
+    enabled: !!branchId,
+    staleTime: 10 * 60 * 1000,
+    gcTime: 15 * 60 * 1000,
+  });
+
+  const { data: members = [] } = useQuery({
+    queryKey: ["branch-members", branchId],
+    queryFn: async () => {
+      const allMembers = await api.getMembers();
+      return allMembers.filter(m => m.branchId === parseInt(branchId));
+    },
+    enabled: !!branchId,
+    staleTime: 10 * 60 * 1000,
+    gcTime: 15 * 60 * 1000,
+  });
+
+  const { data: loans = [] } = useQuery({
+    queryKey: ["branch-loans", branchId],
+    queryFn: async () => {
+      const allLoans = await api.getLoans();
+      const memberIds = members.map(m => m.id);
+      return allLoans.filter(l => memberIds.includes(l.memberId));
+    },
+    enabled: !!branchId && members.length > 0,
+    staleTime: 10 * 60 * 1000,
+    gcTime: 15 * 60 * 1000,
+  });
+
+  const { data: products = [] } = useQuery({
+    queryKey: ["loan-products"],
+    queryFn: api.getLoanProducts,
+    staleTime: 15 * 60 * 1000,
+    gcTime: 20 * 60 * 1000,
+  });
+
+  const { data: branchStaff = [] } = useQuery({
+    queryKey: ["branch-staff", branchId],
+    queryFn: () => api.getBranchStaff(parseInt(branchId)),
+    enabled: !!branchId,
+    staleTime: 5 * 60 * 1000,
+    gcTime: 10 * 60 * 1000,
+  });
+
+  const { data: groupMembers = [] } = useQuery({
+    queryKey: ["group-members", selectedGroup?.id],
+    queryFn: async () => {
+      if (!selectedGroup) return [];
+      const allMembers = await api.getMembers();
+      return allMembers.filter(m => m.groupId === selectedGroup.id);
+    },
+    enabled: !!selectedGroup && isGroupDetailsOpen,
+    staleTime: 5 * 60 * 1000,
+    gcTime: 10 * 60 * 1000,
+  });
+
+  const { data: memberLoans = [] } = useQuery({
+    queryKey: ["member-loans", selectedMember?.id],
+    queryFn: async () => {
+      if (!selectedMember) return [];
+      const allLoans = await api.getLoans();
+      return allLoans.filter(l => l.memberId === selectedMember.id);
+    },
+    enabled: !!selectedMember && isMemberDetailsOpen,
+    staleTime: 5 * 60 * 1000,
+    gcTime: 10 * 60 * 1000,
+  });
+
+  const filteredGroups = groups.filter(group => {
+    const searchLower = groupSearchQuery.toLowerCase();
+    return (
+      group.name.toLowerCase().includes(searchLower) ||
+      group.id.toString().includes(searchLower)
+    );
+  });
+
+  const filteredMembers = members.filter(member => {
+    const searchLower = memberSearchQuery.toLowerCase();
+    return (
+      member.memberCode?.toLowerCase().includes(searchLower) ||
+      member.id?.toString().includes(searchLower)
+    );
+  });
+
+  const handleExportGroups = (format) => {
+    const reportData = filteredGroups.map(group => ({
+      id: group.id,
+      name: group.name,
+      members: members.filter(m => m.groupId === group.id).length,
+      maxMembers: group.maxMembers,
+      status: group.isActive ? "Active" : "Inactive",
+    }));
+
+    const timestamp = new Date().toISOString().split("T")[0];
+    const filename = `${branch?.name}-groups-${timestamp}`;
+
+    if (format === "csv") {
+      downloadCSV(reportData, filename);
+    } else if (format === "json") {
+      downloadJSON(reportData, filename);
+    } else if (format === "excel") {
+      downloadExcel(reportData, filename);
     }
-    if (!branch) {
-        return (<Layout>
+
+    toast({
+      title: "Success",
+      description: `Groups report exported as ${format.toUpperCase()}`,
+    });
+  };
+
+  const handleExportMembers = (format) => {
+    const reportData = filteredMembers.map(member => ({
+      id: member.id,
+      memberCode: member.memberCode,
+      groupId: member.groupId || "N/A",
+      status: member.status,
+      riskScore: member.riskScore,
+      riskCategory: member.riskCategory,
+    }));
+
+    const timestamp = new Date().toISOString().split("T")[0];
+    const filename = `${branch?.name}-members-${timestamp}`;
+
+    if (format === "csv") {
+      downloadCSV(reportData, filename);
+    } else if (format === "json") {
+      downloadJSON(reportData, filename);
+    } else if (format === "excel") {
+      downloadExcel(reportData, filename);
+    }
+
+    toast({
+      title: "Success",
+      description: `Members report exported as ${format.toUpperCase()}`,
+    });
+  };
+
+  if (branchLoading) {
+    return (
+      <Layout>
+        <div className="flex items-center justify-center py-12">
+          <Loader2 className="h-6 w-6 animate-spin" />
+        </div>
+      </Layout>
+    );
+  }
+
+  if (!branch) {
+    return (
+      <Layout>
         <div className="p-8">
           <p className="text-red-500">Branch not found</p>
-          <Button variant="outline" onClick={function () { return navigate("/branches"); }} className="mt-4">
-            <ArrowLeft className="mr-2 h-4 w-4"/> Back to Branches
+          <Button variant="outline" onClick={() => navigate("/branches")} className="mt-4">
+            <ArrowLeft className="mr-2 h-4 w-4" /> Back to Branches
           </Button>
         </div>
-      </Layout>);
-    }
-    var totalLoans = loans.length;
-    var totalCustomers = members.length;
-    var totalStaff = branchStaff.length;
-    var totalRevenue = loans.reduce(function (sum, loan) { return sum + parseFloat(loan.principleAmount || '0'); }, 0);
-    var activeLoans = loans.filter(function (l) { return l.status === 'active' || l.status === 'pending'; }).length;
-    var outstandingBalance = loans.reduce(function (sum, loan) { return sum + parseFloat(loan.outstandingBalance || '0'); }, 0);
-    return (<Layout>
+      </Layout>
+    );
+  }
+
+  const totalLoans = loans.length;
+  const totalCustomers = members.length;
+  const totalStaff = branchStaff.length;
+  const totalRevenue = loans.reduce((sum, loan) => sum + parseFloat(loan.principleAmount || '0'), 0);
+  const activeLoans = loans.filter(l => l.status === 'active' || l.status === 'pending').length;
+  const outstandingBalance = loans.reduce((sum, loan) => sum + parseFloat(loan.outstandingBalance || '0'), 0);
+
+  return (
+    <Layout>
       <div className="p-8 space-y-8">
         {/* Header */}
         <div className="flex items-start justify-between">
           <div className="space-y-2">
             <div className="flex items-center gap-2">
-              <Button variant="ghost" size="sm" onClick={function () { return navigate("/branches"); }} className="h-8 w-8 p-0">
-                <ArrowLeft className="h-4 w-4"/>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => navigate("/branches")}
+                className="h-8 w-8 p-0"
+              >
+                <ArrowLeft className="h-4 w-4" />
               </Button>
               <h1 className="text-4xl font-heading font-extrabold tracking-tight text-gradient">
                 {branch.name}
@@ -280,7 +238,7 @@ export default function BranchDetail() {
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">Total Customers</CardTitle>
-              <Users className="h-4 w-4 text-muted-foreground"/>
+              <Users className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold">{totalCustomers}</div>
@@ -291,7 +249,7 @@ export default function BranchDetail() {
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">Total Loans</CardTitle>
-              <TrendingUp className="h-4 w-4 text-muted-foreground"/>
+              <TrendingUp className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold">{totalLoans}</div>
@@ -302,7 +260,7 @@ export default function BranchDetail() {
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">Outstanding</CardTitle>
-              <DollarSign className="h-4 w-4 text-muted-foreground"/>
+              <DollarSign className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold">KES {(outstandingBalance / 1000).toFixed(0)}K</div>
@@ -313,7 +271,7 @@ export default function BranchDetail() {
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">Total Staff</CardTitle>
-              <Users className="h-4 w-4 text-muted-foreground"/>
+              <Users className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold">{totalStaff}</div>
@@ -324,7 +282,7 @@ export default function BranchDetail() {
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">Loan Portfolio</CardTitle>
-              <Package className="h-4 w-4 text-muted-foreground"/>
+              <Package className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold">KES {(totalRevenue / 1000).toFixed(0)}K</div>
@@ -411,19 +369,27 @@ export default function BranchDetail() {
                   </div>
                   <div className="flex gap-2">
                     <div className="relative">
-                      <Search className="absolute left-3 top-2.5 h-4 w-4 text-muted-foreground"/>
-                      <Input placeholder="Search groups..." className="pl-9 w-64 neon-input" value={groupSearchQuery} onChange={function (e) { return setGroupSearchQuery(e.target.value); }}/>
+                      <Search className="absolute left-3 top-2.5 h-4 w-4 text-muted-foreground" />
+                      <Input 
+                        placeholder="Search groups..." 
+                        className="pl-9 w-64 neon-input"
+                        value={groupSearchQuery}
+                        onChange={(e) => setGroupSearchQuery(e.target.value)}
+                      />
                     </div>
                     <Button variant="outline" size="sm" className="gap-2">
-                      <FileText className="h-4 w-4"/> Export
+                      <FileText className="h-4 w-4" /> Export
                     </Button>
                   </div>
                 </div>
               </CardHeader>
               <CardContent>
-                {filteredGroups.length === 0 ? (<p className="text-center text-muted-foreground py-8">
+                {filteredGroups.length === 0 ? (
+                  <p className="text-center text-muted-foreground py-8">
                     {groupSearchQuery ? "No groups match your search" : "No groups in this branch"}
-                  </p>) : (<Table>
+                  </p>
+                ) : (
+                  <Table>
                     <TableHeader>
                       <TableRow>
                         <TableHead>Group Name</TableHead>
@@ -433,9 +399,10 @@ export default function BranchDetail() {
                       </TableRow>
                     </TableHeader>
                     <TableBody>
-                      {filteredGroups.map(function (group) {
-                var groupMemCount = members.filter(function (m) { return m.groupId === group.id; }).length;
-                return (<TableRow key={group.id} className="cursor-pointer hover:bg-accent">
+                      {filteredGroups.map(group => {
+                        const groupMemCount = members.filter(m => m.groupId === group.id).length;
+                        return (
+                          <TableRow key={group.id} className="cursor-pointer hover:bg-accent">
                             <TableCell className="font-medium">{group.name}</TableCell>
                             <TableCell>{groupMemCount}/{group.maxMembers}</TableCell>
                             <TableCell>
@@ -444,17 +411,23 @@ export default function BranchDetail() {
                               </Badge>
                             </TableCell>
                             <TableCell>
-                              <Button variant="outline" size="sm" onClick={function () {
-                        setSelectedGroup(group);
-                        setIsGroupDetailsOpen(true);
-                    }}>
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                onClick={() => {
+                                  setSelectedGroup(group);
+                                  setIsGroupDetailsOpen(true);
+                                }}
+                              >
                                 View Details
                               </Button>
                             </TableCell>
-                          </TableRow>);
-            })}
+                          </TableRow>
+                        );
+                      })}
                     </TableBody>
-                  </Table>)}
+                  </Table>
+                )}
               </CardContent>
             </Card>
           </TabsContent>
@@ -471,19 +444,27 @@ export default function BranchDetail() {
                   </div>
                   <div className="flex gap-2">
                     <div className="relative">
-                      <Search className="absolute left-3 top-2.5 h-4 w-4 text-muted-foreground"/>
-                      <Input placeholder="Search members..." className="pl-9 w-64 neon-input" value={memberSearchQuery} onChange={function (e) { return setMemberSearchQuery(e.target.value); }}/>
+                      <Search className="absolute left-3 top-2.5 h-4 w-4 text-muted-foreground" />
+                      <Input 
+                        placeholder="Search members..." 
+                        className="pl-9 w-64 neon-input"
+                        value={memberSearchQuery}
+                        onChange={(e) => setMemberSearchQuery(e.target.value)}
+                      />
                     </div>
                     <Button variant="outline" size="sm" className="gap-2">
-                      <FileText className="h-4 w-4"/> Export
+                      <FileText className="h-4 w-4" /> Export
                     </Button>
                   </div>
                 </div>
               </CardHeader>
               <CardContent>
-                {filteredMembers.length === 0 ? (<p className="text-center text-muted-foreground py-8">
+                {filteredMembers.length === 0 ? (
+                  <p className="text-center text-muted-foreground py-8">
                     {memberSearchQuery ? "No members match your search" : "No customers in this branch"}
-                  </p>) : (<Table>
+                  </p>
+                ) : (
+                  <Table>
                     <TableHeader>
                       <TableRow>
                         <TableHead>Member Code</TableHead>
@@ -494,7 +475,8 @@ export default function BranchDetail() {
                       </TableRow>
                     </TableHeader>
                     <TableBody>
-                      {filteredMembers.map(function (member) { return (<TableRow key={member.id} className="cursor-pointer hover:bg-accent">
+                      {filteredMembers.map(member => (
+                        <TableRow key={member.id} className="cursor-pointer hover:bg-accent">
                           <TableCell className="font-medium">{member.memberCode}</TableCell>
                           <TableCell>
                             <Badge variant={member.status === 'active' ? 'default' : 'secondary'}>
@@ -504,16 +486,22 @@ export default function BranchDetail() {
                           <TableCell>{member.riskScore}</TableCell>
                           <TableCell>{member.riskCategory}</TableCell>
                           <TableCell>
-                            <Button variant="outline" size="sm" onClick={function () {
-                    setSelectedMember(member);
-                    setIsMemberDetailsOpen(true);
-                }}>
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              onClick={() => {
+                                setSelectedMember(member);
+                                setIsMemberDetailsOpen(true);
+                              }}
+                            >
                               View Loans
                             </Button>
                           </TableCell>
-                        </TableRow>); })}
+                        </TableRow>
+                      ))}
                     </TableBody>
-                  </Table>)}
+                  </Table>
+                )}
               </CardContent>
             </Card>
           </TabsContent>
@@ -527,7 +515,10 @@ export default function BranchDetail() {
                 <CardDescription>Loans from all customers in this branch</CardDescription>
               </CardHeader>
               <CardContent>
-                {loans.length === 0 ? (<p className="text-center text-muted-foreground py-8">No loans in this branch</p>) : (<Table>
+                {loans.length === 0 ? (
+                  <p className="text-center text-muted-foreground py-8">No loans in this branch</p>
+                ) : (
+                  <Table>
                     <TableHeader>
                       <TableRow>
                         <TableHead>Loan Number</TableHead>
@@ -539,7 +530,8 @@ export default function BranchDetail() {
                       </TableRow>
                     </TableHeader>
                     <TableBody>
-                      {loans.map(function (loan) { return (<TableRow key={loan.id}>
+                      {loans.map(loan => (
+                        <TableRow key={loan.id}>
                           <TableCell className="font-medium">{loan.loanNumber}</TableCell>
                           <TableCell>KES {parseFloat(loan.principleAmount).toLocaleString()}</TableCell>
                           <TableCell>KES {parseFloat(loan.totalAmount).toLocaleString()}</TableCell>
@@ -550,9 +542,11 @@ export default function BranchDetail() {
                             </Badge>
                           </TableCell>
                           <TableCell>{new Date(loan.applicationDate).toLocaleDateString()}</TableCell>
-                        </TableRow>); })}
+                        </TableRow>
+                      ))}
                     </TableBody>
-                  </Table>)}
+                  </Table>
+                )}
               </CardContent>
             </Card>
           </TabsContent>
@@ -566,7 +560,10 @@ export default function BranchDetail() {
                 <CardDescription>Products that can be distributed through this branch</CardDescription>
               </CardHeader>
               <CardContent>
-                {products.length === 0 ? (<p className="text-center text-muted-foreground py-8">No products available</p>) : (<Table>
+                {products.length === 0 ? (
+                  <p className="text-center text-muted-foreground py-8">No products available</p>
+                ) : (
+                  <Table>
                     <TableHeader>
                       <TableRow>
                         <TableHead>Product Name</TableHead>
@@ -575,13 +572,16 @@ export default function BranchDetail() {
                       </TableRow>
                     </TableHeader>
                     <TableBody>
-                      {products.map(function (product) { return (<TableRow key={product.id}>
+                      {products.map(product => (
+                        <TableRow key={product.id}>
                           <TableCell className="font-medium">{product.name}</TableCell>
                           <TableCell>KES {parseFloat(product.sellingPrice).toLocaleString()}</TableCell>
                           <TableCell>{product.stockQuantity} units</TableCell>
-                        </TableRow>); })}
+                        </TableRow>
+                      ))}
                     </TableBody>
-                  </Table>)}
+                  </Table>
+                )}
               </CardContent>
             </Card>
           </TabsContent>
@@ -595,7 +595,10 @@ export default function BranchDetail() {
                 <CardDescription>Team members assigned to this branch</CardDescription>
               </CardHeader>
               <CardContent>
-                {branchStaff.length === 0 ? (<p className="text-center text-muted-foreground py-8">No staff assigned</p>) : (<Table>
+                {branchStaff.length === 0 ? (
+                  <p className="text-center text-muted-foreground py-8">No staff assigned</p>
+                ) : (
+                  <Table>
                     <TableHeader>
                       <TableRow>
                         <TableHead>Name</TableHead>
@@ -605,7 +608,8 @@ export default function BranchDetail() {
                       </TableRow>
                     </TableHeader>
                     <TableBody>
-                      {branchStaff.map(function (staff) { return (<TableRow key={staff.id}>
+                      {branchStaff.map(staff => (
+                        <TableRow key={staff.id}>
                           <TableCell className="font-medium">
                             {staff.firstName} {staff.lastName}
                           </TableCell>
@@ -616,9 +620,11 @@ export default function BranchDetail() {
                               {staff.isActive ? 'Active' : 'Inactive'}
                             </Badge>
                           </TableCell>
-                        </TableRow>); })}
+                        </TableRow>
+                      ))}
                     </TableBody>
-                  </Table>)}
+                  </Table>
+                )}
               </CardContent>
             </Card>
           </TabsContent>
@@ -629,10 +635,11 @@ export default function BranchDetail() {
       <Dialog open={isGroupDetailsOpen} onOpenChange={setIsGroupDetailsOpen}>
         <DialogContent className="sm:max-w-[600px]">
           <DialogHeader>
-            <DialogTitle>{selectedGroup === null || selectedGroup === void 0 ? void 0 : selectedGroup.name}</DialogTitle>
+            <DialogTitle>{selectedGroup?.name}</DialogTitle>
             <DialogDescription>Group details and members</DialogDescription>
           </DialogHeader>
-          {selectedGroup && (<div className="space-y-4">
+          {selectedGroup && (
+            <div className="space-y-4">
               <div className="grid gap-2">
                 <p className="text-sm text-muted-foreground">Status</p>
                 <Badge variant={selectedGroup.isActive ? 'default' : 'secondary'}>
@@ -641,7 +648,10 @@ export default function BranchDetail() {
               </div>
               <div className="grid gap-2">
                 <p className="text-sm text-muted-foreground">Group Members</p>
-                {groupMembers.length === 0 ? (<p className="text-sm py-4 text-muted-foreground">No members in this group</p>) : (<Table>
+                {groupMembers.length === 0 ? (
+                  <p className="text-sm py-4 text-muted-foreground">No members in this group</p>
+                ) : (
+                  <Table>
                     <TableHeader>
                       <TableRow>
                         <TableHead>Member Code</TableHead>
@@ -650,7 +660,8 @@ export default function BranchDetail() {
                       </TableRow>
                     </TableHeader>
                     <TableBody>
-                      {groupMembers.map(function (member) { return (<TableRow key={member.id}>
+                      {groupMembers.map(member => (
+                        <TableRow key={member.id}>
                           <TableCell className="font-medium">{member.memberCode}</TableCell>
                           <TableCell>
                             <Badge variant={member.status === 'active' ? 'default' : 'secondary'}>
@@ -658,11 +669,14 @@ export default function BranchDetail() {
                             </Badge>
                           </TableCell>
                           <TableCell>{member.riskScore}</TableCell>
-                        </TableRow>); })}
+                        </TableRow>
+                      ))}
                     </TableBody>
-                  </Table>)}
+                  </Table>
+                )}
               </div>
-            </div>)}
+            </div>
+          )}
         </DialogContent>
       </Dialog>
 
@@ -670,10 +684,11 @@ export default function BranchDetail() {
       <Dialog open={isMemberDetailsOpen} onOpenChange={setIsMemberDetailsOpen}>
         <DialogContent className="sm:max-w-[600px]">
           <DialogHeader>
-            <DialogTitle>Customer Details - {selectedMember === null || selectedMember === void 0 ? void 0 : selectedMember.memberCode}</DialogTitle>
+            <DialogTitle>Customer Details - {selectedMember?.memberCode}</DialogTitle>
             <DialogDescription>Member loans and information</DialogDescription>
           </DialogHeader>
-          {selectedMember && (<div className="space-y-4">
+          {selectedMember && (
+            <div className="space-y-4">
               <div className="grid gap-2">
                 <p className="text-sm text-muted-foreground">Status</p>
                 <Badge variant={selectedMember.status === 'active' ? 'default' : 'secondary'}>
@@ -689,7 +704,10 @@ export default function BranchDetail() {
               </div>
               <div className="grid gap-2">
                 <p className="text-sm text-muted-foreground">Loans</p>
-                {memberLoans.length === 0 ? (<p className="text-sm py-4 text-muted-foreground">No loans for this customer</p>) : (<Table>
+                {memberLoans.length === 0 ? (
+                  <p className="text-sm py-4 text-muted-foreground">No loans for this customer</p>
+                ) : (
+                  <Table>
                     <TableHeader>
                       <TableRow>
                         <TableHead>Loan Number</TableHead>
@@ -699,7 +717,8 @@ export default function BranchDetail() {
                       </TableRow>
                     </TableHeader>
                     <TableBody>
-                      {memberLoans.map(function (loan) { return (<TableRow key={loan.id}>
+                      {memberLoans.map(loan => (
+                        <TableRow key={loan.id}>
                           <TableCell className="font-medium">{loan.loanNumber}</TableCell>
                           <TableCell>KES {parseFloat(loan.principleAmount).toLocaleString()}</TableCell>
                           <TableCell>KES {parseFloat(loan.outstandingBalance).toLocaleString()}</TableCell>
@@ -708,12 +727,16 @@ export default function BranchDetail() {
                               {loan.status}
                             </Badge>
                           </TableCell>
-                        </TableRow>); })}
+                        </TableRow>
+                      ))}
                     </TableBody>
-                  </Table>)}
+                  </Table>
+                )}
               </div>
-            </div>)}
+            </div>
+          )}
         </DialogContent>
       </Dialog>
-    </Layout>);
+    </Layout>
+  );
 }
