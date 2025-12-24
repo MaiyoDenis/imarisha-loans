@@ -6,9 +6,13 @@ load_dotenv()
 class Config:
     SECRET_KEY = os.environ.get('SECRET_KEY') or 'dev-secret-key-change-in-production'
     
-    # PostgreSQL Database Configuration (Production)
+    # PostgreSQL Database Configuration
+    # Default to local database if DATABASE_URL not set
     SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_URL') or \
-        'postgresql://imarisha_postgres_gua6_user:YeQSmgRC6Wg4o4l2d0fCfCiF3jAiJmnt@dpg-d53ddtmmcj7s73e5knbg-a.oregon-postgres.render.com/imarisha_postgres_gua6'
+        'postgresql://postgres:postgres@localhost/imarisha_loan'
+    
+    # Render Production Database (Commented out)
+    # 'postgresql://imarisha_postgres_gua6_user:YeQSmgRC6Wg4o4l2d0fCfCiF3jAiJmnt@dpg-d53ddtmmcj7s73e5knbg-a.oregon-postgres.render.com/imarisha_postgres_gua6'
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     
     # PostgreSQL-specific configuration
