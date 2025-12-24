@@ -3,6 +3,9 @@ set -e
 
 cd "$(dirname "$0")"
 
+echo "Checking database state..."
+python fix_db_state.py
+
 echo "Running database migrations..."
 # Only run upgrade, do not stamp as it skips migrations on fresh DB
 flask db upgrade
