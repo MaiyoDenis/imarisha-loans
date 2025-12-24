@@ -128,7 +128,7 @@ export function DepositForm(_a) {
         });
     };
     if (pendingTransaction) {
-        return (<Card>
+        return (<Card className="!bg-transparent">
         <CardHeader>
           <div className="flex items-start gap-3">
             <Clock className="h-5 w-5 text-orange-500 mt-1 flex-shrink-0"/>
@@ -141,7 +141,7 @@ export function DepositForm(_a) {
           </div>
         </CardHeader>
         <CardContent className="space-y-4">
-          <div className="bg-orange-50 p-4 rounded-lg border border-orange-200">
+          <div className="bg-transparent p-4 rounded-lg border border-orange-200">
             <p className="text-sm font-semibold text-orange-900 mb-2">Status: PENDING</p>
             <p className="text-sm text-orange-800 mb-4">
               This deposit is awaiting approval from the procurement officer. Once the M-Pesa payment is confirmed, the balance will be updated.
@@ -177,7 +177,7 @@ export function DepositForm(_a) {
         </CardContent>
       </Card>);
     }
-    return (<Card>
+    return (<Card className="!bg-transparent">
       <CardHeader>
         <CardTitle>Make a Deposit</CardTitle>
         <CardDescription>Add funds to your account</CardDescription>

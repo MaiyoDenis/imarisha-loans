@@ -50,6 +50,13 @@ export function MemberDashboardPage() {
               {m.user.firstName} {m.user.lastName}
             </h1>
             <div className="flex items-center gap-4 text-muted-foreground flex-wrap">
+              <span className={`px-4 py-1 rounded-full text-xs font-bold border shadow-sm ${
+                m.status === 'active' 
+                  ? 'bg-[#3E2723] border-[#FFD700] text-white' 
+                  : 'bg-gray-100 border-gray-200 text-gray-700'
+              }`}>
+                {m.status.toUpperCase()}
+              </span>
               <div className="flex items-center gap-1">
                 <Code className="h-4 w-4"/>
                 <span>{m.memberCode}</span>
@@ -79,17 +86,17 @@ export function MemberDashboardPage() {
         </div>)}
 
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-        <KPICard title="Max Loan Limit" value={new Intl.NumberFormat('en-KE').format(m.maxLoanLimit)} unit="KES" icon={<CreditCard size={24}/>} status="normal"/>
+        <KPICard className="!bg-transparent" title="Max Loan Limit" value={new Intl.NumberFormat('en-KE').format(m.maxLoanLimit)} unit="KES" icon={<CreditCard size={24}/>} status="normal"/>
 
-        <KPICard title="Available Loan" value={new Intl.NumberFormat('en-KE').format(m.availableLoan)} unit="KES" icon={<DollarSign size={24}/>} status="success"/>
+        <KPICard className="!bg-transparent" title="Available Loan" value={new Intl.NumberFormat('en-KE').format(m.availableLoan)} unit="KES" icon={<DollarSign size={24}/>} status="success"/>
 
-        <KPICard title="Outstanding Balance" value={new Intl.NumberFormat('en-KE').format(m.totalOutstanding)} unit="KES" icon={<TrendingUp size={24}/>} status="warning"/>
+        <KPICard className="!bg-transparent" title="Outstanding Balance" value={new Intl.NumberFormat('en-KE').format(m.totalOutstanding)} unit="KES" icon={<TrendingUp size={24}/>} status="warning"/>
 
-        <KPICard title="Repayment Rate" value={m.repaymentRate} unit="%" icon={<Percent size={24}/>} status={parseFloat(m.repaymentRate) >= 90 ? 'success' : parseFloat(m.repaymentRate) >= 70 ? 'warning' : 'critical'}/>
+        <KPICard className="!bg-transparent" title="Repayment Rate" value={m.repaymentRate} unit="%" icon={<Percent size={24}/>} status={parseFloat(m.repaymentRate) >= 90 ? 'success' : parseFloat(m.repaymentRate) >= 70 ? 'warning' : 'critical'}/>
       </div>
 
       <div className="grid gap-4 md:grid-cols-2">
-        <Card className="border-2">
+        <Card className="border-2 !bg-transparent">
           <CardHeader>
             <div className="flex items-center justify-between">
               <CardTitle className="flex items-center gap-2">
@@ -99,7 +106,7 @@ export function MemberDashboardPage() {
             </div>
           </CardHeader>
           <CardContent className="space-y-3">
-            <div className="bg-green-50 p-4 rounded-lg">
+            <div className="bg-transparent p-4 rounded-lg border border-gray-200/20">
               <p className="text-xs text-muted-foreground mb-1">Current Balance</p>
               <p className="text-3xl font-bold text-secondary">
                 KES {new Intl.NumberFormat('en-KE').format(parseFloat(m.savingsBalance))}
@@ -120,7 +127,7 @@ export function MemberDashboardPage() {
           </CardContent>
         </Card>
 
-        <Card className="border-2">
+        <Card className="border-2 !bg-transparent">
           <CardHeader>
             <div className="flex items-center justify-between">
               <CardTitle className="flex items-center gap-2">
@@ -130,7 +137,7 @@ export function MemberDashboardPage() {
             </div>
           </CardHeader>
           <CardContent className="space-y-3">
-            <div className="bg-primary/10 p-4 rounded-lg">
+            <div className="bg-transparent p-4 rounded-lg border border-gray-200/20">
               <p className="text-xs text-muted-foreground mb-1">Current Balance</p>
               <p className="text-3xl font-bold text-primary">
                 KES {new Intl.NumberFormat('en-KE').format(parseFloat(m.drawdownBalance))}
@@ -152,7 +159,7 @@ export function MemberDashboardPage() {
         </Card>
       </div>
 
-      {showLoanForm && (<Card className="border-blue-300 bg-primary/10">
+      {showLoanForm && (<Card className="border-blue-300 !bg-transparent">
           <CardHeader>
             <CardTitle>Apply for New Loan</CardTitle>
           </CardHeader>
@@ -164,7 +171,7 @@ export function MemberDashboardPage() {
           </CardContent>
         </Card>)}
 
-      {showTransferForm && (<Card className="border-green-300 bg-green-50">
+      {showTransferForm && (<Card className="border-green-300 !bg-transparent">
           <CardHeader>
             <CardTitle>Transfer Funds Between Accounts</CardTitle>
           </CardHeader>
@@ -176,7 +183,7 @@ export function MemberDashboardPage() {
           </CardContent>
         </Card>)}
 
-      {showDepositForm && (<Card className="border-secondary/50 bg-secondary/5">
+      {showDepositForm && (<Card className="border-secondary/50 !bg-transparent">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-4">
             <div>
               <CardTitle>Record Deposit</CardTitle>
@@ -197,25 +204,25 @@ export function MemberDashboardPage() {
         </Card>)}
 
       <Tabs defaultValue="loans" className="w-full">
-        <TabsList className="bg-gray-100 p-1 rounded-lg">
-          <TabsTrigger value="loans" className="data-[state=active]:bg-card">
+        <TabsList className="bg-transparent p-1 rounded-lg border border-gray-200/20">
+          <TabsTrigger value="loans" className="data-[state=active]:bg-[#3E2723] data-[state=active]:text-white data-[state=active]:border-[#FFD700] data-[state=active]:border">
             Active Loans ({m.activeLoans.length})
           </TabsTrigger>
-          <TabsTrigger value="history" className="data-[state=active]:bg-card">
+          <TabsTrigger value="history" className="data-[state=active]:bg-[#3E2723] data-[state=active]:text-white data-[state=active]:border-[#FFD700] data-[state=active]:border">
             Loan History
           </TabsTrigger>
-          <TabsTrigger value="transactions" className="data-[state=active]:bg-card">
+          <TabsTrigger value="transactions" className="data-[state=active]:bg-[#3E2723] data-[state=active]:text-white data-[state=active]:border-[#FFD700] data-[state=active]:border">
             Recent Transactions
           </TabsTrigger>
         </TabsList>
 
         <TabsContent value="loans" className="space-y-4 mt-6">
-          {m.activeLoans.length === 0 ? (<Card className="border-dashed">
+          {m.activeLoans.length === 0 ? (<Card className="border-dashed !bg-transparent">
               <CardContent className="pt-6 text-center">
                 <CreditCard className="h-12 w-12 mx-auto text-gray-400 mb-2"/>
                 <p className="text-muted-foreground">No active loans</p>
               </CardContent>
-            </Card>) : (m.activeLoans.map(function (loan) { return (<Card key={loan.id} className="hover:shadow-md transition-shadow border-2">
+            </Card>) : (m.activeLoans.map(function (loan) { return (<Card key={loan.id} className="hover:shadow-md transition-shadow border-2 !bg-transparent">
                 <CardContent className="pt-6">
                   <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
                     <div className="space-y-1 flex-1">
@@ -230,19 +237,19 @@ export function MemberDashboardPage() {
                     </div>
 
                     <div className="grid grid-cols-3 gap-4 sm:text-right">
-                      <div className="bg-primary/10 p-3 rounded-lg sm:bg-transparent sm:p-0">
+                      <div className="bg-transparent p-3 rounded-lg border border-gray-200/20 sm:p-0 sm:border-0">
                         <p className="text-xs text-muted-foreground mb-1">Principal</p>
                         <p className="font-bold text-lg">
                           KES {new Intl.NumberFormat('en-KE').format(parseFloat(loan.principleAmount))}
                         </p>
                       </div>
-                      <div className="bg-orange-50 p-3 rounded-lg sm:bg-transparent sm:p-0">
+                      <div className="bg-transparent p-3 rounded-lg border border-gray-200/20 sm:p-0 sm:border-0">
                         <p className="text-xs text-muted-foreground mb-1">Outstanding</p>
                         <p className="font-bold text-lg text-orange-600">
                           KES {new Intl.NumberFormat('en-KE').format(parseFloat(loan.outstandingBalance))}
                         </p>
                       </div>
-                      <div className="bg-purple-50 p-3 rounded-lg sm:bg-transparent sm:p-0">
+                      <div className="bg-transparent p-3 rounded-lg border border-gray-200/20 sm:p-0 sm:border-0">
                         <p className="text-xs text-muted-foreground mb-1">Due In</p>
                         <p className="font-bold text-lg text-purple-600">
                           {loan.daysUntilDue !== undefined
@@ -258,16 +265,16 @@ export function MemberDashboardPage() {
         </TabsContent>
 
         <TabsContent value="history" className="mt-6">
-          <Card className="border-2">
+          <Card className="border-2 !bg-transparent">
             <CardContent className="pt-6 space-y-6">
               <div className="grid grid-cols-2 gap-4">
-                <div className="bg-primary/10 p-6 rounded-lg border border-primary/30">
+                <div className="bg-transparent p-6 rounded-lg border border-primary/30">
                   <p className="text-xs text-muted-foreground mb-2">Total Borrowed</p>
                   <p className="text-3xl font-bold text-primary">
                     KES {new Intl.NumberFormat('en-KE').format(parseFloat(m.totalBorrowed))}
                   </p>
                 </div>
-                <div className="bg-green-50 p-6 rounded-lg border border-green-200">
+                <div className="bg-transparent p-6 rounded-lg border border-green-200">
                   <p className="text-xs text-muted-foreground mb-2">Total Repaid</p>
                   <p className="text-3xl font-bold text-secondary">
                     KES {new Intl.NumberFormat('en-KE').format(parseFloat(m.totalRepaid))}
@@ -279,12 +286,12 @@ export function MemberDashboardPage() {
         </TabsContent>
 
         <TabsContent value="transactions" className="space-y-4 mt-6">
-          {m.recentTransactions.length === 0 ? (<Card className="border-dashed">
+          {m.recentTransactions.length === 0 ? (<Card className="border-dashed !bg-transparent">
               <CardContent className="pt-6 text-center">
                 <TrendingUp className="h-12 w-12 mx-auto text-gray-400 mb-2"/>
                 <p className="text-muted-foreground">No recent transactions</p>
               </CardContent>
-            </Card>) : (m.recentTransactions.map(function (transaction) { return (<Card key={transaction.id} className="hover:shadow-md transition-shadow border-2">
+            </Card>) : (m.recentTransactions.map(function (transaction) { return (<Card key={transaction.id} className="hover:shadow-md transition-shadow border-2 !bg-transparent">
                 <CardContent className="pt-6">
                   <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
                     <div className="space-y-1 flex-1">

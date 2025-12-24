@@ -37,6 +37,9 @@ export default function ProcurementOfficerDashboard() {
     var _d = useState(false), isActionDialogOpen = _d[0], setIsActionDialogOpen = _d[1];
     var _e = useState('under_review'), actionType = _e[0], setActionType = _e[1];
     var _f = useState(""), rejectionReason = _f[0], setRejectionReason = _f[1];
+    var _t = useState(null), selectedTransaction = _t[0], setSelectedTransaction = _t[1];
+    var _ta = useState(""), transactionAction = _ta[0], setTransactionAction = _ta[1];
+
     var _g = useQuery({
         queryKey: ["loans"],
         queryFn: function () { return api.getLoans(); },
@@ -52,6 +55,13 @@ export default function ProcurementOfficerDashboard() {
         queryFn: function () { return api.getSuppliers(); },
     }).data;
     var suppliers = (suppliersData === null || suppliersData === void 0 ? void 0 : suppliersData.suppliers) || [];
+
+    var { data: pendingTransactions = [] } = useQuery({
+        queryKey: ["pending-transactions"],
+        queryFn: () => api.getTransactions(undefined, undefined, "pending"),
+        refetchInterval: 10000,
+    });
+
     var markUnderReviewMutation = useMutation({
         mutationFn: function (id) { return api.markLoanUnderReview(id); },
         onSuccess: function () {
@@ -128,6 +138,57 @@ export default function ProcurementOfficerDashboard() {
             });
         },
     });
+
+    var approveTransactionMutation = useMutation({
+        mutationFn: function (id) { return api.approveDeposit(id); },
+        onSuccess: function () {
+            queryClient.invalidateQueries({ queryKey: ["pending-transactions"] });
+            setIsActionDialogOpen(false);
+            toast({ title: "Success", description: "Transaction approved successfully" });
+        },
+        onError: function (error) {
+            toast({
+                title: "Error",
+                description: error.message || "Failed to approve transaction",
+                variant: "destructive"
+            });
+        },
+    });
+
+    var rejectTransactionMutation = useMutation({
+        mutationFn: function (id) { return api.rejectDeposit(id, rejectionReason); },
+        onSuccess: function () {
+            queryClient.invalidateQueries({ queryKey: ["pending-transactions"] });
+            setIsActionDialogOpen(false);
+            setRejectionReason("");
+            toast({ title: "Success", description: "Transaction rejected successfully" });
+        },
+        onError: function (error) {
+            toast({
+                title: "Error",
+                description: error.message || "Failed to reject transaction",
+                variant: "destructive"
+            });
+        },
+    });
+
+    var handleTransactionAction = function () {
+        if (!selectedTransaction) return;
+        if (transactionAction === 'approve') {
+            approveTransactionMutation.mutate(selectedTransaction.id);
+        } else if (transactionAction === 'reject') {
+             if (!rejectionReason.trim()) {
+                toast({
+                    title: "Error",
+                    description: "Please provide a rejection reason",
+                    variant: "destructive"
+                });
+                return;
+            }
+            rejectTransactionMutation.mutate(selectedTransaction.id);
+        }
+    };
+
     var handleLoanAction = function () {
         if (!selectedLoan)
             return;
@@ -256,13 +317,81 @@ export default function ProcurementOfficerDashboard() {
         </div>
 
         <Tabs value={activeTab} onValueChange={setActiveTab}>
-          <TabsList className="grid w-full grid-cols-5">
-            <TabsTrigger value="pending-loans">Pending ({pendingLoans.length})</TabsTrigger>
+          <TabsList className="grid w-full grid-cols-6">
+            <TabsTrigger value="pending-transactions">Transactions ({pendingTransactions.length})</TabsTrigger>
+            <TabsTrigger value="pending-loans">Pending Loans ({pendingLoans.length})</TabsTrigger>
             <TabsTrigger value="under-review">Under Review ({underReviewLoans.length})</TabsTrigger>
             <TabsTrigger value="approved">Approved ({approvedLoans.length})</TabsTrigger>
             <TabsTrigger value="stock-alerts">Stock Alerts ({lowStockProducts.length})</TabsTrigger>
             <TabsTrigger value="suppliers">Suppliers</TabsTrigger>
           </TabsList>
+
+          <TabsContent value="pending-transactions" className="space-y-4 mt-6">
+             {pendingTransactions.length === 0 ? (
+                <Card>
+                    <CardContent className="py-12 text-center">
+                        <CheckCircle className="h-12 w-12 text-green-500 mx-auto mb-4"/>
+                        <p className="text-muted-foreground">No pending transactions</p>
+                    </CardContent>
+                </Card>
+             ) : (
+                <div className="rounded-md border border-border bg-card overflow-hidden">
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>Reference</TableHead>
+                      <TableHead>Type</TableHead>
+                      <TableHead>Member</TableHead>
+                      <TableHead className="text-right">Amount</TableHead>
+                      <TableHead>Date</TableHead>
+                      <TableHead>Status</TableHead>
+                      <TableHead className="text-right">Actions</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {pendingTransactions.map((tx) => (
+                        <TableRow key={tx.id}>
+                        <TableCell className="font-mono">{tx.transactionId}</TableCell>
+                        <TableCell className="capitalize">{tx.transactionType}</TableCell>
+                        <TableCell>Member {tx.memberId}</TableCell>
+                        <TableCell className="text-right font-mono">KES {parseFloat(tx.amount).toLocaleString()}</TableCell>
+                        <TableCell className="text-xs text-muted-foreground">
+                          {new Date(tx.createdAt).toLocaleDateString()}
+                        </TableCell>
+                        <TableCell>
+                          <Badge className={statusColors[tx.status] || "bg-gray-100"}>
+                            {tx.status}
+                          </Badge>
+                        </TableCell>
+                        <TableCell className="text-right">
+                          <div className="flex justify-end gap-2">
+                            <Button size="sm" variant="outline" className="text-green-600 hover:text-green-700" onClick={() => {
+                                setSelectedTransaction(tx);
+                                setTransactionAction('approve');
+                                // Reuse the dialog logic, we might need to adjust what dialog content is shown
+                                // Since the existing dialog handles loan actions, let's create a conditional render or a new dialog.
+                                // But wait, existing code uses `isActionDialogOpen` and `handleLoanAction`.
+                                // I will modify the Dialog at the bottom to handle transaction actions too.
+                                setIsActionDialogOpen(true);
+                            }}>
+                                Approve
+                            </Button>
+                            <Button size="sm" variant="outline" className="text-red-600 hover:text-red-700" onClick={() => {
+                                setSelectedTransaction(tx);
+                                setTransactionAction('reject');
+                                setIsActionDialogOpen(true);
+                            }}>
+                                Reject
+                            </Button>
+                          </div>
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </div>
+             )}
+          </TabsContent>
 
           {/* Pending Loans */}
           <TabsContent value="pending-loans" className="space-y-4 mt-6">
@@ -515,34 +644,51 @@ export default function ProcurementOfficerDashboard() {
         </Tabs>
       </div>
 
-      {/* Loan Action Dialog */}
-      <Dialog open={isActionDialogOpen} onOpenChange={setIsActionDialogOpen}>
+      {/* Action Dialog */}
+      <Dialog open={isActionDialogOpen} onOpenChange={function (open) { 
+          setIsActionDialogOpen(open);
+          if (!open) {
+              setRejectionReason("");
+              // Don't nullify selections immediately as it causes flicker during close animation
+          }
+      }}>
         <DialogContent className="sm:max-w-[500px]">
           <DialogHeader>
             <DialogTitle>
-              {actionType === 'reject' ? 'Reject Loan' : "".concat(actionType.replace('_', ' ').toUpperCase(), " - ").concat(selectedLoan === null || selectedLoan === void 0 ? void 0 : selectedLoan.loanNumber)}
+              {selectedTransaction ? 
+                (transactionAction === 'approve' ? 'Approve Transaction' : 'Reject Transaction')
+                : (actionType === 'reject' ? 'Reject Loan' : "".concat(actionType.replace('_', ' ').toUpperCase(), " - ").concat(selectedLoan === null || selectedLoan === void 0 ? void 0 : selectedLoan.loanNumber || ''))
+              }
             </DialogTitle>
             <DialogDescription>
-              {selectedLoan && (<div className="mt-2 space-y-1 text-sm">
+              {selectedTransaction ? (
+                <div className="mt-2 space-y-1 text-sm">
+                   <p>Reference: {selectedTransaction.transactionId}</p>
+                   <p>Amount: KES {parseFloat(selectedTransaction.amount).toLocaleString()}</p>
+                   <p>Type: {selectedTransaction.transactionType.toUpperCase()}</p>
+                </div>
+              ) : selectedLoan && (
+                <div className="mt-2 space-y-1 text-sm">
                   <p>Member: {selectedLoan.memberId}</p>
                   <p>Amount: KES {parseFloat(selectedLoan.totalAmount).toLocaleString()}</p>
-                </div>)}
+                </div>
+              )}
             </DialogDescription>
           </DialogHeader>
 
           <div className="space-y-4">
-            {actionType === 'reject' && (<div>
+            {(actionType === 'reject' || (selectedTransaction && transactionAction === 'reject')) && (<div>
                 <label className="text-sm font-medium">Reason for Rejection</label>
                 <textarea className="w-full mt-2 p-2 border border-input rounded-md text-sm" placeholder="Enter reason..." rows={4} value={rejectionReason} onChange={function (e) { return setRejectionReason(e.target.value); }}/>
               </div>)}
             
-            {actionType === 'disburse' && (<div className="bg-primary/10 border border-primary/30 rounded-lg p-4">
+            {!selectedTransaction && actionType === 'disburse' && (<div className="bg-primary/10 border border-primary/30 rounded-lg p-4">
                 <p className="text-sm text-blue-800">
                   Disbursing this loan will deduct stock items and set the due date based on the loan term.
                 </p>
               </div>)}
 
-            {actionType === 'under_review' && (<div className="bg-primary/10 border border-primary/30 rounded-lg p-4">
+            {!selectedTransaction && actionType === 'under_review' && (<div className="bg-primary/10 border border-primary/30 rounded-lg p-4">
                 <p className="text-sm text-blue-800">
                   Mark this loan as under review for internal processing.
                 </p>
@@ -553,16 +699,21 @@ export default function ProcurementOfficerDashboard() {
             <Button variant="outline" onClick={function () { return setIsActionDialogOpen(false); }}>
               Cancel
             </Button>
-            <Button onClick={handleLoanAction} disabled={markUnderReviewMutation.isPending ||
+            <Button onClick={selectedTransaction ? handleTransactionAction : handleLoanAction} disabled={
+            markUnderReviewMutation.isPending ||
             approveLoanMutation.isPending ||
             disburseLoanMutation.isPending ||
             releaseLoanMutation.isPending ||
-            rejectLoanMutation.isPending} className={actionType === 'reject'
+            rejectLoanMutation.isPending ||
+            approveTransactionMutation.isPending ||
+            rejectTransactionMutation.isPending
+            } className={(actionType === 'reject' || (selectedTransaction && transactionAction === 'reject'))
             ? 'bg-red-600 hover:bg-red-700'
-            : actionType === 'approve'
+            : (actionType === 'approve' || (selectedTransaction && transactionAction === 'approve'))
                 ? 'bg-secondary hover:bg-secondary/80'
                 : 'bg-primary hover:bg-primary/80'}>
-              {actionType === 'reject' ? 'Reject Loan' : "".concat(actionType.replace('_', ' '), " Loan")}
+              {selectedTransaction ? (transactionAction === 'approve' ? 'Approve Transaction' : 'Reject Transaction') : 
+               (actionType === 'reject' ? 'Reject Loan' : "".concat(actionType.replace('_', ' '), " Loan"))}
             </Button>
           </DialogFooter>
         </DialogContent>

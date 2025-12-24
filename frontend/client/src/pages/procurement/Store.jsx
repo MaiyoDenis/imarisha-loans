@@ -57,7 +57,36 @@ export default function Store() {
         queryFn: function () { return api.getCriticalStockProducts(); },
         staleTime: 5 * 60 * 1000,
     }).data, criticalStockProducts = _l === void 0 ? [] : _l;
-    var createSupplierMutation = useMutation({
+    const { data: loanProducts = [] } = useQuery({
+        queryKey: ["loan-products"],
+        queryFn: () => api.getLoanProducts(),
+    });
+
+    const [isEditStockOpen, setIsEditStockOpen] = useState(false);
+    const [selectedProduct, setSelectedProduct] = useState(null);
+    const [stockForm, setStockForm] = useState({ quantity: 0 });
+
+    const updateStockMutation = useMutation({
+        mutationFn: (data) => api.updateLoanProduct(selectedProduct.id, {
+             stockQuantity: parseInt(data.quantity)
+        }),
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ["loan-products"] });
+            queryClient.invalidateQueries({ queryKey: ["low-stock-products"] });
+            queryClient.invalidateQueries({ queryKey: ["critical-stock-products"] });
+            setIsEditStockOpen(false);
+            toast({ title: "Success", description: "Stock updated successfully" });
+        },
+        onError: (error) => {
+            toast({
+                title: "Error",
+                description: error.message || "Failed to update stock",
+                variant: "destructive"
+            });
+        },
+    });
+
+    const createSupplierMutation = useMutation({
         mutationFn: function (data) { return api.createSupplier(data); },
         onSuccess: function () {
             queryClient.invalidateQueries({ queryKey: ["suppliers"] });
@@ -164,12 +193,63 @@ export default function Store() {
         </div>
 
         <Tabs value={activeTab} onValueChange={setActiveTab}>
-          <TabsList className="grid w-full grid-cols-4">
+          <TabsList className="grid w-full grid-cols-5">
+            <TabsTrigger value="products">All Products</TabsTrigger>
             <TabsTrigger value="suppliers">Suppliers</TabsTrigger>
             <TabsTrigger value="low-stock">Low Stock ({lowStockProducts.length})</TabsTrigger>
             <TabsTrigger value="critical-stock">Critical ({criticalStockProducts.length})</TabsTrigger>
             <TabsTrigger value="movements">Movements</TabsTrigger>
           </TabsList>
+
+          <TabsContent value="products" className="space-y-4 mt-6">
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Package className="h-5 w-5 text-primary"/>
+                  All Loan Products
+                </CardTitle>
+                <CardDescription>Manage inventory for all loan products</CardDescription>
+              </CardHeader>
+              <CardContent>
+                {loanProducts.length === 0 ? (<p className="text-muted-foreground text-center py-8">No products found</p>) : (<Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead>Product Name</TableHead>
+                        <TableHead>Buying Price</TableHead>
+                        <TableHead>Selling Price</TableHead>
+                        <TableHead>Current Stock</TableHead>
+                        <TableHead>Status</TableHead>
+                        <TableHead>Action</TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {loanProducts.map((product) => (
+                        <TableRow key={product.id}>
+                          <TableCell className="font-medium">{product.name}</TableCell>
+                          <TableCell>KES {parseFloat(product.buyingPrice).toLocaleString()}</TableCell>
+                          <TableCell>KES {parseFloat(product.sellingPrice).toLocaleString()}</TableCell>
+                          <TableCell>{product.stockQuantity}</TableCell>
+                          <TableCell>
+                            <Badge variant={product.stockQuantity <= product.criticalStockThreshold ? "destructive" : product.stockQuantity <= product.lowStockThreshold ? "secondary" : "default"}>
+                              {product.stockQuantity <= product.criticalStockThreshold ? "Critical" : product.stockQuantity <= product.lowStockThreshold ? "Low" : "Good"}
+                            </Badge>
+                          </TableCell>
+                          <TableCell>
+                            <Button variant="outline" size="sm" onClick={() => {
+                                setSelectedProduct(product);
+                                setStockForm({ quantity: product.stockQuantity });
+                                setIsEditStockOpen(true);
+                            }}>
+                              Update Stock
+                            </Button>
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>)}
+              </CardContent>
+            </Card>
+          </TabsContent>
 
           <TabsContent value="suppliers" className="space-y-4 mt-6">
             <div className="flex items-center gap-4 glass-card gradient-border p-4 rounded-lg">
@@ -344,6 +424,39 @@ export default function Store() {
             </Card>
           </TabsContent>
         </Tabs>
+
+        {/* Update Stock Dialog */}
+        <Dialog open={isEditStockOpen} onOpenChange={setIsEditStockOpen}>
+          <DialogContent className="sm:max-w-[425px]">
+            <DialogHeader>
+              <DialogTitle>Update Stock Quantity</DialogTitle>
+              <DialogDescription>
+                Update stock level for {selectedProduct?.name}
+              </DialogDescription>
+            </DialogHeader>
+            <form onSubmit={(e) => {
+                e.preventDefault();
+                updateStockMutation.mutate(stockForm);
+            }} className="space-y-4">
+              <div className="space-y-2">
+                <Label htmlFor="quantity">Stock Quantity</Label>
+                <Input 
+                    id="quantity" 
+                    type="number" 
+                    min="0"
+                    value={stockForm.quantity} 
+                    onChange={(e) => setStockForm({ quantity: e.target.value })} 
+                    required
+                />
+              </div>
+              <DialogFooter>
+                <Button type="submit" disabled={updateStockMutation.isPending}>
+                  {updateStockMutation.isPending ? "Updating..." : "Update Stock"}
+                </Button>
+              </DialogFooter>
+            </form>
+          </DialogContent>
+        </Dialog>
 
         {/* Add Supplier Dialog */}
         <Dialog open={isAddSupplierOpen} onOpenChange={setIsAddSupplierOpen}>

@@ -231,9 +231,6 @@ def get_member_dashboard(member_id):
     if not member:
         return jsonify({'error': 'Member not found'}), 404
     
-    if member.status != 'active':
-        return jsonify({'error': 'Member must have active status to apply for loans'}), 400
-    
     if user.role.name != 'admin':
         group = member.group
         if not group or group.loan_officer_id != user_id:

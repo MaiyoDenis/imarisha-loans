@@ -67,7 +67,7 @@ export function TransferFundsForm(_a) {
             reference: reference,
         });
     };
-    return (<Card>
+    return (<Card className="!bg-transparent">
       <CardHeader>
         <CardTitle>Transfer Funds</CardTitle>
         <CardDescription>Transfer funds between member accounts</CardDescription>

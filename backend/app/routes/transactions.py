@@ -10,6 +10,7 @@ bp = Blueprint('transactions', __name__, url_prefix='/api/transactions')
 def get_transactions():
     member_id = request.args.get('memberId')
     account_type = request.args.get('accountType')
+    status = request.args.get('status')
     
     from flask import session
     from app.models import User
@@ -21,6 +22,9 @@ def get_transactions():
         
     if account_type:
         query = query.filter_by(account_type=account_type)
+
+    if status:
+        query = query.filter_by(status=status)
         
     if 'user_id' in session:
         user = User.query.get(session['user_id'])
@@ -153,7 +157,7 @@ def create_transaction():
     else:
         return jsonify({'error': 'Invalid transaction type'}), 400
     
-    transaction_status = 'pending' if transaction_type == 'deposit' else 'confirmed'
+    transaction_status = 'pending' if transaction_type in ['deposit', 'withdrawal'] else 'confirmed'
     
     transaction = Transaction(
         transaction_id=str(uuid.uuid4()),
@@ -175,16 +179,17 @@ def create_transaction():
     return jsonify(transaction.to_dict()), 201
 
 @bp.route('/<int:transaction_id>/approve', methods=['POST'])
-def approve_deposit(transaction_id):
+def approve_transaction(transaction_id):
     from flask import session
     from app.models import User
+    from datetime import datetime
     
     transaction = Transaction.query.get(transaction_id)
     if not transaction:
         return jsonify({'error': 'Transaction not found'}), 404
     
-    if transaction.transaction_type != 'deposit':
-        return jsonify({'error': 'Only deposit transactions can be approved'}), 400
+    if transaction.transaction_type not in ['deposit', 'withdrawal']:
+        return jsonify({'error': 'Only deposit and withdrawal transactions can be approved'}), 400
     
     if transaction.status != 'pending':
         return jsonify({'error': f'Transaction is already {transaction.status}'}), 400
@@ -195,7 +200,7 @@ def approve_deposit(transaction_id):
         return jsonify({'error': 'User not found'}), 401
     
     if user.role.name not in ['procurement_officer', 'branch_manager', 'admin']:
-        return jsonify({'error': 'Only procurement officers can approve deposits'}), 403
+        return jsonify({'error': 'Only procurement officers can approve transactions'}), 403
     
     account = None
     if transaction.account_type == 'savings':
@@ -206,7 +211,10 @@ def approve_deposit(transaction_id):
     if not account:
         return jsonify({'error': f'{transaction.account_type} account not found'}), 404
     
-    account.balance += transaction.amount
+    # If deposit, add funds. If withdrawal, funds already deducted in create_transaction, so just confirm.
+    if transaction.transaction_type == 'deposit':
+        account.balance += transaction.amount
+    
     transaction.status = 'confirmed'
     transaction.confirmed_by = user_id
     transaction.confirmed_at = datetime.utcnow()
@@ -214,14 +222,15 @@ def approve_deposit(transaction_id):
     db.session.commit()
     
     return jsonify({
-        'message': 'Deposit approved successfully',
+        'message': 'Transaction approved successfully',
         'transaction': transaction.to_dict()
     }), 200
 
 @bp.route('/<int:transaction_id>/reject', methods=['POST'])
-def reject_deposit(transaction_id):
+def reject_transaction(transaction_id):
     from flask import session
     from app.models import User
+    from datetime import datetime
     
     data = request.get_json() or {}
     reason = data.get('reason', 'No reason provided')
@@ -230,8 +239,8 @@ def reject_deposit(transaction_id):
     if not transaction:
         return jsonify({'error': 'Transaction not found'}), 404
     
-    if transaction.transaction_type != 'deposit':
-        return jsonify({'error': 'Only deposit transactions can be rejected'}), 400
+    if transaction.transaction_type not in ['deposit', 'withdrawal']:
+        return jsonify({'error': 'Only deposit and withdrawal transactions can be rejected'}), 400
     
     if transaction.status != 'pending':
         return jsonify({'error': f'Transaction is already {transaction.status}'}), 400
@@ -242,7 +251,18 @@ def reject_deposit(transaction_id):
         return jsonify({'error': 'User not found'}), 401
     
     if user.role.name not in ['procurement_officer', 'branch_manager', 'admin']:
-        return jsonify({'error': 'Only procurement officers can reject deposits'}), 403
+        return jsonify({'error': 'Only procurement officers can reject transactions'}), 403
+    
+    # Handle Refund for withdrawal
+    if transaction.transaction_type == 'withdrawal':
+        account = None
+        if transaction.account_type == 'savings':
+            account = SavingsAccount.query.filter_by(member_id=transaction.member_id).first()
+        elif transaction.account_type == 'drawdown':
+            account = DrawdownAccount.query.filter_by(member_id=transaction.member_id).first()
+            
+        if account:
+            account.balance += transaction.amount
     
     transaction.status = 'failed'
     transaction.confirmed_by = user_id
@@ -252,7 +272,7 @@ def reject_deposit(transaction_id):
     db.session.commit()
     
     return jsonify({
-        'message': 'Deposit rejected successfully',
+        'message': 'Transaction rejected successfully',
         'transaction': transaction.to_dict()
     }), 200
 

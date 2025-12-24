@@ -67,7 +67,7 @@ export function ApplyLoanForm(_a) {
     var maxLoanLimit = (memberDashboard === null || memberDashboard === void 0 ? void 0 : memberDashboard.maxLoanLimit) ? parseFloat(memberDashboard.maxLoanLimit) : 0;
     var availableLoan = (memberDashboard === null || memberDashboard === void 0 ? void 0 : memberDashboard.availableLoan) ? parseFloat(memberDashboard.availableLoan) : 0;
     var totalOutstanding = (memberDashboard === null || memberDashboard === void 0 ? void 0 : memberDashboard.totalOutstanding) ? parseFloat(memberDashboard.totalOutstanding) : 0;
-    return (<Card>
+    return (<Card className="!bg-transparent">
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
           <CreditCard className="h-5 w-5"/>
@@ -87,7 +87,7 @@ export function ApplyLoanForm(_a) {
           </div>)}
         
         {/* Member Financial Summary */}
-        {memberDashboard && (<div className="bg-gradient-to-r from-blue-50 to-indigo-50 p-4 rounded-lg border border-blue-200">
+        {memberDashboard && (<div className="bg-transparent p-4 rounded-lg border border-blue-200">
             <h3 className="font-semibold text-blue-900 mb-3 flex items-center gap-2">
               <TrendingUp className="h-5 w-5"/>
               Member Financial Summary
@@ -129,7 +129,7 @@ export function ApplyLoanForm(_a) {
             </select>
           </div>
 
-          {selectedLoanType && (<div className="text-sm bg-primary/10 p-3 rounded-md text-blue-900">
+          {selectedLoanType && (<div className="text-sm bg-transparent border border-blue-200 p-3 rounded-md text-blue-900">
               <p>Min: KES {parseFloat(selectedLoanType.minAmount).toLocaleString()}</p>
               <p>Max: KES {parseFloat(selectedLoanType.maxAmount).toLocaleString()}</p>
               <p>Duration: {selectedLoanType.durationMonths} months</p>

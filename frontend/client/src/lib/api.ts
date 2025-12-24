@@ -252,10 +252,11 @@ export const api = {
     }),
 
     // Transactions
-    getTransactions: (memberId?: number | string, accountType?: string) => {
+    getTransactions: (memberId?: number | string, accountType?: string, status?: string) => {
         const params = new URLSearchParams();
         if (memberId) params.append("memberId", memberId.toString());
         if (accountType) params.append("accountType", accountType);
+        if (status) params.append("status", status);
         return fetchAPI(`/transactions?${params.toString()}`);
     },
     getTransaction: (id: number | string) => fetchAPI(`/transactions/${id}`),

@@ -100,18 +100,18 @@ export function GroupMembersPage() {
       <GroupVisitsSection groupId={groupId || 0}/>
 
       {stats && (<div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-          <KPICard title="Total Members" value={stats.totalMembers} unit={"".concat(stats.activeMembers, " active")} icon={<Users size={24}/>} status="normal"/>
+          <KPICard className="!bg-transparent" title="Total Members" value={stats.totalMembers} unit={"".concat(stats.activeMembers, " active")} icon={<Users size={24}/>} status="normal"/>
 
-          <KPICard title="Total Savings" value={new Intl.NumberFormat('en-KE').format(parseFloat(stats.totalSavings || "0"))} unit="KES" icon={<DollarSign size={24}/>} status="success"/>
+          <KPICard className="!bg-transparent" title="Total Savings" value={new Intl.NumberFormat('en-KE').format(parseFloat(stats.totalSavings || "0"))} unit="KES" icon={<DollarSign size={24}/>} status="success"/>
 
-          <KPICard title="Outstanding Loans" value={new Intl.NumberFormat('en-KE').format(parseFloat(stats.totalLoansOutstanding || "0"))} unit="KES" icon={<TrendingUp size={24}/>} status="warning"/>
+          <KPICard className="!bg-transparent" title="Outstanding Loans" value={new Intl.NumberFormat('en-KE').format(parseFloat(stats.totalLoansOutstanding || "0"))} unit="KES" icon={<TrendingUp size={24}/>} status="warning"/>
 
-          <KPICard title="Repayment Rate" value={stats.repaymentRate} unit="%" status={stats.repaymentRate >= 90 ? 'success' : stats.repaymentRate >= 70 ? 'warning' : 'critical'}/>
+          <KPICard className="!bg-transparent" title="Repayment Rate" value={stats.repaymentRate} unit="%" status={stats.repaymentRate >= 90 ? 'success' : stats.repaymentRate >= 70 ? 'warning' : 'critical'}/>
 
-          <KPICard title="Active Loans" value={stats.totalLoans || 0} status="normal"/>
+          <KPICard className="!bg-transparent" title="Active Loans" value={stats.totalLoans || 0} status="normal"/>
         </div>)}
 
-      <Card className="border-2">
+      <Card className="border-2 !bg-transparent">
         <CardHeader className="pb-4">
           <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between">
             <div>
@@ -139,14 +139,14 @@ export function GroupMembersPage() {
         </CardHeader>
       </Card>
 
-      {filteredMembers && filteredMembers.length === 0 ? (<Card className="border-dashed">
+      {filteredMembers && filteredMembers.length === 0 ? (<Card className="border-dashed !bg-transparent">
           <CardContent className="pt-12 text-center">
             <p className="text-muted-foreground text-lg">
               {(members === null || members === void 0 ? void 0 : members.length) === 0 ? "No members in this group" : "No members match your search"}
             </p>
           </CardContent>
         </Card>) : (<div className="grid gap-4">
-          {filteredMembers === null || filteredMembers === void 0 ? void 0 : filteredMembers.map(function (member) { return (<Card key={member.id} className="hover:shadow-lg hover:border-blue-300 transition-all duration-300 border-2 cursor-pointer" onClick={function () { return setLocation("/field-officer/members/".concat(member.id)); }}>
+          {filteredMembers === null || filteredMembers === void 0 ? void 0 : filteredMembers.map(function (member) { return (<Card key={member.id} className="hover:shadow-lg hover:border-blue-300 transition-all duration-300 border-2 cursor-pointer !bg-transparent" onClick={function () { return setLocation("/field-officer/members/".concat(member.id)); }}>
               <CardContent className="pt-6">
                 <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
                   <div className="flex-1 space-y-2">
@@ -159,16 +159,14 @@ export function GroupMembersPage() {
                           {member.memberCode} | {member.user.phone}
                         </p>
                       </div>
-                      <div className={"px-3 py-1 rounded-full text-xs font-semibold whitespace-nowrap ".concat(member.status === "active"
-                    ? "bg-green-100 text-green-700"
-                    : "bg-gray-100 text-foreground")}>
-                        {member.status}
+                      <div className="px-4 py-1 rounded-full text-xs font-bold whitespace-nowrap border shadow-sm bg-[#3E2723] border-[#FFD700] text-white">
+                        {member.status.toUpperCase()}
                       </div>
                     </div>
                   </div>
 
                   <div className="grid grid-cols-3 gap-4 sm:grid-cols-3 flex-1 sm:flex-none text-center">
-                    <div className="bg-primary/10 p-3 rounded-lg">
+                    <div className="bg-transparent p-3 rounded-lg border border-gray-200/20">
                       <p className="text-xs text-muted-foreground mb-1">
                         Active Loans
                       </p>
@@ -176,7 +174,7 @@ export function GroupMembersPage() {
                         {member.activeLoans}
                       </p>
                     </div>
-                    <div className="bg-orange-50 p-3 rounded-lg">
+                    <div className="bg-transparent p-3 rounded-lg border border-gray-200/20">
                       <p className="text-xs text-muted-foreground mb-1">
                         Outstanding
                       </p>
@@ -184,7 +182,7 @@ export function GroupMembersPage() {
                         KES {new Intl.NumberFormat('en-KE').format(parseFloat(member.totalOutstanding || "0"))}
                       </p>
                     </div>
-                    <div className="bg-green-50 p-3 rounded-lg">
+                    <div className="bg-transparent p-3 rounded-lg border border-gray-200/20">
                       <p className="text-xs text-muted-foreground mb-1">
                         Savings
                       </p>

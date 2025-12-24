@@ -29,7 +29,7 @@ def get_loan_product(id):
         return jsonify({'error': 'Product not found'}), 404
     return jsonify(product.to_dict())
 
-from app.utils.decorators import admin_required
+from app.utils.decorators import admin_required, role_required
 
 @bp.route('/loan-products', methods=['POST'])
 @admin_required
@@ -60,7 +60,7 @@ def create_loan_product():
         return jsonify({'error': str(e)}), 500
 
 @bp.route('/loan-products/<int:id>', methods=['PATCH'])
-@admin_required
+@role_required(['admin', 'procurement_officer'])
 def update_loan_product(id):
     product = LoanProduct.query.get(id)
     if not product:

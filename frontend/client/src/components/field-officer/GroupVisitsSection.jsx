@@ -85,7 +85,7 @@ export function GroupVisitsSection(_a) {
         return new Date(b.visitDate).getTime() - new Date(a.visitDate).getTime();
     }) : [];
     return (<>
-      <Card className="border-2">
+      <Card className="border-2 !bg-transparent">
         <CardHeader>
           <div className="flex items-center justify-between">
             <div>
@@ -104,7 +104,7 @@ export function GroupVisitsSection(_a) {
           {isLoading ? (<p className="text-muted-foreground">Loading visits...</p>) : sortedVisits.length === 0 ? (<div className="text-center py-8">
               <p className="text-muted-foreground">No visits recorded yet</p>
             </div>) : (<div className="space-y-4">
-              {sortedVisits.map(function (visit) { return (<div key={visit.id} className="p-4 border rounded-lg bg-card hover:bg-accent/5 transition">
+              {sortedVisits.map(function (visit) { return (<div key={visit.id} className="p-4 border rounded-lg bg-transparent hover:bg-accent/5 transition">
                   <div className="flex items-start gap-4">
                     <div className="p-2 rounded-lg bg-primary/10">
                       <Calendar className="h-5 w-5 text-primary"/>
