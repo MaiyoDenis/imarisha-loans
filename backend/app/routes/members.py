@@ -179,7 +179,7 @@ def process_registration_fee(id):
     if member.status == 'pending':
         # Wait for approval from procurement officer/branch manager/admin
         pass
-    elif member.status == 'pending_approval':
+    elif member.status == 'inactive':
         member.status = 'active'
     
     db.session.commit()

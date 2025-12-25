@@ -222,6 +222,28 @@ def get_user_notification_history(user_id):
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
+@bp.route('/unread-count/<int:user_id>', methods=['GET'])
+def get_unread_count(user_id):
+    try:
+        count = notification_service.get_unread_count(user_id)
+        return jsonify({'unread_count': count})
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+@bp.route('/<notification_id>/mark-read', methods=['POST'])
+def mark_as_read(notification_id):
+    data = request.get_json()
+    user_id = data.get('userId')
+    
+    if not user_id:
+        return jsonify({'error': 'userId is required'}), 400
+        
+    try:
+        success = notification_service.mark_as_read(user_id, notification_id)
+        return jsonify({'success': success})
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
 @bp.route('/<notification_id>/status', methods=['GET'])
 def get_notification_status(notification_id):
     try:

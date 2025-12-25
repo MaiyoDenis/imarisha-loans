@@ -12,13 +12,18 @@ export function CreateLoanDialog() {
     var _a = useState(false), open = _a[0], setOpen = _a[1];
     var _b = useState(""), memberId = _b[0], setMemberId = _b[1];
     var _c = useState(""), productId = _c[0], setProductId = _c[1];
-    var _d = useState(""), amount = _d[0], setAmount = _d[1];
+    var _d = useState(""), loanTypeId = _d[0], setLoanTypeId = _d[1];
+    var _e = useState(""), amount = _e[0], setAmount = _e[1];
     var queryClient = useQueryClient();
     var toast = useToast().toast;
-    var _e = useQuery({
+    var _f = useQuery({
         queryKey: ["loan-products"],
         queryFn: api.getLoanProducts,
-    }).data, products = _e === void 0 ? [] : _e;
+    }).data, products = _f === void 0 ? [] : _f;
+    var _g = useQuery({
+        queryKey: ["loan-types"],
+        queryFn: api.getLoanTypes,
+    }).data, loanTypes = _g === void 0 ? [] : _g;
     var createLoanMutation = useMutation({
         mutationFn: api.createLoan,
         onSuccess: function () {
@@ -26,6 +31,7 @@ export function CreateLoanDialog() {
             setOpen(false);
             setMemberId("");
             setProductId("");
+            setLoanTypeId("");
             setAmount("");
             toast({
                 title: "Success",
@@ -45,6 +51,7 @@ export function CreateLoanDialog() {
         createLoanMutation.mutate({
             memberId: parseInt(memberId),
             productId: parseInt(productId),
+            loanTypeId: parseInt(loanTypeId),
             amount: parseFloat(amount),
         });
     };
@@ -68,6 +75,23 @@ export function CreateLoanDialog() {
                 Member ID
               </Label>
               <Input id="memberId" type="number" value={memberId} onChange={function (e) { return setMemberId(e.target.value); }} className="col-span-3" required/>
+            </div>
+            <div className="grid grid-cols-4 items-center gap-4">
+              <Label htmlFor="loanType" className="text-right">
+                Loan Type
+              </Label>
+              <Select onValueChange={setLoanTypeId} value={loanTypeId}>
+                <SelectTrigger className="col-span-3">
+                  <SelectValue placeholder="Select loan type"/>
+                </SelectTrigger>
+                <SelectContent>
+                  {loanTypes.map(function (type) {
+            return (<SelectItem key={type.id} value={type.id.toString()}>
+                      {type.name} ({type.interestRate}%)
+                    </SelectItem>);
+        })}
+                </SelectContent>
+              </Select>
             </div>
             <div className="grid grid-cols-4 items-center gap-4">
               <Label htmlFor="product" className="text-right">

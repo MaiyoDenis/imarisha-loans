@@ -43,7 +43,53 @@ class FieldOperationsService:
                 FieldOfficerVisit.visit_date >= start_date
             ).order_by(desc(FieldOfficerVisit.visit_date)).limit(limit).offset(offset).all()
             
-            return [visit.to_dict() for visit in visits]
+            result = []
+            for visit in visits:
+                d = visit.to_dict()
+                # Adapt for Schedule.jsx expectations
+                d['status'] = 'completed' if visit.completed else 'pending'
+                d['type'] = visit.visit_purpose or 'visit'
+                d['date'] = visit.visit_date.isoformat()
+                d['time'] = visit.visit_date.strftime('%I:%M %p')
+                
+                if visit.member:
+                    d['memberName'] = f"{visit.member.user.first_name} {visit.member.user.last_name}"
+                    if visit.member.group:
+                        d['groupName'] = visit.member.group.name
+                        d['location'] = visit.member.group.location or 'N/A'
+                    else:
+                        d['groupName'] = d['memberName']
+                        d['location'] = 'N/A'
+                    d['contactPerson'] = d['memberName']
+                    d['phone'] = visit.member.user.phone
+                else:
+                    d['groupName'] = 'Unknown'
+                    d['location'] = 'N/A'
+                    d['contactPerson'] = 'N/A'
+                    d['phone'] = 'N/A'
+                
+                result.append(d)
+            
+            # Also include GroupVisit
+            from app.models import GroupVisit
+            group_visits = GroupVisit.query.filter_by(field_officer_id=user_id).filter(
+                GroupVisit.visit_date >= start_date.date()
+            ).order_by(desc(GroupVisit.visit_date)).all()
+            
+            for gv in group_visits:
+                d = gv.to_dict()
+                # Adapt for Schedule.jsx expectations
+                d['status'] = 'pending' # GroupVisit doesn't have a completed field in current model
+                d['type'] = 'group-visit'
+                d['groupName'] = gv.group.name if gv.group else 'Unknown'
+                d['date'] = gv.visit_date.isoformat()
+                d['time'] = '10:00 AM' # GroupVisit doesn't have time in current model
+                d['location'] = gv.group.location if gv.group else 'N/A'
+                d['contactPerson'] = 'Group Leader'
+                d['phone'] = 'N/A'
+                result.append(d)
+
+            return sorted(result, key=lambda x: x['date'], reverse=True)
         except Exception as e:
             logger.error(f"Error getting visits: {str(e)}")
             return []

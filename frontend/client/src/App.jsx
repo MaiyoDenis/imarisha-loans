@@ -45,6 +45,7 @@ const ProductManagement = lazy(() => import("@/pages/admin/Products"));
 const BranchManagerDashboard = lazy(() => import("@/pages/branch-manager/Dashboard"));
 const ProcurementOfficerDashboard = lazy(() => import("@/pages/procurement/Dashboard"));
 const MemberApprovalPage = lazy(() => import("@/components/field-officer/MemberApprovalPage").then(module => ({ default: module.MemberApprovalPage })));
+const MessagesPage = lazy(() => import("@/pages/shared/Messages"));
 
 function Router() {
     const [location, setLocation] = useLocation();

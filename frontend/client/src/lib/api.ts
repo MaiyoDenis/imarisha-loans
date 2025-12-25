@@ -381,10 +381,38 @@ export const api = {
     getFieldOfficerApplications: (limit: number = 50) => fetchAPI(`/field-operations/applications?limit=${limit}`),
     getFieldOfficerPerformance: (period: string = 'month') => fetchAPI(`/field-operations/performance?period=${period}`),
     getSyncStatus: () => fetchAPI("/field-operations/sync/status"),
+    getSchedule: () => fetchAPI("/field-operations/visits"),
     createFieldOperation: (data: any) => fetchAPI('/field-operations/visits', {
         method: 'POST',
         body: JSON.stringify(data)
     }),
+    createAppointment: (data: any) => fetchAPI('/field-operations/visits', {
+        method: 'POST',
+        body: JSON.stringify(data)
+    }),
+    createGroupVisit: (groupId: number | string, data: any) => fetchAPI(`/field-officer/groups/${groupId}/visits`, {
+        method: 'POST',
+        body: JSON.stringify(data)
+    }),
+    checkMeetingReminders: () => fetchAPI("/field-officer/reminders"),
+    
+    // Notifications
+    getNotifications: (userId: number | string) => fetchAPI(`/notifications/history/${userId}`),
+    getUnreadNotificationCount: (userId: number | string) => fetchAPI(`/notifications/unread-count/${userId}`),
+    markNotificationRead: (notificationId: string, userId: number | string) => fetchAPI(`/notifications/${notificationId}/mark-read`, {
+        method: 'POST',
+        body: JSON.stringify({ userId })
+    }),
+
+    // Messaging
+    getContacts: () => fetchAPI("/messages/contacts"),
+    sendMessage: (data: { recipientId: number; content: string }) => fetchAPI("/messages/send", {
+        method: 'POST',
+        body: JSON.stringify(data)
+    }),
+    getConversation: (contactId: number) => fetchAPI(`/messages/conversation/${contactId}`),
+    getUnreadMessageCount: () => fetchAPI("/messages/unread-count"),
+
     updateFieldOperationLocation: (id: number | string, location: any) => fetchAPI(`/field-operations/visits/${id}/location`, {
         method: 'PATCH',
         body: JSON.stringify(location)

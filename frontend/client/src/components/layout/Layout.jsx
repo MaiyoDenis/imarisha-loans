@@ -88,10 +88,18 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
 };
 import { SidebarProvider, SidebarInset, SidebarTrigger } from "@/components/ui/sidebar";
 import { AppSidebar } from "./AppSidebar";
-import { Menu, Bell, MessageSquare, User, LogOut, ChevronDown } from "lucide-react";
-import React, { useState } from "react";
+import { Menu, Bell, MessageSquare, User, LogOut, ChevronDown, Check, Clock } from "lucide-react";
+import React, { useState, useEffect } from "react";
 import { useLocation } from "wouter";
 import { useToast } from "@/hooks/use-toast";
+import { useQuery, useMutation } from "@tanstack/react-query";
+import { api } from "@/lib/api";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { format } from "date-fns";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { ScrollArea } from "@/components/ui/scroll-area";
+
 export default function Layout(_a) {
     var _this = this;
     var _b, _c;
@@ -101,19 +109,44 @@ export default function Layout(_a) {
     var toast = useToast().toast;
     var userStr = typeof window !== 'undefined' ? localStorage.getItem('user') : null;
     var user = userStr ? JSON.parse(userStr) : null;
+    var userId = (user === null || user === void 0 ? void 0 : user.id) || 0;
     var userInitials = user ? "".concat(((_b = user.firstName) === null || _b === void 0 ? void 0 : _b[0]) || '').concat(((_c = user.lastName) === null || _c === void 0 ? void 0 : _c[0]) || '').toUpperCase() : 'A';
     var userName = user ? "".concat(user.firstName, " ").concat(user.lastName) : 'Admin';
-    var notifications = [
-        { id: 1, message: 'Low stock alert: Product X', time: '5 min ago', read: false },
-        { id: 2, message: 'Loan repayment due', time: '1 hour ago', read: false },
-        { id: 3, message: 'System maintenance scheduled', time: '2 hours ago', read: true }
-    ];
-    var messages = [
-        { id: 1, sender: 'John Doe', message: 'Can you review the report?', time: '10 min ago', unread: true },
-        { id: 2, sender: 'Jane Smith', message: 'Meeting at 3 PM', time: '30 min ago', unread: false }
-    ];
-    var unreadNotifications = notifications.filter(function (n) { return !n.read; }).length;
-    var unreadMessages = messages.filter(function (m) { return m.unread; }).length;
+
+    // Fetch notifications
+    var _f = useQuery({
+        queryKey: ["notifications", userId],
+        queryFn: function () { return api.getNotifications(userId); },
+        enabled: !!userId,
+        refetchInterval: 30000, // Poll every 30 seconds
+    }), notificationData = _f.data, refetchNotifications = _f.refetch;
+    var notifications = (notificationData === null || notificationData === void 0 ? void 0 : notificationData.notifications) || [];
+
+    // Fetch unread message count
+    var unreadMessageQuery = useQuery({
+        queryKey: ["unread-message-count"],
+        queryFn: api.getUnreadMessageCount,
+        enabled: !!userId,
+        refetchInterval: 30000,
+    });
+    var unreadMessages = ((_b = unreadMessageQuery.data) === null || _b === void 0 ? void 0 : _b.count) || 0;
+
+    // Check meeting reminders for field officers
+    useEffect(function () {
+        if (user && user.role === 'field_officer') {
+            api.checkMeetingReminders();
+        }
+    }, [user === null || user === void 0 ? void 0 : user.id]);
+
+    var markReadMutation = useMutation({
+        mutationFn: function (notificationId) { return api.markNotificationRead(notificationId, userId); },
+        onSuccess: function () {
+            refetchNotifications();
+        },
+    });
+
+    var unreadNotifications = notifications.filter(function (n) { return n.status !== 'read'; }).length;
+
     var handleLogout = function () {
         return __awaiter(_this, void 0, void 0, function () {
             return __generator(this, function (_a) {
@@ -148,18 +181,60 @@ export default function Layout(_a) {
           
           <div className="flex items-center gap-4">
             {/* Notifications */}
-            <div className="relative">
-              <button className="relative p-2 text-muted-foreground hover:text-foreground hover:bg-background rounded-lg transition">
-                <Bell size={20}/>
-                {unreadNotifications > 0 && (<span className="absolute top-1 right-1 bg-destructive/100 text-white text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center">
-                    {unreadNotifications}
-                  </span>)}
-              </button>
-            </div>
+            <Popover>
+              <PopoverTrigger asChild>
+                <button className="relative p-2 text-muted-foreground hover:text-foreground hover:bg-background rounded-lg transition">
+                  <Bell size={20}/>
+                  {unreadNotifications > 0 && (<span className="absolute top-1 right-1 bg-destructive/100 text-white text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center animate-pulse">
+                      {unreadNotifications}
+                    </span>)}
+                </button>
+              </PopoverTrigger>
+              <PopoverContent className="w-80 p-0" align="end">
+                <div className="flex items-center justify-between p-4 border-b">
+                  <h4 className="font-semibold text-sm">Notifications</h4>
+                  {unreadNotifications > 0 && (
+                    <Badge variant="secondary" className="text-xs">{unreadNotifications} New</Badge>
+                  )}
+                </div>
+                <ScrollArea className="h-80">
+                  {notifications.length === 0 ? (
+                    <div className="p-8 text-center text-muted-foreground text-sm">
+                      No notifications yet
+                    </div>
+                  ) : (
+                    <div className="divide-y">
+                      {notifications.map((n) => (
+                        <div key={n.notification_id} className={"p-4 text-sm hover:bg-muted/50 transition cursor-pointer ".concat(n.status !== 'read' ? 'bg-primary/5' : '')} onClick={() => n.status !== 'read' && markReadMutation.mutate(n.notification_id)}>
+                          <div className="flex justify-between gap-2 mb-1">
+                            <span className="font-medium text-xs text-primary uppercase tracking-wider">{n.category}</span>
+                            <span className="text-[10px] text-muted-foreground">{n.sent_at ? format(new Date(n.sent_at), 'HH:mm') : ''}</span>
+                          </div>
+                          <p className={"text-sm ".concat(n.status !== 'read' ? 'font-medium' : 'text-muted-foreground')}>{n.message}</p>
+                          {n.status !== 'read' && (
+                            <div className="flex justify-end mt-2">
+                              <Button variant="ghost" size="sm" className="h-6 px-2 text-[10px]" onClick={(e) => {
+                                e.stopPropagation();
+                                markReadMutation.mutate(n.notification_id);
+                              }}>
+                                <Check className="h-3 w-3 mr-1" /> Mark read
+                              </Button>
+                            </div>
+                          )}
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </ScrollArea>
+              </PopoverContent>
+            </Popover>
 
             {/* Messages */}
             <div className="relative">
-              <button className="relative p-2 text-muted-foreground hover:text-foreground hover:bg-background rounded-lg transition">
+              <button 
+                onClick={() => setLocation('/messages')}
+                className="relative p-2 text-muted-foreground hover:text-foreground hover:bg-background rounded-lg transition"
+              >
                 <MessageSquare size={20}/>
                 {unreadMessages > 0 && (<span className="absolute top-1 right-1 bg-primary text-white text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center">
                     {unreadMessages}

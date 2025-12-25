@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { Calendar as CalendarIcon, Clock, MapPin, Search, Filter, MoreVertical, ChevronLeft, ChevronRight } from "lucide-react";
-import { format, startOfMonth, endOfMonth, startOfWeek, endOfWeek, eachDayOfInterval, isSameDay, isSameMonth, isToday, addMonths, subMonths } from "date-fns";
+import { format, startOfMonth, endOfMonth, startOfWeek, endOfWeek, eachDayOfInterval, isSameDay, isSameMonth, isToday, addMonths, subMonths, isAfter, startOfToday, addDays, isWithinInterval } from "date-fns";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -11,27 +11,52 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigge
 import { Calendar } from "@/components/ui/calendar";
 import { api } from "@/lib/api";
 import Layout from "@/components/layout/Layout";
+import { AddAppointmentModal } from "@/components/field-officer/AddAppointmentModal";
+
 export function SchedulePage() {
     var _a = useState(new Date()), date = _a[0], setDate = _a[1];
     var _b = useState('list'), view = _b[0], setView = _b[1];
     var _c = useState('all'), filter = _c[0], setFilter = _c[1];
     var _d = useState(new Date()), currentMonth = _d[0], setCurrentMonth = _d[1];
+    var _g = useState(false), isModalOpen = _g[0], setIsModalOpen = _g[1];
+    var _h = useState('today'), timeRange = _h[0], setTimeRange = _h[1];
     var _e = useQuery({
         queryKey: ["schedule"],
         queryFn: api.getSchedule,
-    }), _f = _e.data, schedule = _f === void 0 ? [] : _f, isLoading = _e.isLoading;
+    }), _f = _e.data, schedule = _f === void 0 ? [] : _f, isLoading = _e.isLoading, refetch = _e.refetch;
     var filteredSchedule = schedule.filter(function (item) {
         if (filter === 'all')
             return true;
         return item.status === filter;
     });
-    // Filter for list view based on selected date if in list view? 
-    // Or just show all upcoming? Let's show all upcoming in list view, 
-    // but maybe highlight the selected date.
-    // Actually, let's filter list view by selected date if user selects one in sidebar.
-    var listSchedule = date
-        ? filteredSchedule.filter(function (item) { return isSameDay(new Date(item.date), date); })
-        : filteredSchedule;
+    
+    var listSchedule = filteredSchedule.filter(function (item) {
+        var itemDate = new Date(item.date);
+        var today = startOfToday();
+        
+        switch (timeRange) {
+            case 'today':
+                return isSameDay(itemDate, today);
+            case 'upcoming':
+                return isAfter(itemDate, today) || isSameDay(itemDate, today);
+            case 'next-7-days':
+                return isWithinInterval(itemDate, { start: today, end: addDays(today, 7) });
+            case 'next-30-days':
+                return isWithinInterval(itemDate, { start: today, end: addDays(today, 30) });
+            case 'selected-date':
+                return date ? isSameDay(itemDate, date) : true;
+            case 'all':
+            default:
+                return true;
+        }
+    });
+
+    var handleDateSelect = function(newDate) {
+        setDate(newDate);
+        if (newDate) {
+            setTimeRange('selected-date');
+        }
+    };
     var getStatusColor = function (status) {
         switch (status) {
             case 'completed': return 'bg-green-100 text-green-800 border-green-200';
@@ -66,19 +91,21 @@ export function SchedulePage() {
           <Button variant={view === 'calendar' ? 'default' : 'outline'} onClick={function () { return setView('calendar'); }} size="sm">
             Calendar View
           </Button>
-          <Button size="sm" className="gap-2">
+          <Button size="sm" className="gap-2" onClick={function () { return setIsModalOpen(true); }}>
             <CalendarIcon className="h-4 w-4"/>
             New Appointment
           </Button>
         </div>
       </div>
 
+      <AddAppointmentModal open={isModalOpen} onOpenChange={setIsModalOpen} onSuccess={refetch}/>
+
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
         {/* Sidebar / Calendar Picker */}
         <div className="lg:col-span-4 xl:col-span-3 space-y-6">
           <Card>
             <CardContent className="p-4">
-              <Calendar mode="single" selected={date} onSelect={setDate} className="rounded-md border w-full flex justify-center"/>
+              <Calendar mode="single" selected={date} onSelect={handleDateSelect} className="rounded-md border w-full flex justify-center"/>
             </CardContent>
           </Card>
 
@@ -111,7 +138,22 @@ export function SchedulePage() {
               <Input type="search" placeholder="Search groups, locations..." className="pl-8"/>
             </div>
             <div className="flex items-center gap-2 w-full sm:w-auto">
-              <Filter className="h-4 w-4 text-muted-foreground"/>
+              <Clock className="h-4 w-4 text-muted-foreground"/>
+              <Select value={timeRange} onValueChange={setTimeRange}>
+                <SelectTrigger className="w-[150px]">
+                  <SelectValue placeholder="Timeframe"/>
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="today">Today</SelectItem>
+                  <SelectItem value="upcoming">All Upcoming</SelectItem>
+                  <SelectItem value="next-7-days">Next 7 Days</SelectItem>
+                  <SelectItem value="next-30-days">Next 30 Days</SelectItem>
+                  <SelectItem value="selected-date">Selected Date</SelectItem>
+                  <SelectItem value="all">All Time</SelectItem>
+                </SelectContent>
+              </Select>
+
+              <Filter className="h-4 w-4 text-muted-foreground ml-2"/>
               <Select value={filter} onValueChange={setFilter}>
                 <SelectTrigger className="w-[180px]">
                   <SelectValue placeholder="Filter by status"/>
@@ -128,8 +170,8 @@ export function SchedulePage() {
           </div>
 
           {isLoading ? (<div className="flex justify-center py-12">Loading schedule...</div>) : view === 'list' ? (<div className="space-y-4">
-              {listSchedule.length === 0 ? (<div className="text-center py-12 text-muted-foreground">
-                  No appointments found for this date.
+              {listSchedule.length === 0 ? (<div className="text-center py-12 text-muted-foreground border rounded-lg bg-muted/10">
+                  No appointments found for this period.
                 </div>) : (listSchedule.map(function (item) { return (<Card key={item.id} className="overflow-hidden hover:shadow-md transition-shadow">
                     <div className="flex flex-col md:flex-row">
                       <div className={"w-full md:w-2 ".concat(item.status === 'completed' ? 'bg-green-500' :

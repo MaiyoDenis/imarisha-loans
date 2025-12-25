@@ -265,6 +265,36 @@ class NotificationService:
                 variables=["offer_title", "offer_description", "expiry_date", "offer_link"],
                 language="en",
                 category="marketing"
+            ),
+            NotificationTemplate(
+                template_id="loan_created",
+                name="New Loan Application",
+                channel=NotificationChannel.IN_APP,
+                subject="New Loan Application Received",
+                body_template="A new loan application {{loan_number}} for {{amount}} has been created by {{field_officer}}.",
+                variables=["loan_number", "amount", "field_officer"],
+                language="en",
+                category="loan"
+            ),
+            NotificationTemplate(
+                template_id="meeting_reminder",
+                name="Meeting Reminder",
+                channel=NotificationChannel.IN_APP,
+                subject="Upcoming Meeting Reminder",
+                body_template="Reminder: You have a meeting with {{group_name}} at {{time}} in {{location}}.",
+                variables=["group_name", "time", "location"],
+                language="en",
+                category="schedule"
+            ),
+            NotificationTemplate(
+                template_id="new_message",
+                name="New Message Notification",
+                channel=NotificationChannel.IN_APP,
+                subject="You have a new message",
+                body_template="You have received a new message from {{sender_name}}.",
+                variables=["sender_name"],
+                language="en",
+                category="message"
             )
         ]
         
@@ -417,6 +447,10 @@ class NotificationService:
                 success = self._send_email(notification_data)
             elif channel == NotificationChannel.WHATSAPP:
                 success = self._send_whatsapp(notification_data)
+            elif channel == NotificationChannel.IN_APP:
+                success = True  # Already stored in Redis
+            elif channel == NotificationChannel.WEBSOCKET:
+                success = self._send_websocket(notification_data)
             else:
                 success = False
             
@@ -650,6 +684,71 @@ class NotificationService:
             logging.error(f"Error sending WhatsApp via Meta: {str(e)}")
             return False
     
+    def _send_websocket(self, notification_data: Dict[str, Any]) -> bool:
+        """Send notification via WebSocket"""
+        try:
+            # If socketio is initialized, emit the message
+            # For now, we'll just return True as it's also stored in Redis for polling
+            if hasattr(self.app, 'socketio'):
+                self.app.socketio.emit(
+                    'notification', 
+                    notification_data, 
+                    room=f"user_{notification_data['recipient_id']}"
+                )
+            return True
+        except Exception as e:
+            logging.error(f"Error sending WebSocket notification: {str(e)}")
+            return False
+
+    def mark_as_read(self, user_id: int, notification_id: str) -> bool:
+        """Mark a notification as read"""
+        try:
+            if not self.redis_client:
+                return False
+                
+            # Update main notification object
+            key = f"notification:{notification_id}"
+            notif_json = self.redis_client.get(key)
+            if notif_json:
+                notif_data = json.loads(notif_json)
+                notif_data['status'] = NotificationStatus.READ.value
+                notif_data['read_at'] = datetime.utcnow().isoformat()
+                self.redis_client.setex(key, 30*24*60*60, json.dumps(notif_data))
+            
+            # Update in user list
+            user_key = f"notifications:user:{user_id}"
+            notifications = self.redis_client.lrange(user_key, 0, -1)
+            for i, n_json in enumerate(notifications):
+                n_data = json.loads(n_json)
+                if n_data['notification_id'] == notification_id:
+                    n_data['status'] = NotificationStatus.READ.value
+                    n_data['read_at'] = datetime.utcnow().isoformat()
+                    self.redis_client.lset(user_key, i, json.dumps(n_data))
+                    break
+            
+            return True
+        except Exception as e:
+            logging.error(f"Error marking notification as read: {str(e)}")
+            return False
+
+    def get_unread_count(self, user_id: int) -> int:
+        """Get count of unread notifications for a user"""
+        try:
+            if not self.redis_client:
+                return 0
+                
+            user_key = f"notifications:user:{user_id}"
+            notifications = self.redis_client.lrange(user_key, 0, -1)
+            count = 0
+            for n_json in notifications:
+                n_data = json.loads(n_json)
+                if n_data.get('status') != NotificationStatus.READ.value:
+                    count += 1
+            return count
+        except Exception as e:
+            logging.error(f"Error getting unread count: {str(e)}")
+            return 0
+
     def _get_user_phone(self, user_id: int) -> Optional[str]:
         """Get user phone number from database"""
         try:

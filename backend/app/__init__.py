@@ -98,9 +98,10 @@ def create_app(config_class=Config):
     etl_service.init_app(app)
     
     # Register blueprints
-    from app.routes import auth, branches, groups, members, loans, products, transactions, dashboard, payments, jobs, reports, field, gamification, notifications, risk, dashboards, ai_analytics, reporting, field_operations, currency, alternative_payments, ussd, bi_integration, compliance, voice_assistant as voice_assistant_routes, inventory_intelligence, etl_pipeline, users, suppliers, stock, permissions, field_officer, savings, subscription
+    from app.routes import auth, branches, groups, members, loans, products, transactions, dashboard, payments, jobs, reports, field, gamification, notifications, risk, dashboards, ai_analytics, reporting, field_operations, currency, alternative_payments, ussd, bi_integration, compliance, voice_assistant as voice_assistant_routes, inventory_intelligence, etl_pipeline, users, suppliers, stock, permissions, field_officer, savings, subscription, messages
     app.register_blueprint(auth.bp)
     app.register_blueprint(users.bp)
+    app.register_blueprint(messages.bp)
     app.register_blueprint(branches.bp)
     app.register_blueprint(permissions.bp)
     app.register_blueprint(suppliers.bp)
@@ -140,7 +141,8 @@ def create_app(config_class=Config):
     def health_check():
         try:
             # Test database connection
-            db.session.execute('SELECT 1')
+            from sqlalchemy import text
+            db.session.execute(text('SELECT 1'))
             
             # Test cache connection (simple cache doesn't need Redis)
             cache.get('health_check')

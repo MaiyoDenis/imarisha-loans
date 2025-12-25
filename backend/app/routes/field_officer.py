@@ -409,6 +409,25 @@ def apply_loan_for_member(member_id):
         db.session.add(product_item)
     
     db.session.commit()
+
+    # Notify procurement officers
+    try:
+        from app.services.notification_service import notification_service, NotificationChannel
+        procurement_officers = User.query.join(Role).filter(Role.name == 'procurement_officer').all()
+        for officer in procurement_officers:
+            notification_service.send_notification(
+                recipient_id=officer.id,
+                template_id="loan_created",
+                variables={
+                    "loan_number": loan_number,
+                    "amount": f"KES {principle_amount}",
+                    "field_officer": f"{user.first_name} {user.last_name}"
+                },
+                channel=NotificationChannel.IN_APP
+            )
+    except Exception as e:
+        # Don't fail the loan application if notification fails
+        print(f"Failed to send notification: {str(e)}")
     
     return jsonify({
         'message': 'Loan application created successfully',
@@ -687,9 +706,13 @@ def manage_group_visits(group_id):
         
         try:
             from datetime import datetime
-            visit_date = datetime.fromisoformat(data.get('visitDate')).date()
-        except:
-            return jsonify({'error': 'Invalid visit date format'}), 400
+            visit_date_str = data.get('visitDate')
+            # Handle 'Z' suffix for Python versions < 3.11
+            if visit_date_str.endswith('Z'):
+                visit_date_str = visit_date_str.replace('Z', '+00:00')
+            visit_date = datetime.fromisoformat(visit_date_str).date()
+        except Exception as e:
+            return jsonify({'error': f'Invalid visit date format: {str(e)}'}), 400
         
         visit = GroupVisit(
             group_id=group_id,
@@ -712,6 +735,47 @@ def manage_group_visits(group_id):
     visits = GroupVisit.query.filter_by(group_id=group_id).order_by(GroupVisit.visit_date.desc()).all()
     
     return jsonify([visit.to_dict() for visit in visits])
+
+@bp.route('/reminders', methods=['GET'])
+@login_required
+def check_meeting_reminders():
+    from flask import session
+    user_id = session.get('user_id')
+    from datetime import datetime, timedelta
+    from app.models import GroupVisit, Group
+    from app.services.notification_service import notification_service, NotificationChannel
+    
+    # Check for meetings in the next 2 hours
+    now = datetime.utcnow()
+    two_hours_later = now + timedelta(hours=2)
+    
+    # GroupVisit.visit_date is a Date object, so we check today's visits
+    today = now.date()
+    visits = GroupVisit.query.filter_by(
+        field_officer_id=user_id,
+        visit_date=today
+    ).all()
+    
+    reminders_sent = 0
+    for visit in visits:
+        # Check if we already sent a reminder for this visit today in Redis to avoid duplicates
+        reminder_key = f"reminder_sent:{user_id}:{visit.id}:{today.isoformat()}"
+        if not notification_service.redis_client.get(reminder_key):
+            notification_service.send_notification(
+                recipient_id=user_id,
+                template_id="meeting_reminder",
+                variables={
+                    "group_name": visit.group.name if visit.group else "Your Group",
+                    "time": "Today",
+                    "location": visit.group.location if visit.group else "Scheduled Location"
+                },
+                channel=NotificationChannel.IN_APP
+            )
+            # Mark as sent for today (expire in 24 hours)
+            notification_service.redis_client.setex(reminder_key, 86400, "1")
+            reminders_sent += 1
+            
+    return jsonify({'reminders_sent': reminders_sent})
 
 @bp.route('/members/pending-approval', methods=['GET'])
 @login_required
@@ -942,7 +1006,7 @@ def process_first_deposit():
     if not member.savings_account or not member.drawdown_account:
         return jsonify({'error': 'Member accounts not found'}), 404
     
-    if member.status == 'pending':
+    if member.status in ['pending', 'inactive']:
         # Change status to active upon first deposit
         member.status = 'active'
     
@@ -957,6 +1021,7 @@ def process_first_deposit():
         # Deduct registration fee from the deposit
         drawdown_balance_before = member.drawdown_account.balance
         member.drawdown_account.balance += registration_fee  # Moving towards 0
+        member.registration_fee_paid = True
         
         # Create transaction for registration fee deduction
         transaction_id = f"TXN-{datetime.now().strftime('%Y%m%d%H%M%S')}-{uuid.uuid4().hex[:6].upper()}"

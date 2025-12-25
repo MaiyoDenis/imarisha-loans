@@ -131,14 +131,12 @@ export default function Groups() {
     var _i = useQuery({
         queryKey: ["members"],
         queryFn: api.getMembers,
-        enabled: !isFieldOfficer,
         staleTime: 10 * 60 * 1000,
         gcTime: 15 * 60 * 1000,
     }).data, members = _i === void 0 ? [] : _i;
     var _j = useQuery({
         queryKey: ["loans"],
         queryFn: function () { return api.getLoans(); },
-        enabled: !isFieldOfficer,
         staleTime: 10 * 60 * 1000,
         gcTime: 15 * 60 * 1000,
     }).data, loans = _j === void 0 ? [] : _j;
@@ -146,11 +144,11 @@ export default function Groups() {
         queryKey: ["group-members", selectedGroup === null || selectedGroup === void 0 ? void 0 : selectedGroup.id],
         queryFn: function () {
             return __awaiter(_this, void 0, void 0, function () {
-                return __generator(this, function (_a) {
-                    if (!selectedGroup)
-                        return [2 /*return*/, []];
-                    return [2 /*return*/, members.filter(function (m) { return m.groupId === selectedGroup.id; })];
-                });
+                if (!selectedGroup) return [2 /*return*/, []];
+                if (isFieldOfficer) {
+                    return [2 /*return*/, api.getGroupMembers(selectedGroup.id)];
+                }
+                return [2 /*return*/, members.filter(function (m) { return m.groupId === selectedGroup.id; })];
             });
         },
         enabled: !!selectedGroup && isMembersOpen,
