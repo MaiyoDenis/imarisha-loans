@@ -26,14 +26,19 @@ class CurrencyService:
         
         # Initialize Redis client with graceful failure handling
         try:
-            self.redis_client = redis.Redis(
-                host=app.config.get('REDIS_HOST', 'localhost'),
-                port=app.config.get('REDIS_PORT', 6379),
-                db=app.config.get('REDIS_DB', 5),
-                decode_responses=True
-            )
+            redis_url = app.config.get('REDIS_URL')
+            if redis_url:
+                self.redis_client = redis.from_url(redis_url, decode_responses=True)
+            else:
+                self.redis_client = redis.Redis(
+                    host=app.config.get('REDIS_HOST', 'localhost'),
+                    port=app.config.get('REDIS_PORT', 6379),
+                    db=app.config.get('REDIS_DB', 5),
+                    decode_responses=True
+                )
             # Test connection
-            self.redis_client.ping()
+            if self.redis_client:
+                self.redis_client.ping()
             logging.info("Currency Service: Redis connection established")
         except Exception as e:
             logging.warning(f"Currency Service: Redis not available - {str(e)}")

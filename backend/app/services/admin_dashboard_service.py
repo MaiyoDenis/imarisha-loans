@@ -30,16 +30,22 @@ class AdminDashboardService:
         """Initialize admin dashboard service with Flask app"""
         self.app = app
         try:
-            self.redis_client = redis.Redis(
-                host=app.config.get('REDIS_HOST', 'localhost'),
-                port=app.config.get('REDIS_PORT', 6379),
-                db=app.config.get('REDIS_DB', 6),
-                decode_responses=True
-            )
+            redis_url = app.config.get('REDIS_URL')
+            if redis_url:
+                self.redis_client = redis.from_url(redis_url, decode_responses=True)
+            else:
+                self.redis_client = redis.Redis(
+                    host=app.config.get('REDIS_HOST', 'localhost'),
+                    port=app.config.get('REDIS_PORT', 6379),
+                    db=app.config.get('REDIS_DB', 6),
+                    decode_responses=True
+                )
+            # Test connection
+            if self.redis_client:
+                self.redis_client.ping()
         except Exception as e:
             logging.warning(f"Failed to initialize Redis for admin dashboard: {str(e)}")
-        
-        logging.info("Admin Dashboard Service initialized successfully")
+            self.redis_client = None
     
     def get_admin_dashboard(self, branch_id: Optional[int] = None) -> Dict[str, Any]:
         """Get comprehensive admin dashboard with all metrics"""

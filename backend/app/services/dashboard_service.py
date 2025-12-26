@@ -31,14 +31,17 @@ class DashboardService:
         self.app = app
         try:
             # Parse Redis URL for connection details
-            redis_url = app.config.get('REDIS_URL', 'redis://localhost:6379/0')
-            if redis_url.startswith('redis://'):
-                # Parse URL: redis://host:port/db
-                url_parts = redis_url.replace('redis://', '').split('/')
-                host_port = url_parts[0].split(':')
-                host = host_port[0]
-                port = int(host_port[1]) if len(host_port) > 1 else 6379
-                db = int(url_parts[1]) if len(url_parts) > 1 else 0
+            redis_url = app.config.get('REDIS_URL')
+            if redis_url:
+                self.redis_client = redis.from_url(redis_url, decode_responses=True)
+                # Test connection
+                self.redis_client.ping()
+                logging.info("Redis connected successfully for dashboard service using REDIS_URL")
+            else:
+                # Fallback to individual components
+                host = app.config.get('REDIS_HOST', 'localhost')
+                port = int(app.config.get('REDIS_PORT', 6379))
+                db = int(app.config.get('REDIS_DB', 0))
 
                 self.redis_client = redis.Redis(
                     host=host,
@@ -51,8 +54,6 @@ class DashboardService:
                 # Test connection
                 self.redis_client.ping()
                 logging.info("Redis connected successfully for dashboard service")
-            else:
-                raise ValueError(f"Invalid Redis URL format: {redis_url}")
         except Exception as e:
             logging.warning(f"Failed to initialize Redis for dashboard service: {str(e)}. Dashboard will work without caching.")
             self.redis_client = None
