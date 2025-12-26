@@ -89,7 +89,7 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
 import { SidebarProvider, SidebarInset, SidebarTrigger } from "@/components/ui/sidebar";
 import { AppSidebar } from "./AppSidebar";
 import { Menu, Bell, MessageSquare, User, LogOut, ChevronDown, Check, Clock } from "lucide-react";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useLocation } from "wouter";
 import { useToast } from "@/hooks/use-toast";
 import { useQuery, useMutation } from "@tanstack/react-query";
@@ -105,7 +105,9 @@ export default function Layout(_a) {
     var _b, _c;
     var children = _a.children;
     var _d = useState(false), showProfileMenu = _d[0], setShowProfileMenu = _d[1];
-    var _e = useLocation(), setLocation = _e[1];
+    var _e = useLocation(), location = _e[0], setLocation = _e[1];
+    var scrollPositions = useRef({});
+    var contentRef = useRef(null);
     var toast = useToast().toast;
     var userStr = typeof window !== 'undefined' ? localStorage.getItem('user') : null;
     var user = userStr ? JSON.parse(userStr) : null;
@@ -137,6 +139,27 @@ export default function Layout(_a) {
             api.checkMeetingReminders();
         }
     }, [user === null || user === void 0 ? void 0 : user.id]);
+
+    // Save scroll position before navigation
+    useEffect(function () {
+        var container = contentRef.current;
+        if (!container) return;
+        var handleScroll = function () {
+            scrollPositions.current[location] = container.scrollTop;
+        };
+        container.addEventListener('scroll', handleScroll);
+        return function () { return container.removeEventListener('scroll', handleScroll); };
+    }, [location]);
+
+    // Restore scroll position on location change
+    useEffect(function () {
+        if (contentRef.current) {
+            var savedPosition = scrollPositions.current[location];
+            if (typeof savedPosition === 'number') {
+                contentRef.current.scrollTop = savedPosition;
+            }
+        }
+    }, [location]);
 
     var markReadMutation = useMutation({
         mutationFn: function (notificationId) { return api.markNotificationRead(notificationId, userId); },
@@ -266,7 +289,7 @@ export default function Layout(_a) {
             </div>
           </div>
         </header>
-        <div className="flex flex-1 flex-col gap-3 md:gap-4 p-3 md:p-4 pt-0 overflow-y-auto">
+        <div ref={contentRef} className="flex flex-1 flex-col gap-3 md:gap-4 p-3 md:p-4 pt-0 overflow-y-auto">
           {children}
         </div>
       </SidebarInset>

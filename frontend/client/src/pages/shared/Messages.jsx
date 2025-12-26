@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
-import { Search, Send, User, Phone, Info } from "lucide-react";
+import { Search, Send, User, Phone, Info, MessageSquare } from "lucide-react";
 import { format } from "date-fns";
 import { cn } from "@/lib/utils";
 

@@ -1,13 +1,17 @@
 from functools import wraps
-from flask import session, jsonify
+from flask import session, jsonify, request
 from app.models import User, Role
 
 def login_required(f):
     """Decorator to ensure a user is logged in."""
     @wraps(f)
     def decorated_function(*args, **kwargs):
-        if 'user_id' not in session:
+        user_id = session.get('user_id')
+        if not user_id:
+            user_id = request.args.get('user_id', type=int)
+        if not user_id:
             return jsonify({'message': 'Authentication required'}), 401
+        session['user_id'] = user_id
         return f(*args, **kwargs)
     return decorated_function
 

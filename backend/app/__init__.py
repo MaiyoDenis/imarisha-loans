@@ -33,7 +33,8 @@ def create_app(config_class=Config):
             "http://127.0.0.1:5173",
             "https://imarisha-loans.vercel.app",
             r"https://.*\.vercel\.app",
-            r"https://.*\.netlify\.app"
+            r"https://.*\.netlify\.app",
+            r"https://.*\.render\.com"
         ],
         "methods": ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
         "allowed_headers": [

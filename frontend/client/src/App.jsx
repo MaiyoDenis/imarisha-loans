@@ -30,7 +30,7 @@ const OperationsDashboard = lazy(() => import("@/pages/operations/Dashboard"));
 const RiskDashboard = lazy(() => import("@/pages/risk/Dashboard"));
 const MemberAnalyticsDashboard = lazy(() => import("@/pages/analytics/Members"));
 const ForecastDashboard = lazy(() => import("@/pages/analytics/Forecast"));
-const AdminDashboard = lazy(() => import("@/pages/admin/Dashboard"));
+const AdminDashboard = lazy(() => import("@/pages/admin/DashboardEnhanced"));
 const AIAnalyticsDashboard = lazy(() => import("@/pages/analytics/AI").then(module => ({ default: module.AIAnalyticsDashboard })));
 const GamificationDashboard = lazy(() => import("@/pages/gamification/GamificationDashboard").then(module => ({ default: module.GamificationDashboard })));
 const FieldOperationsPage = lazy(() => import("@/pages/field-operations/Dashboard").then(module => ({ default: module.FieldOperationsPage })));
@@ -306,6 +306,13 @@ function Router() {
             {(params) => (
               <ProtectedRoute allowedRoles={["admin", "executive", "operations_manager"]} fallbackPath="/dashboard">
                 <ReportsPage {...params}/>
+              </ProtectedRoute>
+            )}
+          </Route>
+          <Route path="/messages">
+            {(params) => (
+              <ProtectedRoute fallbackPath="/dashboard">
+                <MessagesPage {...params}/>
               </ProtectedRoute>
             )}
           </Route>

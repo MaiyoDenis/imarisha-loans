@@ -29,3 +29,10 @@ class Config:
     # Celery Configuration
     CELERY_BROKER_URL = os.environ.get('CELERY_BROKER_URL', REDIS_URL)
     CELERY_RESULT_BACKEND = os.environ.get('CELERY_RESULT_BACKEND', REDIS_URL)
+    
+    # Session Configuration
+    SESSION_COOKIE_SECURE = os.environ.get('FLASK_ENV') == 'production'
+    SESSION_COOKIE_HTTPONLY = True
+    SESSION_COOKIE_SAMESITE = 'Lax'
+    PERMANENT_SESSION_LIFETIME = 86400
+    SESSION_PERMANENT = True

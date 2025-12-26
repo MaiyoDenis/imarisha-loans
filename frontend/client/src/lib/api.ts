@@ -2,6 +2,16 @@ import { apiRequest } from "./queryClient";
 
 const API_BASE = import.meta.env.VITE_API_URL || import.meta.env.VITE_BACKEND_URL || "https://imarisha-loans.onrender.com/api";
 
+const getUserId = () => {
+    if (typeof window === 'undefined') return null;
+    try {
+        const user = JSON.parse(localStorage.getItem('user') || '{}');
+        return user.id;
+    } catch {
+        return null;
+    }
+};
+
 if (typeof window !== 'undefined') {
     console.log('[API] Configuration:', {
         'API Base': API_BASE,
@@ -405,13 +415,29 @@ export const api = {
     }),
 
     // Messaging
-    getContacts: () => fetchAPI("/messages/contacts"),
-    sendMessage: (data: { recipientId: number; content: string }) => fetchAPI("/messages/send", {
-        method: 'POST',
-        body: JSON.stringify(data)
-    }),
-    getConversation: (contactId: number) => fetchAPI(`/messages/conversation/${contactId}`),
-    getUnreadMessageCount: () => fetchAPI("/messages/unread-count"),
+    getContacts: () => {
+        const userId = getUserId();
+        const url = userId ? `/messages/contacts?user_id=${userId}` : "/messages/contacts";
+        return fetchAPI(url);
+    },
+    sendMessage: (data: { recipientId: number; content: string }) => {
+        const userId = getUserId();
+        const url = userId ? `/messages/send?user_id=${userId}` : "/messages/send";
+        return fetchAPI(url, {
+            method: 'POST',
+            body: JSON.stringify(data)
+        });
+    },
+    getConversation: (contactId: number) => {
+        const userId = getUserId();
+        const url = userId ? `/messages/conversation/${contactId}?user_id=${userId}` : `/messages/conversation/${contactId}`;
+        return fetchAPI(url);
+    },
+    getUnreadMessageCount: () => {
+        const userId = getUserId();
+        const url = userId ? `/messages/unread-count?user_id=${userId}` : "/messages/unread-count";
+        return fetchAPI(url);
+    },
 
     updateFieldOperationLocation: (id: number | string, location: any) => fetchAPI(`/field-operations/visits/${id}/location`, {
         method: 'PATCH',

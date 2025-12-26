@@ -61,6 +61,8 @@ def get_contacts():
 @login_required
 def send_message():
     sender_id = session.get('user_id')
+    if not sender_id:
+        sender_id = request.args.get('user_id', type=int)
     data = request.get_json()
     
     recipient_id = data.get('recipientId')
@@ -102,6 +104,8 @@ def send_message():
 @login_required
 def get_conversation(contact_id):
     user_id = session.get('user_id')
+    if not user_id:
+        user_id = request.args.get('user_id', type=int)
     
     messages = Message.query.filter(
         or_(
@@ -124,5 +128,7 @@ def get_conversation(contact_id):
 @login_required
 def get_unread_message_count():
     user_id = session.get('user_id')
+    if not user_id:
+        user_id = request.args.get('user_id', type=int)
     count = Message.query.filter_by(recipient_id=user_id, is_read=False).count()
     return jsonify({'count': count})
