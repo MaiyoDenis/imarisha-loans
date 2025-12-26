@@ -1,4 +1,4 @@
-import { apiRequest } from "./queryClient";
+import { apiRequest } from "./queryClient.js";
 
 const API_BASE = import.meta.env.VITE_API_URL || import.meta.env.VITE_BACKEND_URL || "https://imarisha-loans.onrender.com/api";
 
@@ -213,6 +213,7 @@ export const api = {
         method: "PATCH",
         body: JSON.stringify(data),
     }),
+    deleteLoanProduct: (id: number | string) => fetchAPI(`/loan-products/${id}`, { method: "DELETE" }),
 
     // Loan Types
     getLoanTypes: () => fetchAPI("/loan-types"),
